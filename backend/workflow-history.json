@@ -1,5 +1,193 @@
 [
   {
+    "workflowId": "33b7ae07-e134-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Story to Scenes (Parallel Template)",
+    "status": "failed",
+    "startTime": "2025-12-25T01:51:17.071Z",
+    "endTime": "2025-12-25T01:51:17.748Z",
+    "durationMs": 677,
+    "nodeCount": 1,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": false,
+        "error": "Request failed with status code 401"
+      }
+    ]
+  },
+  {
+    "workflowId": "fc5e9745-e131-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Story to Scenes (Parallel Template)",
+    "status": "failed",
+    "startTime": "2025-12-25T01:35:25.219Z",
+    "endTime": "2025-12-25T01:35:26.082Z",
+    "durationMs": 863,
+    "nodeCount": 1,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": false,
+        "error": "Request failed with status code 401"
+      }
+    ]
+  },
+  {
+    "workflowId": "cc85ee92-e12e-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Story to Scenes (Parallel Template)",
+    "status": "failed",
+    "startTime": "2025-12-25T01:12:36.456Z",
+    "endTime": "2025-12-25T01:12:43.884Z",
+    "durationMs": 7428,
+    "nodeCount": 2,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "Under the flickering glow of a streetlamp, Mia discovered an old, leather-bound journal tucked beneath a gnarled oak. Intrigued, she opened it and found pages filled with the elegant script of a long-forgotten poet, each line a dance of words that painted vivid landscapes and heartaches. As she read, the world around her faded, and she felt herself walking through the poet's dreams, feeling the warmth of the sun on her skin and the cool breeze whispering secrets.\n\nDays turned into weeks as Mia returned to the tree, pouring over the entries, each one igniting a spark within her. Inspired, she began to write her own verses, weaving her life into the fabric of the poet’s world. But one evening, as she reached for the journal, it was gone, vanished like a fleeting memory.\n\nHeartbroken yet determined, Mia decided to share her own poems with the world. She set up a small stand at the park, her heart racing as she read aloud to passersby. And in that moment, she realized—the spirit of the poet lived on through her words, and her voice became a new chapter in a story that would never truly end.",
+            "model": "gpt-4o-mini",
+            "tokens": 1103,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-scenes-1",
+        "nodeType": "split_text",
+        "success": false,
+        "error": "Request failed with status code 401"
+      }
+    ]
+  },
+  {
+    "workflowId": "cf0d397e-e0dd-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Direct Mock Test",
+    "status": "completed",
+    "startTime": "2025-12-24T15:32:51.463Z",
+    "endTime": "2025-12-24T15:32:52.910Z",
+    "durationMs": 1447,
+    "nodeCount": 1,
+    "results": [
+      {
+        "nodeId": "mock-test-123",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "It seems like you might have a concern or a specific request. How can I assist you today?",
+            "model": "gpt-4o-mini",
+            "tokens": 89,
+            "nodeType": "text_to_text"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "workflowId": "b46de2e8-e0dd-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Mock Output Test",
+    "status": "completed",
+    "startTime": "2025-12-24T15:32:06.798Z",
+    "endTime": "2025-12-24T15:32:09.205Z",
+    "durationMs": 2407,
+    "nodeCount": 1,
+    "results": [
+      {
+        "nodeId": "test-mock-node",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "It looks like you're expressing a concern about code execution. If you have specific code or a scenario in mind that you want to discuss or ensure doesn't run, please share more details, and I'll be happy to help you analyze or understand it!",
+            "model": "gpt-4o-mini",
+            "tokens": 242,
+            "nodeType": "text_to_text"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "workflowId": "97744574-e0d9-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Rerun: node-story-1",
+    "status": "completed",
+    "startTime": "2025-12-24T15:02:40.199Z",
+    "endTime": "2025-12-24T15:02:47.338Z",
+    "durationMs": 7139,
+    "nodeCount": 1,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "The sun dipped low on the horizon, casting a golden hue over the small fishing village of Eldermere. Clara, a young girl with wild curls and a heart full of dreams, stood at the edge of the pier, clutching a tattered notebook where she sketched fantastical creatures of the sea. One evening, as she dipped her toes into the cool water, a shimmering figure emerged from the waves—a mermaid with scales that sparkled like diamonds. \n\n\"Help me,\" the mermaid pleaded, her voice like the gentle lapping of the tide. \"I need a song to break the curse that binds me to these waters.\" With a spark of inspiration, Clara quickly penned a melody, her voice rising above the roar of the waves. As the last note danced into the air, the mermaid transformed into a breathtaking woman, free at last. In gratitude, she gifted Clara a pearl, promising that every time she sang, her dreams would bloom like the flowers of spring. From that day on, the village echoed with the sound of Clara's voice, weaving magic and wonder into the hearts of all who listened.",
+            "model": "gpt-4o-mini",
+            "tokens": 1044,
+            "nodeType": "text_to_text"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "workflowId": "98e6c136-e0d9-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Continue from: node-story-1",
+    "status": "failed",
+    "startTime": "2025-12-24T15:02:42.627Z",
+    "endTime": "2025-12-24T15:02:43.502Z",
+    "durationMs": 875,
+    "nodeCount": 1,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": false,
+        "error": "Request failed with status code 401"
+      }
+    ]
+  },
+  {
+    "workflowId": "8b94b871-e0d9-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Story to Scenes (Parallel Template)",
+    "status": "failed",
+    "startTime": "2025-12-24T15:02:20.279Z",
+    "endTime": "2025-12-24T15:02:27.831Z",
+    "durationMs": 7552,
+    "nodeCount": 2,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "In the heart of a bustling city, nestled between towering skyscrapers, stood a forgotten park, overgrown and wild. One sunny afternoon, a curious girl named Mia stumbled upon the hidden sanctuary, her eyes widening at the sight of vibrant flowers breaking through the tangled weeds. She spent hours exploring, her laughter mixing with the chirping of birds as she discovered a rusty swing set, long abandoned but still sturdy. \n\nAs the sun began to set, painting the sky in shades of orange and lavender, Mia decided to take a seat on the swing. With each push, she soared higher, feeling the weight of the world lift from her shoulders. In that moment, she made a promise to return, to breathe life back into the park. \n\nA few weeks later, armed with seeds and determination, she rallied her friends to join her in a clean-up day. The park transformed under their care, blooming anew, and with it, so did Mia's spirit—a vibrant reminder of the beauty that can thrive when we nurture what we love.",
+            "model": "gpt-4o-mini",
+            "tokens": 997,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-scenes-1",
+        "nodeType": "split_text",
+        "success": false,
+        "error": "Request failed with status code 401"
+      }
+    ]
+  },
+  {
     "workflowId": "6715290e-e079-11f0-a8f9-3aba69338ee5",
     "workflowName": "Items Test",
     "status": "completed",

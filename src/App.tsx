@@ -1,13 +1,24 @@
 import { WorkflowProvider, useWorkflowContext } from './context/WorkflowContext'
 import { WorkflowCanvas } from './components/WorkflowCanvas'
 import { NodePropertiesPanel } from './components/NodePropertiesPanel'
+import ExecutionOverviewPanel from './components/ExecutionOverviewPanel'
 import { ExecutionHistory } from './components/ExecutionHistory'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 
 function AppContent() {
-  const { execution, runWorkflow, stopWorkflow, workflow } = useWorkflowContext();
+  const { execution, runWorkflow, stopWorkflow, workflow, selectedNodeId, rerunNode, continueFromNode, loadWorkflowFromHistory, clearExecutionState } = useWorkflowContext();
   const [activeTab, setActiveTab] = useState<'builder' | 'history'>('builder');
+
+  const selectedNode = workflow.nodes.find(n => n.id === selectedNodeId) || null;
+  const showExecutionPanel = execution.isRunning && selectedNode && selectedNode.status !== 'not_run';
+
+  const handleLoadExecution = async (workflowId: string) => {
+    await loadWorkflowFromHistory(workflowId);
+    setActiveTab('builder');
+  };
+
+  const hasExecutionState = workflow.nodes.some(n => n.status !== 'not_run');
 
   return (
     <div className="app">
@@ -19,6 +30,11 @@ function AppContent() {
         <div className="header-actions">
           {execution.error && (
             <span className="error-badge">{execution.error}</span>
+          )}
+          {hasExecutionState && !execution.isRunning && (
+            <button className="btn-secondary" onClick={clearExecutionState}>
+              Clear Execution State
+            </button>
           )}
           {execution.isRunning ? (
             <button className="btn-danger" onClick={stopWorkflow}>
@@ -57,10 +73,18 @@ function AppContent() {
             <div className="canvas-holder">
               <WorkflowCanvas />
             </div>
-            <NodePropertiesPanel />
+            {showExecutionPanel ? (
+              <ExecutionOverviewPanel
+                node={selectedNode}
+                onRerunNode={rerunNode}
+                onContinueFromNode={continueFromNode}
+              />
+            ) : (
+              <NodePropertiesPanel />
+            )}
           </>
         ) : (
-          <ExecutionHistory />
+          <ExecutionHistory onLoadExecution={handleLoadExecution} />
         )}
       </main>
     </div>

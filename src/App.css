@@ -95,8 +95,13 @@
   border-bottom: none;
 }
 
-.history-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+.history-table tbody tr.clickable-row {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-table tbody tr.clickable-row:hover td {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .status-badge {

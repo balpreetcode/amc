@@ -3,10 +3,23 @@ export interface WorkflowNodeData {
   type: NodeType;
   title: string;
   provider: string;
-  status: 'not_run' | 'running' | 'completed' | 'error';
+  status: 'not_run' | 'running' | 'completed' | 'error' | 'mocked';
   estimatedTime: string;
   config?: Record<string, unknown>;
   execution?: NodeExecutionConfig;
+  mockOutput?: {
+    enabled: boolean;
+    data: Record<string, unknown>;
+  };
+  executionMeta?: {
+    startTime?: string;
+    endTime?: string;
+    duration?: number;
+    retryCount?: number;
+    error?: string;
+    inputs?: Record<string, unknown>;
+    outputs?: Record<string, unknown>;
+  };
 }
 
 export type ExecutionMode = 'parallel' | 'sequential';
@@ -76,7 +89,7 @@ export const createNode = (type: NodeType, index: number): WorkflowNodeData => {
   return {
     id: `node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     type,
-    title: `${index + 1}. ${config.label}`,
+    title: config.label,
     provider: config.defaultProvider,
     status: 'not_run',
     estimatedTime: config.defaultTime,

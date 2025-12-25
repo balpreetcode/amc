@@ -332,3 +332,38 @@ input:checked+.slider:before {
     font-size: 0.8rem !important;
     padding: 0.4rem !important;
 }
+
+.status-badge {
+    font-size: var(--font-size-xs);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.status-not-run {
+    background: var(--color-bg-secondary);
+    color: var(--color-text-muted);
+}
+
+.status-running {
+    background: #FEF3C7;
+    color: #D97706;
+}
+
+.status-completed {
+    background: #D1FAE5;
+    color: #059669;
+}
+
+.status-error {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+.status-mocked {
+    background: #F3E8FF;
+    color: #7C3AED;
+}

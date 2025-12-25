@@ -517,6 +517,53 @@ export const NodePropertiesPanel: React.FC = () => {
                 })}
             </div>
 
+            <div className="panel-section">
+                <div className="section-title">Mock Output</div>
+                <div className="form-group toggle-group">
+                    <span className="toggle-label">Enable Mock Output</span>
+                    <label className="toggle-switch">
+                        <input
+                            type="checkbox"
+                            checked={selectedNode.mockOutput?.enabled || false}
+                            onChange={(e) => {
+                                updateNode(selectedNode.id, {
+                                    mockOutput: {
+                                        enabled: e.target.checked,
+                                        data: selectedNode.mockOutput?.data || {}
+                                    }
+                                });
+                            }}
+                        />
+                        <span className="slider round"></span>
+                    </label>
+                </div>
+                {selectedNode.mockOutput?.enabled && (
+                    <div className="form-group">
+                        <label>Mock Output Data (JSON)</label>
+                        <textarea
+                            value={JSON.stringify(selectedNode.mockOutput.data, null, 2)}
+                            onChange={(e) => {
+                                try {
+                                    const parsed = JSON.parse(e.target.value);
+                                    updateNode(selectedNode.id, {
+                                        mockOutput: {
+                                            enabled: true,
+                                            data: parsed
+                                        }
+                                    });
+                                } catch {
+                                }
+                            }}
+                            placeholder='{"text": "example output", "imageUrl": "https://..."}'
+                            style={{ fontFamily: 'monospace', minHeight: '120px' }}
+                        />
+                        <small style={{ color: '#666', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                            Enter valid JSON. This will be used instead of executing the node.
+                        </small>
+                    </div>
+                )}
+            </div>
+
             <div className="panel-footer">
                 <div className="node-stats">
                     <div className="stat">

@@ -31,6 +31,8 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
                 return <span className="status-badge status-running">⚡ Running</span>;
             case 'completed':
                 return <span className="status-badge status-completed">✓ Done</span>;
+            case 'mocked':
+                return <span className="status-badge status-mocked">🎭 Mocked</span>;
             case 'error':
                 return <span className="status-badge status-error">✗ Error</span>;
             default:

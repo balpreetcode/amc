@@ -577,7 +577,8 @@ function buildWorkflowDefinition(workflowDefName, nodes) {
             nodeId: node.id,
             nodeType: node.type,
             config: mapConfigReferences(node.config || {}, nodeIdToTaskRef),
-            execution: node.execution || {}
+            execution: node.execution || {},
+            mockOutput: node.mockOutput || null
         }
     }));
 
@@ -645,9 +646,22 @@ async function executeTask(task) {
     const handler = nodeProcessors[taskType];
     const config = normalizePromptConfig(task.inputData?.config || {});
     const execution = normalizeExecution(task.inputData?.execution);
+    const mockOutput = task.inputData?.mockOutput;
     const aggregateItems = execution.waitForAll && execution.aggregateItems;
 
+    console.log(`[Task ${task.taskId}] mockOutput:`, JSON.stringify(mockOutput));
+
     try {
+        if (mockOutput && mockOutput.enabled && mockOutput.data) {
+            console.log(`[Task ${task.taskId}] Using mock output`);
+            await updateTaskStatus(task, 'COMPLETED', {
+                ...mockOutput.data,
+                nodeType: taskType,
+                mocked: true
+            }, null);
+            return;
+        }
+
         const arrayFields = getArrayFields(config);
         const runOne = async (itemConfig) => {
             if (handler) {
@@ -785,7 +799,14 @@ app.get('/workflow/:id/status', async (req, res) => {
         const tasks = workflow.tasks || [];
         const nodeStatuses = tasks.map(task => ({
             id: task.inputData?.nodeId || task.taskReferenceName,
-            status: mapTaskStatus(task.status)
+            status: mapTaskStatus(task.status),
+            startTime: task.startTime ? new Date(task.startTime).toISOString() : null,
+            endTime: task.endTime ? new Date(task.endTime).toISOString() : null,
+            duration: task.startTime && task.endTime ? task.endTime - task.startTime : null,
+            retryCount: task.retryCount || 0,
+            error: task.status === 'FAILED' ? task.reasonForIncompletion || task.failureReason : null,
+            inputs: task.inputData?.config || null,
+            outputs: task.outputData || null
         }));
 
         const runningTask = tasks.find(task => mapTaskStatus(task.status) === 'running');
@@ -846,6 +867,159 @@ app.get('/workflow/:id/results', async (req, res) => {
         });
     } catch (error) {
         res.status(404).json({ error: 'Workflow not found' });
+    }
+});
+
+app.get('/workflow/:id/full', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const response = await conductor.get(`/workflow/${id}`);
+        const workflow = response.data;
+
+        const nodes = (workflow.tasks || []).map(task => {
+            const nodeId = task.inputData?.nodeId || task.taskReferenceName;
+            const nodeType = task.inputData?.nodeType || task.taskType;
+            const status = mapTaskStatus(task.status);
+            
+            let finalStatus = status === 'completed' ? 'completed' :
+                status === 'running' ? 'running' :
+                status === 'failed' ? 'error' : 'not_run';
+            
+            if (task.outputData?.mocked) {
+                finalStatus = 'mocked';
+            }
+
+            const executionMeta = {
+                startTime: task.startTime ? new Date(task.startTime).toISOString() : null,
+                endTime: task.endTime ? new Date(task.endTime).toISOString() : null,
+                duration: task.startTime && task.endTime ? task.endTime - task.startTime : null,
+                retryCount: task.retryCount || 0,
+                error: task.status === 'FAILED' ? task.reasonForIncompletion || task.failureReason : null,
+                inputs: task.inputData?.config || null,
+                outputs: task.outputData || null,
+            };
+
+            return {
+                id: nodeId,
+                type: nodeType,
+                title: task.referenceTaskName || `${nodeType}`,
+                provider: 'Unknown',
+                status: finalStatus,
+                config: task.inputData?.config || {},
+                execution: task.inputData?.execution || { mode: 'parallel', waitForAll: false, aggregateItems: false },
+                mockOutput: task.inputData?.mockOutput || null,
+                executionMeta
+            };
+        });
+
+        res.json({
+            workflowId: workflow.workflowId,
+            workflowName: workflow.input?.workflowName || 'Untitled Workflow',
+            status: mapWorkflowStatus(workflow.status),
+            nodes,
+            startTime: workflow.startTime ? new Date(workflow.startTime).toISOString() : null,
+            endTime: workflow.endTime ? new Date(workflow.endTime).toISOString() : null
+        });
+    } catch (error) {
+        res.status(404).json({ error: 'Workflow not found' });
+    }
+});
+
+app.post('/workflow/:workflowId/rerun/:nodeId', async (req, res) => {
+    try {
+        const { workflowId, nodeId } = req.params;
+        
+        const response = await conductor.get(`/workflow/${workflowId}`);
+        const workflow = response.data;
+        
+        const nodeTask = workflow.tasks.find(t => t.inputData?.nodeId === nodeId);
+        if (!nodeTask) {
+            return res.status(404).json({ error: 'Node not found in workflow' });
+        }
+
+        const newWorkflowDefName = `flow_builder_rerun_${uuidv4().replace(/-/g, '')}`;
+        const singleNodeWorkflow = {
+            name: newWorkflowDefName,
+            description: 'Rerun single node',
+            version: 1,
+            tasks: [{
+                name: nodeTask.taskDefName,
+                taskReferenceName: 'rerun_node',
+                type: 'SIMPLE',
+                inputParameters: nodeTask.inputData
+            }],
+            outputParameters: {},
+            schemaVersion: 2,
+            ownerEmail: 'noreply@flowbuilder.local'
+        };
+
+        await ensureTaskDefinition(nodeTask.taskDefName);
+        await ensureWorkflowDefinition(singleNodeWorkflow);
+
+        const newWorkflowId = await startWorkflow(newWorkflowDefName, {
+            workflowName: `Rerun: ${nodeId}`
+        });
+
+        res.json({
+            success: true,
+            workflowId: newWorkflowId,
+            message: 'Node rerun started'
+        });
+    } catch (error) {
+        console.error('[API] Error rerunning node:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/workflow/:workflowId/continue/:nodeId', async (req, res) => {
+    try {
+        const { workflowId, nodeId } = req.params;
+        
+        const response = await conductor.get(`/workflow/${workflowId}`);
+        const workflow = response.data;
+        
+        const nodeIndex = workflow.tasks.findIndex(t => t.inputData?.nodeId === nodeId);
+        if (nodeIndex === -1) {
+            return res.status(404).json({ error: 'Node not found in workflow' });
+        }
+
+        const tasksFromNode = workflow.tasks.slice(nodeIndex);
+        
+        const newWorkflowDefName = `flow_builder_continue_${uuidv4().replace(/-/g, '')}`;
+        const continueWorkflow = {
+            name: newWorkflowDefName,
+            description: 'Continue from node',
+            version: 1,
+            tasks: tasksFromNode.map((task, idx) => ({
+                name: task.taskDefName,
+                taskReferenceName: `continue_node_${idx + 1}`,
+                type: 'SIMPLE',
+                inputParameters: task.inputData
+            })),
+            outputParameters: {},
+            schemaVersion: 2,
+            ownerEmail: 'noreply@flowbuilder.local'
+        };
+
+        const uniqueTaskTypes = [...new Set(tasksFromNode.map(t => t.taskDefName))];
+        for (const taskType of uniqueTaskTypes) {
+            await ensureTaskDefinition(taskType);
+        }
+        
+        await ensureWorkflowDefinition(continueWorkflow);
+
+        const newWorkflowId = await startWorkflow(newWorkflowDefName, {
+            workflowName: `Continue from: ${nodeId}`
+        });
+
+        res.json({
+            success: true,
+            workflowId: newWorkflowId,
+            message: 'Continue from node started'
+        });
+    } catch (error) {
+        console.error('[API] Error continuing from node:', error.message);
+        res.status(500).json({ error: error.message });
     }
 });
 

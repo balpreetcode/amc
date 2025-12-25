@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ExecutionResult {
     workflowId: string;
@@ -12,7 +12,11 @@ interface ExecutionResult {
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
 
-export function ExecutionHistory() {
+interface ExecutionHistoryProps {
+    onLoadExecution: (workflowId: string) => void;
+}
+
+export function ExecutionHistory({ onLoadExecution }: ExecutionHistoryProps) {
     const [history, setHistory] = useState<ExecutionResult[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -52,6 +56,10 @@ export function ExecutionHistory() {
         return new Date(isoString).toLocaleString();
     };
 
+    const handleRowClick = (workflowId: string) => {
+        onLoadExecution(workflowId);
+    };
+
     return (
         <div className="execution-history">
             <div className="history-header">
@@ -81,7 +89,7 @@ export function ExecutionHistory() {
                         </thead>
                         <tbody>
                             {history.map((run) => (
-                                <tr key={run.workflowId}>
+                                <tr key={run.workflowId} onClick={() => handleRowClick(run.workflowId)} className="clickable-row">
                                     <td>
                                         <span className={`status-badge ${run.status}`}>
                                             {run.status === 'completed' ? '✓ Success' : '✕ Failed'}

@@ -50,7 +50,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-story-1',
             type: 'text_to_text',
-            title: '1. Generate Story',
+            title: 'Generate Story',
             provider: 'OpenAI',
             status: 'not_run',
             estimatedTime: '10s',
@@ -66,7 +66,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-scenes-1',
             type: 'split_text',
-            title: '2. Split Story Into 3 Scenes',
+            title: 'Split Story Into 3 Scenes',
             provider: 'ClipZap',
             status: 'not_run',
             estimatedTime: '30s',
@@ -83,7 +83,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-narration-1',
             type: 'text_to_text',
-            title: '3. Narration For All Scenes',
+            title: 'Narration For All Scenes',
             provider: 'OpenAI',
             status: 'not_run',
             estimatedTime: '10s',
@@ -100,7 +100,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-img-prompt-1',
             type: 'text_to_text',
-            title: '4. Image Prompts For All Scenes',
+            title: 'Image Prompts For All Scenes',
             provider: 'OpenAI',
             status: 'not_run',
             estimatedTime: '10s',
@@ -117,7 +117,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-video-prompt-1',
             type: 'text_to_text',
-            title: '5. Video Prompts For All Scenes',
+            title: 'Video Prompts For All Scenes',
             provider: 'OpenAI',
             status: 'not_run',
             estimatedTime: '10s',
@@ -134,7 +134,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-tts-all',
             type: 'text_to_speech',
-            title: '6. Speech For All Narrations',
+            title: 'Speech For All Narrations',
             provider: 'ElevenLabs',
             status: 'not_run',
             estimatedTime: '20s',
@@ -151,7 +151,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-img-all',
             type: 'text_to_image',
-            title: '7. Images For All Scenes',
+            title: 'Images For All Scenes',
             provider: 'Fal AI',
             status: 'not_run',
             estimatedTime: '30s',
@@ -168,7 +168,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-video-all',
             type: 'image_to_video',
-            title: '8. Videos For All Scenes',
+            title: 'Videos For All Scenes',
             provider: 'Runway',
             status: 'not_run',
             estimatedTime: '2min',
@@ -186,7 +186,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-music-1',
             type: 'text_to_music',
-            title: '9. Story Music',
+            title: 'Story Music',
             provider: 'MiniMax',
             status: 'not_run',
             estimatedTime: '3min',
@@ -203,7 +203,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-final-merge',
             type: 'edit_video',
-            title: '10. Merge All Scenes + Audio',
+            title: 'Merge All Scenes + Audio',
             provider: 'FFmpeg',
             status: 'not_run',
             estimatedTime: '2min',
@@ -290,15 +290,9 @@ export const useWorkflow = () => {
                 nodes.push(newNode);
             }
 
-            // Update titles with correct numbering
-            const updatedNodes = nodes.map((node, index) => ({
-                ...node,
-                title: `${index + 1}. ${node.title.replace(/^\d+\.\s*/, '')}`,
-            }));
-
             return {
                 ...prev,
-                nodes: updatedNodes,
+                nodes,
                 lastModified: new Date().toISOString(),
             };
         });
@@ -308,15 +302,9 @@ export const useWorkflow = () => {
         setWorkflow(prev => {
             const nodes = prev.nodes.filter(n => n.id !== nodeId);
 
-            // Update titles with correct numbering
-            const updatedNodes = nodes.map((node, index) => ({
-                ...node,
-                title: `${index + 1}. ${node.title.replace(/^\d+\.\s*/, '')}`,
-            }));
-
             return {
                 ...prev,
-                nodes: updatedNodes,
+                nodes,
                 lastModified: new Date().toISOString(),
             };
         });
@@ -338,15 +326,9 @@ export const useWorkflow = () => {
             const [removed] = nodes.splice(fromIndex, 1);
             nodes.splice(toIndex, 0, removed);
 
-            // Update titles with correct numbering
-            const updatedNodes = nodes.map((node, index) => ({
-                ...node,
-                title: `${index + 1}. ${node.title.replace(/^\d+\.\s*/, '')}`,
-            }));
-
             return {
                 ...prev,
-                nodes: updatedNodes,
+                nodes,
                 lastModified: new Date().toISOString(),
             };
         });
@@ -389,12 +371,30 @@ export const useWorkflow = () => {
                     nodes: prev.nodes.map(node => {
                         const statusInfo = data.nodeStatuses.find((s: { id: string }) => s.id === node.id);
                         if (statusInfo) {
+                            let status = statusInfo.status === 'completed' ? 'completed' :
+                                statusInfo.status === 'running' ? 'running' :
+                                    statusInfo.status === 'pending' ? 'not_run' :
+                                        statusInfo.status === 'failed' || statusInfo.status === 'error' ? 'error' : node.status;
+                            
+                            if (statusInfo.outputs && statusInfo.outputs.mocked) {
+                                status = 'mocked';
+                            }
+                            
+                            const executionMeta = {
+                                ...node.executionMeta,
+                                startTime: statusInfo.startTime || node.executionMeta?.startTime,
+                                endTime: statusInfo.endTime || node.executionMeta?.endTime,
+                                duration: statusInfo.duration || node.executionMeta?.duration,
+                                retryCount: statusInfo.retryCount || node.executionMeta?.retryCount || 0,
+                                error: statusInfo.error || node.executionMeta?.error,
+                                inputs: statusInfo.inputs || node.executionMeta?.inputs,
+                                outputs: statusInfo.outputs || node.executionMeta?.outputs,
+                            };
+
                             return {
                                 ...node,
-                                status: statusInfo.status === 'completed' ? 'completed' :
-                                    statusInfo.status === 'running' ? 'running' :
-                                        statusInfo.status === 'pending' ? 'not_run' :
-                                            statusInfo.status === 'failed' || statusInfo.status === 'error' ? 'error' : node.status
+                                status,
+                                executionMeta
                             };
                         }
                         return node;
@@ -418,6 +418,20 @@ export const useWorkflow = () => {
                     ...prev,
                     isRunning: false,
                     error: data.status === 'failed' ? data.error : null,
+                }));
+                
+                // Reset any nodes still showing "running" status
+                setWorkflow(prev => ({
+                    ...prev,
+                    nodes: prev.nodes.map(node => {
+                        if (node.status === 'running') {
+                            return {
+                                ...node,
+                                status: 'not_run' as const,
+                            };
+                        }
+                        return node;
+                    }),
                 }));
             }
         } catch (error) {
@@ -503,6 +517,129 @@ export const useWorkflow = () => {
         }));
     }, []);
 
+    const rerunNode = useCallback(async (nodeId: string) => {
+        if (!execution.workflowId) {
+            console.error('No workflow ID available for rerun');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/workflow/${execution.workflowId}/rerun/${nodeId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setExecution(prev => ({
+                    ...prev,
+                    isRunning: true,
+                    workflowId: data.workflowId,
+                }));
+
+                pollingRef.current = setInterval(() => {
+                    pollStatus(data.workflowId);
+                }, 500);
+            } else {
+                setExecution(prev => ({
+                    ...prev,
+                    error: data.error || 'Failed to rerun node',
+                }));
+            }
+        } catch (error) {
+            setExecution(prev => ({
+                ...prev,
+                error: error instanceof Error ? error.message : 'Failed to rerun node',
+            }));
+        }
+    }, [execution.workflowId, pollStatus]);
+
+    const continueFromNode = useCallback(async (nodeId: string) => {
+        if (!execution.workflowId) {
+            console.error('No workflow ID available for continue');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/workflow/${execution.workflowId}/continue/${nodeId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setExecution(prev => ({
+                    ...prev,
+                    isRunning: true,
+                    workflowId: data.workflowId,
+                }));
+
+                pollingRef.current = setInterval(() => {
+                    pollStatus(data.workflowId);
+                }, 500);
+            } else {
+                setExecution(prev => ({
+                    ...prev,
+                    error: data.error || 'Failed to continue from node',
+                }));
+            }
+        } catch (error) {
+            setExecution(prev => ({
+                ...prev,
+                error: error instanceof Error ? error.message : 'Failed to continue from node',
+            }));
+        }
+    }, [execution.workflowId, pollStatus]);
+
+    const loadWorkflowFromHistory = useCallback(async (workflowId: string) => {
+        try {
+            const response = await fetch(`${BACKEND_URL}/workflow/${workflowId}/full`);
+            if (!response.ok) {
+                throw new Error('Failed to load workflow data');
+            }
+            const data = await response.json();
+
+            setWorkflow({
+                nodes: data.nodes,
+                name: data.workflowName,
+                lastModified: new Date().toISOString(),
+                templateVersion: DEFAULT_TEMPLATE_VERSION,
+            });
+
+            setExecution({
+                isRunning: false,
+                workflowId: data.workflowId,
+                currentNodeId: null,
+                error: null,
+                results: [],
+            });
+
+            if (data.nodes.length > 0) {
+                setSelectedNodeId(data.nodes[0].id);
+            }
+        } catch (error) {
+            console.error('Error loading workflow from history:', error);
+            setExecution(prev => ({
+                ...prev,
+                error: error instanceof Error ? error.message : 'Failed to load workflow',
+            }));
+        }
+    }, []);
+
+    const clearExecutionState = useCallback(() => {
+        setWorkflow(prev => ({
+            ...prev,
+            nodes: prev.nodes.map(node => ({
+                ...node,
+                status: 'not_run' as const,
+                executionMeta: undefined,
+            })),
+        }));
+        setExecution(defaultExecution);
+    }, []);
+
     return {
         workflow,
         execution,
@@ -514,6 +651,10 @@ export const useWorkflow = () => {
         renameWorkflow,
         runWorkflow,
         stopWorkflow,
+        rerunNode,
+        continueFromNode,
+        loadWorkflowFromHistory,
+        clearExecutionState,
         selectedNodeId,
         setSelectedNodeId,
     };
