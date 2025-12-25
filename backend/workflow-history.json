@@ -1,5 +1,115 @@
 [
   {
+    "workflowId": "4f05f795-e15b-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Test Workflow",
+    "status": "failed",
+    "startTime": "2025-12-25T06:31:13.255Z",
+    "endTime": "2025-12-25T06:31:13.579Z",
+    "durationMs": 324,
+    "nodeCount": 1,
+    "results": [
+      {
+        "nodeId": "node1",
+        "nodeType": "text_to_text",
+        "success": false,
+        "error": "Request failed with status code 401"
+      }
+    ]
+  },
+  {
+    "workflowId": "3d900eb3-e15b-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Final API Key Test",
+    "status": "completed",
+    "startTime": "2025-12-25T06:30:43.961Z",
+    "endTime": "2025-12-25T06:30:46.840Z",
+    "durationMs": 2879,
+    "nodeCount": 1,
+    "results": [
+      {
+        "nodeId": "final-test",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "Sure! Here you go: \"Live, Laugh, Love.\"",
+            "model": "gpt-4o-mini",
+            "tokens": 39,
+            "nodeType": "text_to_text"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "workflowId": "f94e4d71-e15a-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Debug Test",
+    "status": "failed",
+    "startTime": "2025-12-25T06:28:49.445Z",
+    "endTime": "2025-12-25T06:28:49.990Z",
+    "durationMs": 545,
+    "nodeCount": 1,
+    "results": [
+      {
+        "nodeId": "testnode",
+        "nodeType": "text_to_text",
+        "success": false,
+        "error": "Request failed with status code 401"
+      }
+    ]
+  },
+  {
+    "workflowId": "cf39e70f-e15a-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Final OpenAI Test",
+    "status": "failed",
+    "startTime": "2025-12-25T06:27:38.847Z",
+    "endTime": "2025-12-25T06:27:39.255Z",
+    "durationMs": 408,
+    "nodeCount": 1,
+    "results": [
+      {
+        "nodeId": "node1",
+        "nodeType": "text_to_text",
+        "success": false,
+        "error": "Request failed with status code 401"
+      }
+    ]
+  },
+  {
+    "workflowId": "9b730cdd-e15a-11f0-922e-8e98c6eac3ff",
+    "workflowName": "OpenAI Test Workflow",
+    "status": "failed",
+    "startTime": "2025-12-25T06:26:11.980Z",
+    "endTime": "2025-12-25T06:26:13.067Z",
+    "durationMs": 1087,
+    "nodeCount": 1,
+    "results": [
+      {
+        "nodeId": "node1",
+        "nodeType": "text_to_text",
+        "success": false,
+        "error": "Request failed with status code 401"
+      }
+    ]
+  },
+  {
+    "workflowId": "7cbe2e0b-e15a-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Test Workflow",
+    "status": "failed",
+    "startTime": "2025-12-25T06:25:20.463Z",
+    "endTime": "2025-12-25T06:25:21.072Z",
+    "durationMs": 609,
+    "nodeCount": 1,
+    "results": [
+      {
+        "nodeId": "node1",
+        "nodeType": "text_to_text",
+        "success": false,
+        "error": "Request failed with status code 401"
+      }
+    ]
+  },
+  {
     "workflowId": "6715290e-e079-11f0-a8f9-3aba69338ee5",
     "workflowName": "Items Test",
     "status": "completed",

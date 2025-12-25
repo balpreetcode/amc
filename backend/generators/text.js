@@ -5,7 +5,7 @@
 
 const axios = require('axios');
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+// Don't cache the API key - read it dynamically from process.env each time
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
 /**
@@ -32,7 +32,7 @@ async function generateText(prompt, systemPrompt = '', model = 'gpt-4o-mini') {
         },
         {
             headers: {
-                'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
                 'Content-Type': 'application/json'
             }
         }
