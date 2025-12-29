@@ -117,7 +117,7 @@ async function concatAudioUrls(urls) {
 
     const timestamp = Date.now();
     const listPath = path.join(TEMP_DIR, `concat_audio_${timestamp}.txt`);
-    const outputPath = path.join(TEMP_DIR, `concat_audio_${timestamp}.m4a`);
+    const outputPath = path.join(TEMP_DIR, `concat_audio_${timestamp}.mp3`);
     const localPaths = [];
 
     for (let i = 0; i < urls.length; i++) {
@@ -129,7 +129,7 @@ async function concatAudioUrls(urls) {
     const listContent = localPaths.map(filePath => `file '${filePath.replace(/'/g, "'\\''")}'`).join('\n');
     fs.writeFileSync(listPath, listContent);
 
-    const command = `ffmpeg -y -f concat -safe 0 -i "${listPath}" -c:a aac "${outputPath}"`;
+    const command = `ffmpeg -y -f concat -safe 0 -i "${listPath}" -c:a libmp3lame "${outputPath}"`;
     await runFFmpeg(command);
 
     localPaths.forEach(filePath => {
@@ -251,6 +251,24 @@ function resolveSubtitleFont(subtitleFont) {
  * @param {object} options - Composition options
  * @returns {Promise<object>} Result with video URL
  */
+/**
+ * Get file extension from URL
+ * @param {string} url - File URL
+ * @returns {string} Extension (e.g., '.mp3', '.m4a')
+ */
+function getExtensionFromUrl(url) {
+    try {
+        const urlObj = new URL(url);
+        const pathname = urlObj.pathname;
+        const ext = path.extname(pathname);
+        return ext || '.mp3'; // Default to .mp3 if no extension found
+    } catch (e) {
+        // If not a valid URL, might be a local path
+        const ext = path.extname(url);
+        return ext || '.mp3';
+    }
+}
+
 async function composeVideo(options) {
     const {
         videoUrl,
@@ -267,12 +285,23 @@ async function composeVideo(options) {
 
     const timestamp = Date.now();
     const videoPath = path.join(TEMP_DIR, `video_${timestamp}.mp4`);
-    const speechPath = path.join(TEMP_DIR, `speech_${timestamp}.mp3`);
-    const musicPath = path.join(TEMP_DIR, `music_${timestamp}.mp3`);
+    const speechExt = speechUrl ? getExtensionFromUrl(speechUrl) : '.mp3';
+    const musicExt = musicUrl ? getExtensionFromUrl(musicUrl) : '.mp3';
+    const speechPath = path.join(TEMP_DIR, `speech_${timestamp}${speechExt}`);
+    const musicPath = path.join(TEMP_DIR, `music_${timestamp}${musicExt}`);
     const outputPath = path.join(OUTPUT_DIR, `composed_${timestamp}.mp4`);
 
     try {
-        console.log('Starting composition...');
+        console.log('=== Starting composition ===');
+        console.log('Input URLs:');
+        console.log('  videoUrl:', videoUrl);
+        console.log('  speechUrl:', speechUrl);
+        console.log('  musicUrl:', musicUrl);
+        console.log('Temp file paths:');
+        console.log('  videoPath:', videoPath);
+        console.log('  speechPath:', speechPath, '(ext:', speechExt + ')');
+        console.log('  musicPath:', musicPath, '(ext:', musicExt + ')');
+        console.log('Output:', outputPath);
 
         // Step 1: Download video
         console.log('Downloading video...');
@@ -286,8 +315,36 @@ async function composeVideo(options) {
 
         // Step 2: Download and add speech audio
         if (speechUrl) {
-            console.log('Downloading speech...');
+            console.log('Downloading speech from:', speechUrl);
+            console.log('Speech path:', speechPath);
             await downloadFile(speechUrl, speechPath);
+
+            // Verify file exists and has size
+            if (!fs.existsSync(speechPath)) {
+                throw new Error('Speech file was not downloaded');
+            }
+            const speechStats = fs.statSync(speechPath);
+            console.log('Speech file size:', speechStats.size, 'bytes');
+
+            // Verify audio stream exists using ffprobe
+            try {
+                const probeCmd = `ffprobe -v error -select_streams a:0 -show_entries stream=codec_type -of default=noprint_wrappers=1:nokey=1 "${speechPath}"`;
+                const { exec } = require('child_process');
+                const probeResult = await new Promise((resolve, reject) => {
+                    exec(probeCmd, (error, stdout, stderr) => {
+                        if (error) {
+                            console.warn('Speech file probe warning:', stderr);
+                            resolve('unknown');
+                        } else {
+                            resolve(stdout.trim());
+                        }
+                    });
+                });
+                console.log('Speech audio stream:', probeResult);
+            } catch (e) {
+                console.warn('Could not probe speech file:', e.message);
+            }
+
             inputs.push(`-i "${speechPath}"`);
             filterParts.push(`[${inputIndex}:a]volume=${speechVolume}[speech]`);
             audioMixInputs.push('[speech]');
@@ -296,8 +353,17 @@ async function composeVideo(options) {
 
         // Step 3: Download and add music audio
         if (musicUrl) {
-            console.log('Downloading music...');
+            console.log('Downloading music from:', musicUrl);
+            console.log('Music path:', musicPath);
             await downloadFile(musicUrl, musicPath);
+
+            // Verify file exists and has size
+            if (!fs.existsSync(musicPath)) {
+                throw new Error('Music file was not downloaded');
+            }
+            const musicStats = fs.statSync(musicPath);
+            console.log('Music file size:', musicStats.size, 'bytes');
+
             inputs.push(`-i "${musicPath}"`);
             filterParts.push(`[${inputIndex}:a]volume=${musicVolume}[music]`);
             audioMixInputs.push('[music]');
@@ -354,6 +420,8 @@ async function composeVideo(options) {
 
         // Step 5: Run FFmpeg
         console.log('Composing video...');
+        console.log('Audio inputs:', audioMixInputs.length > 0 ? audioMixInputs.join(', ') : 'none');
+        console.log('Full FFmpeg command:', ffmpegCmd);
         await runFFmpeg(ffmpegCmd);
 
         // Step 6: Clean up temp files
@@ -361,7 +429,8 @@ async function composeVideo(options) {
             if (fs.existsSync(f)) fs.unlinkSync(f);
         });
 
-        const outputUrl = `http://localhost:3001/output/composed_${timestamp}.mp4`;
+        const PORT = process.env.PORT || 3002;
+        const outputUrl = `http://localhost:${PORT}/output/composed_${timestamp}.mp4`;
         console.log('Composition complete:', outputUrl);
 
         return {

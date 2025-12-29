@@ -8,6 +8,7 @@ interface ExecutionResult {
     endTime: string;
     durationMs: number;
     nodeCount: number;
+    videoUrl?: string;
 }
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
@@ -16,6 +17,7 @@ export function ExecutionHistory() {
     const [history, setHistory] = useState<ExecutionResult[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [playingVideo, setPlayingVideo] = useState<string | null>(null);
 
     const fetchHistory = async () => {
         setLoading(true);
@@ -52,6 +54,20 @@ export function ExecutionHistory() {
         return new Date(isoString).toLocaleString();
     };
 
+    const handleDownloadVideo = (videoUrl: string) => {
+        // Extract filename from URL
+        const filename = videoUrl.split('/').pop() || 'video.mp4';
+
+        // Create a temporary link element and trigger download
+        const link = document.createElement('a');
+        link.href = videoUrl;
+        link.download = filename;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="execution-history">
             <div className="history-header">
@@ -77,6 +93,7 @@ export function ExecutionHistory() {
                                 <th>Date</th>
                                 <th>Duration</th>
                                 <th>Nodes</th>
+                                <th>Video</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -91,10 +108,56 @@ export function ExecutionHistory() {
                                     <td>{formatDate(run.startTime)}</td>
                                     <td>{formatDuration(run.durationMs)}</td>
                                     <td>{run.nodeCount}</td>
+                                    <td>
+                                        {run.status === 'completed' && run.videoUrl ? (
+                                            <button
+                                                className="video-play-button"
+                                                onClick={() => setPlayingVideo(run.videoUrl!)}
+                                                title="Play video"
+                                            >
+                                                ▶ Play
+                                            </button>
+                                        ) : (
+                                            <span className="no-video">—</span>
+                                        )}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                </div>
+            )}
+
+            {/* Video Player Modal */}
+            {playingVideo && (
+                <div className="video-modal-overlay" onClick={() => setPlayingVideo(null)}>
+                    <div className="video-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="video-modal-header">
+                            <h3>Generated Video</h3>
+                            <div className="video-modal-actions">
+                                <button
+                                    className="download-button"
+                                    onClick={() => handleDownloadVideo(playingVideo)}
+                                    title="Download video"
+                                >
+                                    ⬇ Download
+                                </button>
+                                <button className="close-button" onClick={() => setPlayingVideo(null)}>
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+                        <div className="video-player-container">
+                            <video
+                                src={playingVideo}
+                                controls
+                                autoPlay
+                                className="video-player"
+                            >
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

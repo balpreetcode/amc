@@ -30,6 +30,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve output folder for videos and audio files
+const OUTPUT_DIR = path.join(__dirname, '..', 'output');
+app.use('/output', express.static(OUTPUT_DIR));
+
 const savedHistoryIds = new Set();
 
 loadHistoryIndex();
@@ -443,7 +447,31 @@ function loadHistoryIndex() {
     try {
         const data = fs.readFileSync(HISTORY_FILE, 'utf8');
         const history = JSON.parse(data);
-        history.forEach(entry => savedHistoryIds.add(entry.workflowId));
+
+        // Migrate old history entries to add videoUrl if missing
+        let needsUpdate = false;
+        const updatedHistory = history.map(entry => {
+            if (!entry.videoUrl && entry.status === 'completed' && entry.results) {
+                // Try to extract videoUrl from results
+                for (const result of entry.results) {
+                    if (result.success &&
+                        result.nodeType === 'edit_video' &&
+                        result.data?.output?.videoUrl) {
+                        entry.videoUrl = result.data.output.videoUrl;
+                        needsUpdate = true;
+                        break;
+                    }
+                }
+            }
+            savedHistoryIds.add(entry.workflowId);
+            return entry;
+        });
+
+        // Save updated history if we added videoUrls
+        if (needsUpdate) {
+            fs.writeFileSync(HISTORY_FILE, JSON.stringify(updatedHistory, null, 2));
+            console.log('[History] Migrated', updatedHistory.filter(e => e.videoUrl).length, 'entries with video URLs');
+        }
     } catch (error) {
         console.error('[History] Failed to load history index:', error.message);
     }
@@ -874,6 +902,18 @@ function maybeSaveHistory(workflow) {
         error: task.status === 'FAILED' ? task.reasonForIncompletion || task.failureReason : undefined
     }));
 
+    // Extract video URL from results (look for edit_video node)
+    let videoUrl = null;
+    if (status === 'completed') {
+        for (const task of workflow.tasks || []) {
+            if (task.status === 'COMPLETED' &&
+                (task.inputData?.nodeType === 'edit_video' || task.taskType === 'edit_video')) {
+                videoUrl = task.outputData?.videoUrl || null;
+                if (videoUrl) break;
+            }
+        }
+    }
+
     saveExecutionHistory({
         workflowId,
         workflowName: workflow.input?.workflowName || 'Untitled Workflow',
@@ -882,7 +922,8 @@ function maybeSaveHistory(workflow) {
         endTime,
         durationMs,
         nodeCount: workflow.tasks?.length || 0,
-        results
+        results,
+        videoUrl
     });
 }
 
