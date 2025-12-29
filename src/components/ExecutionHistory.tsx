@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ExecutionResult {
     workflowId: string;
@@ -54,18 +54,37 @@ export function ExecutionHistory() {
         return new Date(isoString).toLocaleString();
     };
 
-    const handleDownloadVideo = (videoUrl: string) => {
-        // Extract filename from URL
-        const filename = videoUrl.split('/').pop() || 'video.mp4';
+    const handleDownloadVideo = async (videoUrl: string) => {
+        try {
+            // Extract filename from URL
+            const filename = videoUrl.split('/').pop() || 'video.mp4';
 
-        // Create a temporary link element and trigger download
-        const link = document.createElement('a');
-        link.href = videoUrl;
-        link.download = filename;
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            // Use the download endpoint that forces download with correct headers
+            const downloadUrl = `${BACKEND_URL}/download/${filename}`;
+
+            // Fetch the file as a blob
+            const response = await fetch(downloadUrl);
+            if (!response.ok) {
+                throw new Error('Download failed');
+            }
+
+            const blob = await response.blob();
+
+            // Create blob URL and download
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Clean up blob URL
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error('Download error:', error);
+            alert('Failed to download video. Please try again.');
+        }
     };
 
     return (

@@ -450,6 +450,7 @@ function loadHistoryIndex() {
 
         // Migrate old history entries to add videoUrl if missing
         let needsUpdate = false;
+        const currentPort = PORT;
         const updatedHistory = history.map(entry => {
             if (!entry.videoUrl && entry.status === 'completed' && entry.results) {
                 // Try to extract videoUrl from results
@@ -463,14 +464,22 @@ function loadHistoryIndex() {
                     }
                 }
             }
+
+            // Fix video URLs with wrong port (3001 -> current port)
+            if (entry.videoUrl && entry.videoUrl.includes('localhost:3001')) {
+                entry.videoUrl = entry.videoUrl.replace('localhost:3001', `localhost:${currentPort}`);
+                needsUpdate = true;
+            }
+
             savedHistoryIds.add(entry.workflowId);
             return entry;
         });
 
-        // Save updated history if we added videoUrls
+        // Save updated history if we added videoUrls or fixed ports
         if (needsUpdate) {
             fs.writeFileSync(HISTORY_FILE, JSON.stringify(updatedHistory, null, 2));
-            console.log('[History] Migrated', updatedHistory.filter(e => e.videoUrl).length, 'entries with video URLs');
+            const withVideo = updatedHistory.filter(e => e.videoUrl).length;
+            console.log(`[History] Migrated ${withVideo} entries with video URLs (fixed ports to ${currentPort})`);
         }
     } catch (error) {
         console.error('[History] Failed to load history index:', error.message);
@@ -1032,6 +1041,36 @@ app.get('/workflow/:id/results', async (req, res) => {
     } catch (error) {
         res.status(404).json({ error: 'Workflow not found' });
     }
+});
+
+app.get('/download/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, '..', 'output', filename);
+
+    console.log('[Download] Requested file:', filename);
+    console.log('[Download] File path:', filePath);
+
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+        console.error('[Download] File not found:', filePath);
+        return res.status(404).json({ error: 'File not found' });
+    }
+
+    // Get file stats
+    const stat = fs.statSync(filePath);
+    console.log('[Download] File size:', stat.size, 'bytes');
+
+    // Use Express's built-in download method
+    res.download(filePath, filename, (err) => {
+        if (err) {
+            console.error('[Download] Error sending file:', err);
+            if (!res.headersSent) {
+                res.status(500).json({ error: 'Download failed' });
+            }
+        } else {
+            console.log('[Download] File sent successfully:', filename);
+        }
+    });
 });
 
 app.get('/health', (req, res) => {
