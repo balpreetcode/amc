@@ -19,7 +19,7 @@ const CONDUCTOR_URL = process.env.CONDUCTOR_URL || 'https://p5200.winds-os.com/a
 const CONTENT_SERVICE_URL = process.env.CONTENT_SERVICE_URL; // Optional external service for face_swap, lip_sync, etc.
 const WORKER_ID = process.env.WORKER_ID || `worker-${process.pid}`;
 const POLL_INTERVAL_MS = Number(process.env.POLL_INTERVAL_MS || 1000);
-const PORT = Number(process.env.PORT || 5111);
+const PORT = Number(process.env.PORT || 3002);
 
 const conductor = axios.create({
     baseURL: CONDUCTOR_URL,

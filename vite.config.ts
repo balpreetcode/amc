@@ -7,8 +7,8 @@ export default defineConfig({
   server: {
     port: 3465,
     proxy: {
-      '/workflow': 'http://localhost:5111',
-      '/health': 'http://localhost:5111'
+      '/workflow': 'http://localhost:3002',
+      '/health': 'http://localhost:3002'
     }
   }
 })

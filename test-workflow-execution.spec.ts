@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Workflow Execution Tests', () => {
-  const BACKEND_URL = 'http://localhost:5111';
+  const BACKEND_URL = 'http://localhost:3002';
   const TEST_WORKFLOW = {
     nodes: [
       {
