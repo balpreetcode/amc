@@ -51,13 +51,14 @@ function parseJSON(text, fallbackGenerator = null) {
     // Try to extract JSON from markdown code blocks
     const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
     const jsonText = jsonMatch ? jsonMatch[1].trim() : text.trim();
+    const cleanedText = jsonText.replace(/^\uFEFF/, '');
 
     try {
-        return JSON.parse(jsonText);
+        return JSON.parse(cleanedText);
     } catch (e) {
         // Try to find array or object patterns
-        const arrayMatch = jsonText.match(/\[[\s\S]*\]/);
-        const objectMatch = jsonText.match(/\{[\s\S]*\}/);
+        const arrayMatch = cleanedText.match(/\[[\s\S]*\]/);
+        const objectMatch = cleanedText.match(/\{[\s\S]*\}/);
 
         if (arrayMatch) {
             try {
@@ -71,11 +72,29 @@ function parseJSON(text, fallbackGenerator = null) {
             } catch (e2) { }
         }
 
-        console.error('Failed to parse JSON:', e.message);
-        if (fallbackGenerator) {
-            return fallbackGenerator(text);
+        const arrayStart = cleanedText.indexOf('[');
+        const arrayEnd = cleanedText.lastIndexOf(']');
+        if (arrayStart !== -1 && arrayEnd > arrayStart) {
+            try {
+                return JSON.parse(cleanedText.slice(arrayStart, arrayEnd + 1));
+            } catch (e2) { }
         }
-        throw new Error('Failed to parse JSON response');
+
+        const objectStart = cleanedText.indexOf('{');
+        const objectEnd = cleanedText.lastIndexOf('}');
+        if (objectStart !== -1 && objectEnd > objectStart) {
+            try {
+                return JSON.parse(cleanedText.slice(objectStart, objectEnd + 1));
+            } catch (e2) { }
+        }
+
+        // Only log error if no fallback is provided (meaning it's a critical error)
+        if (!fallbackGenerator) {
+            console.error('Failed to parse JSON:', e.message);
+            throw new Error('Failed to parse JSON response');
+        }
+        // Silently use fallback
+        return fallbackGenerator(text);
     }
 }
 

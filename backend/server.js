@@ -143,6 +143,95 @@ const nodeProcessors = {
         const splitModeRaw = (config.splitMode || 'text').toString().toLowerCase();
         const splitMode = splitModeRaw.includes('json') ? 'json_path' : splitModeRaw.includes('array') ? 'array' : 'text';
 
+        console.log('[split_text] Received config:', {
+            sourceType: typeof source,
+            sourceLength: String(source).length,
+            sourcePreview: String(source).substring(0, 200),
+            splitMode,
+            numSegments
+        });
+
+        const extractSceneFromText = (rawText) => {
+            const text = String(rawText || '').trim();
+            if (!text) {
+                return [];
+            }
+
+            // Try to detect and extract scenes with markdown formatting
+            // Patterns like: **Scene 1**, **🎞️ Scene 1**, **⏱️ Scene 2**
+            // Split by scene markers and reconstruct
+            const lines = text.split('\n');
+            const segments = [];
+            let currentScene = null;
+            let currentIndex = -1;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                // Check if line contains a scene marker like **Scene 1** or **🎞️ Scene 1 (0–5 sec)**
+                const sceneMarkerMatch = line.match(/\*\*[^\*]*?(?:Scene|SCENE)\s*(\d+)[^\*]*?\*\*/i);
+
+                if (sceneMarkerMatch) {
+                    // Save previous scene if exists
+                    if (currentScene !== null && currentScene.text.trim()) {
+                        segments.push(currentScene);
+                    }
+
+                    // Extract duration if present
+                    const durationMatch = line.match(/\((\d+)[–\-](\d+)\s*sec\)/i);
+                    const duration = durationMatch ? parseInt(durationMatch[2]) - parseInt(durationMatch[1]) : 10;
+
+                    currentIndex++;
+                    currentScene = {
+                        index: currentIndex,
+                        text: line.trim(),
+                        duration: duration
+                    };
+                } else if (currentScene !== null && line.trim()) {
+                    // Add content to current scene
+                    currentScene.text += '\n' + line;
+                }
+            }
+
+            // Don't forget the last scene
+            if (currentScene !== null && currentScene.text.trim()) {
+                segments.push(currentScene);
+            }
+
+            if (segments.length > 0) {
+                return segments;
+            }
+
+            return [];
+        };
+
+        const fallbackSegmentsFromText = (rawText) => {
+            const cleaned = String(rawText || '').trim();
+            if (!cleaned) {
+                return [{ index: 0, text: '', duration: 10 }];
+            }
+
+            // First try to extract pre-formatted scenes
+            const extractedScenes = extractSceneFromText(cleaned);
+            if (extractedScenes.length > 0) {
+                return extractedScenes;
+            }
+
+            // Fall back to sentence-based splitting
+            const normalizedText = cleaned.replace(/\s+/g, ' ');
+            const sentences = normalizedText.split(/(?<=[.!?])\s+/).filter(Boolean);
+            const target = Math.max(1, numSegments);
+            const chunkSize = Math.ceil(sentences.length / target);
+            const segments = [];
+            for (let i = 0; i < target; i++) {
+                const chunk = sentences.slice(i * chunkSize, (i + 1) * chunkSize);
+                if (chunk.length === 0) {
+                    break;
+                }
+                segments.push({ index: i, text: chunk.join(' '), duration: 10 });
+            }
+            return segments.length > 0 ? segments : [{ index: 0, text: cleaned, duration: 10 }];
+        };
+
         const getValueByPath = (obj, path) => {
             if (!path) return undefined;
             const cleaned = path.replace(/^\$?\.*response\./, '').replace(/^\$?\./, '');
@@ -173,11 +262,35 @@ const nodeProcessors = {
         if (splitMode === 'array') {
             let items = source;
             if (typeof items === 'string') {
+                // First try to extract scenes from formatted text
+                const extractedScenes = extractSceneFromText(items);
+                if (extractedScenes.length > 0) {
+                    console.log('[split_text] Array mode: extracted', extractedScenes.length, 'scenes from formatted text');
+                    const output = {
+                        segments: extractedScenes,
+                        items: extractedScenes.map(segment => segment.text),
+                        totalSegments: extractedScenes.length
+                    };
+                    return {
+                        type: 'split_text',
+                        output
+                    };
+                }
+
+                // If no scenes found, try parsing as JSON
                 const parsed = parseJSON(items, () => []);
                 items = parsed;
             }
             if (!Array.isArray(items)) {
                 throw new Error('Split mode "array" requires array input');
+            }
+            if (items.length === 0) {
+                console.log('[split_text] Array mode: got empty array, falling back to text extraction');
+                const extractedScenes = fallbackSegmentsFromText(source);
+                return {
+                    type: 'split_text',
+                    output: { segments: extractedScenes, items: extractedScenes.map(segment => segment.text), totalSegments: extractedScenes.length }
+                };
             }
             const segments = buildSegmentsFromArray(items);
             return {
@@ -203,13 +316,44 @@ const nodeProcessors = {
         }
 
         const text = Array.isArray(source) ? source.join('\n') : String(source);
-        const prompt = `Split the following text into ${numSegments} logical segments for video scenes. Return as JSON array with objects containing "index", "text", and "duration" (estimated seconds). Text: "${text}"`;
-        const result = await generateText(prompt, 'You are a text segmentation assistant. Always respond with valid JSON.');
-        const segments = parseJSON(result, () => [{ index: 0, text, duration: 10 }]);
 
+        // First, try to extract pre-formatted scenes from the text
+        const preFormattedScenes = extractSceneFromText(text);
+        console.log('[split_text] Extracted pre-formatted scenes:', preFormattedScenes.length);
+
+        if (preFormattedScenes.length > 0) {
+            const output = {
+                segments: preFormattedScenes,
+                items: preFormattedScenes.map(segment => segment.text),
+                totalSegments: preFormattedScenes.length
+            };
+            console.log('[split_text] Returning output with', output.items.length, 'items');
+            return {
+                type: 'split_text',
+                output
+            };
+        }
+
+        // If no pre-formatted scenes found, ask AI to split the text
+        console.log('[split_text] No pre-formatted scenes found, using AI to split');
+        const prompt = `Split the following text into ${numSegments} logical segments for video scenes. Return as JSON array with objects containing "index", "text", and "duration" (estimated seconds). Text: "${text.substring(0, 500)}..."`;
+        const result = await generateText(prompt, 'You are a text segmentation assistant. Respond ONLY with a JSON array of objects containing "index", "text", and "duration". Do not add markdown, prose, or emojis.');
+        const parsed = parseJSON(result, () => null);
+        let segments = Array.isArray(parsed) ? parsed : null;
+        if (!segments || segments.length === 0) {
+            console.log('[split_text] AI parsing failed, using fallback on AI result');
+            segments = fallbackSegmentsFromText(result);
+        }
+        if (!Array.isArray(segments) || segments.length === 0) {
+            console.log('[split_text] Fallback on AI result failed, using fallback on original text');
+            segments = fallbackSegmentsFromText(text);
+        }
+
+        console.log('[split_text] Final segments count:', segments.length);
+        const output = { segments, items: segments.map(segment => segment.text), totalSegments: segments.length };
         return {
             type: 'split_text',
-            output: { segments, items: segments.map(segment => segment.text), totalSegments: segments.length }
+            output
         };
     },
     edit_video: async (config, previousResults) => {

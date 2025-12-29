@@ -12,7 +12,7 @@ const FAL_API_KEY = process.env.FAL_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // Base directories
-const BASE_DIR = path.resolve(__dirname, '../../..');
+const BASE_DIR = path.resolve(__dirname, '..', '..');
 const OUTPUT_DIR = path.join(BASE_DIR, 'output');
 
 /**
@@ -64,7 +64,7 @@ async function generateSpeechOpenAI(text, voice = 'alloy') {
 
     fs.writeFileSync(outputPath, response.data);
 
-    return `http://localhost:3002/output/${filename}`;
+    return outputPath;
 }
 
 /**
@@ -126,4 +126,3 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
 module.exports = {
     generateSpeech
 };
-

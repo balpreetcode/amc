@@ -10,7 +10,7 @@ const https = require('https');
 const http = require('http');
 
 // Base directories - relative to project root
-const BASE_DIR = path.resolve(__dirname, '../../..');
+const BASE_DIR = path.resolve(__dirname, '..', '..');
 const OUTPUT_DIR = path.join(BASE_DIR, 'output');
 const TEMP_DIR = path.join(BASE_DIR, 'temp');
 
@@ -225,6 +225,27 @@ function cleanColor(color) {
     return color.replace('#', '');
 }
 
+function resolveSubtitleFont(subtitleFont) {
+    if (subtitleFont && typeof subtitleFont === 'string') {
+        if (subtitleFont.includes('/') && fs.existsSync(subtitleFont)) {
+            return { type: 'file', value: subtitleFont };
+        }
+        return { type: 'name', value: subtitleFont };
+    }
+
+    const candidates = [
+        '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+        '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf'
+    ];
+
+    const fontPath = candidates.find(candidate => fs.existsSync(candidate));
+    if (fontPath) {
+        return { type: 'file', value: fontPath };
+    }
+
+    return { type: 'name', value: 'Arial' };
+}
+
 /**
  * Compose video with audio and subtitles
  * @param {object} options - Composition options
@@ -291,8 +312,12 @@ async function composeVideo(options) {
             const escapedText = escapeForDrawtext(subtitleText);
             const yPos = getSubtitleY(subtitlePosition);
             const hexColor = cleanColor(subtitleColor);
+            const fontSpec = resolveSubtitleFont(subtitleFont);
+            const fontPart = fontSpec.type === 'file'
+                ? `fontfile=${fontSpec.value.replace(/'/g, "'\\''")}`
+                : `font=${fontSpec.value.replace(/'/g, "'\\''")}`;
             videoFilters.push(
-                `drawtext=text='${escapedText}':fontfile=/System/Library/Fonts/Helvetica.ttc:fontsize=${subtitleSize}:fontcolor=0x${hexColor}:x=(w-text_w)/2:y=${yPos}:box=1:boxcolor=black@0.5:boxborderw=5`
+                `drawtext=text='${escapedText}':${fontPart}:fontsize=${subtitleSize}:fontcolor=0x${hexColor}:x=(w-text_w)/2:y=${yPos}:box=1:boxcolor=black@0.5:boxborderw=5`
             );
         }
 

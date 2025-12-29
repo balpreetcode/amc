@@ -1,5 +1,1077 @@
 [
   {
+    "workflowId": "f4f92b66-e4a2-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Story to Scenes (Parallel Template)",
+    "status": "completed",
+    "startTime": "2025-12-29T10:41:39.429Z",
+    "endTime": "2025-12-29T10:46:01.846Z",
+    "durationMs": 262417,
+    "nodeCount": 10,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "**🎞️ Scene 1 (0–5 sec)**  \nA vast battlefield stretches under a blood-red sky, banners fluttering like crows in the wind. Chariots rumble, and warriors clad in shimmering armor stand resolute. Arjuna, the great archer, grips his bow tightly, his face a mask of conflict, as Krishna, his charioteer, gazes with divine calmness. The air is thick with the scent of impending war and the murmurs of fate, echoing through the ages.\n\n**⏱️ Scene 2 (5–20 sec)**  \nAs the conch shells sound, Arjuna lowers his bow, his heart burdened by the weight of kin and duty. Krishna, radiant and unwavering, speaks with the authority of the cosmos. Arjuna’s mind flashes with images of beloved family members on the opposing side. The tension mounts; he falters, tears glistening in his eyes. “What is righteousness?” he cries, as the ground trembles beneath the chariots. Krishna’s voice, like thunder, answers with cosmic wisdom. Arjuna’s resolve steels as he rises, bow drawn, the sun illuminating his face as he embraces his destiny, a sacrifice for the greater good.\n\n**⏱️ Scene 3 (20–30 sec)**  \nThe first arrows fly, piercing the silence of hesitation. The clash of steel rings out as shadows of warriors fall upon the earth. In that moment of chaos, Arjuna transforms, embodying the essence of duty and sacrifice. The battlefield becomes a canvas of fate, painted with valor and sorrow. The scene fades with Arjuna’s determined gaze, a silent promise etched in the hearts of the fallen: “In the dance of dharma, sacrifice is the path to salvation.” The screen lingers on the blood-soaked soil, whispering the eternal truth of righteousness.",
+            "model": "gpt-4o-mini",
+            "tokens": 1630,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-scenes-1",
+        "nodeType": "split_text",
+        "success": true,
+        "data": {
+          "type": "split_text",
+          "output": {
+            "segments": [
+              {
+                "index": 0,
+                "text": "**🎞️ Scene 1 (0–5 sec)**\nA vast battlefield stretches under a blood-red sky, banners fluttering like crows in the wind. Chariots rumble, and warriors clad in shimmering armor stand resolute. Arjuna, the great archer, grips his bow tightly, his face a mask of conflict, as Krishna, his charioteer, gazes with divine calmness. The air is thick with the scent of impending war and the murmurs of fate, echoing through the ages.",
+                "duration": 5
+              },
+              {
+                "index": 1,
+                "text": "**⏱️ Scene 2 (5–20 sec)**\nAs the conch shells sound, Arjuna lowers his bow, his heart burdened by the weight of kin and duty. Krishna, radiant and unwavering, speaks with the authority of the cosmos. Arjuna’s mind flashes with images of beloved family members on the opposing side. The tension mounts; he falters, tears glistening in his eyes. “What is righteousness?” he cries, as the ground trembles beneath the chariots. Krishna’s voice, like thunder, answers with cosmic wisdom. Arjuna’s resolve steels as he rises, bow drawn, the sun illuminating his face as he embraces his destiny, a sacrifice for the greater good.",
+                "duration": 15
+              },
+              {
+                "index": 2,
+                "text": "**⏱️ Scene 3 (20–30 sec)**\nThe first arrows fly, piercing the silence of hesitation. The clash of steel rings out as shadows of warriors fall upon the earth. In that moment of chaos, Arjuna transforms, embodying the essence of duty and sacrifice. The battlefield becomes a canvas of fate, painted with valor and sorrow. The scene fades with Arjuna’s determined gaze, a silent promise etched in the hearts of the fallen: “In the dance of dharma, sacrifice is the path to salvation.” The screen lingers on the blood-soaked soil, whispering the eternal truth of righteousness.",
+                "duration": 10
+              }
+            ],
+            "items": [
+              "**🎞️ Scene 1 (0–5 sec)**\nA vast battlefield stretches under a blood-red sky, banners fluttering like crows in the wind. Chariots rumble, and warriors clad in shimmering armor stand resolute. Arjuna, the great archer, grips his bow tightly, his face a mask of conflict, as Krishna, his charioteer, gazes with divine calmness. The air is thick with the scent of impending war and the murmurs of fate, echoing through the ages.",
+              "**⏱️ Scene 2 (5–20 sec)**\nAs the conch shells sound, Arjuna lowers his bow, his heart burdened by the weight of kin and duty. Krishna, radiant and unwavering, speaks with the authority of the cosmos. Arjuna’s mind flashes with images of beloved family members on the opposing side. The tension mounts; he falters, tears glistening in his eyes. “What is righteousness?” he cries, as the ground trembles beneath the chariots. Krishna’s voice, like thunder, answers with cosmic wisdom. Arjuna’s resolve steels as he rises, bow drawn, the sun illuminating his face as he embraces his destiny, a sacrifice for the greater good.",
+              "**⏱️ Scene 3 (20–30 sec)**\nThe first arrows fly, piercing the silence of hesitation. The clash of steel rings out as shadows of warriors fall upon the earth. In that moment of chaos, Arjuna transforms, embodying the essence of duty and sacrifice. The battlefield becomes a canvas of fate, painted with valor and sorrow. The scene fades with Arjuna’s determined gaze, a silent promise etched in the hearts of the fallen: “In the dance of dharma, sacrifice is the path to salvation.” The screen lingers on the blood-soaked soil, whispering the eternal truth of righteousness."
+            ],
+            "totalSegments": 3,
+            "nodeType": "split_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-narration-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [
+              {
+                "text": "As the sun dips below the horizon, casting an ominous glow over the battlefield, Arjuna wrestles with doubt amidst the chaos of clashing wills. Beside him, Krishna embodies an unshakeable serenity, ready to guide his friend through the storm of destiny that looms ahead. The tension is palpable, a prelude to the epic confrontation that will etch their names into the annals of history.",
+                "model": "gpt-4o-mini",
+                "tokens": 386
+              },
+              {
+                "text": "As the conch shells echo across the battlefield, Arjuna's heart is heavy with the anguish of impending conflict, torn between duty and love. Krishna stands beside him, a beacon of cosmic clarity, guiding him through the storm of doubt that clouds his mind. With tears in his eyes, Arjuna grapples with the meaning of righteousness, but as Krishna’s thunderous wisdom washes over him, he finds strength in his destiny, ready to face the battle ahead.",
+                "model": "gpt-4o-mini",
+                "tokens": 449
+              },
+              {
+                "text": "As the first arrows soar through the air, the stillness shatters, giving way to the fierce clash of steel and the shadows of warriors converging on the battlefield. In this tumultuous moment, Arjuna stands resolute, embodying the profound weight of duty and sacrifice, as the ground beneath him becomes a testament to the valor and sorrow of a greater purpose. The scene lingers on his unwavering gaze, a silent vow to uphold righteousness even amidst the chaos, while the blood-soaked soil breathes the timeless truth of dharma.",
+                "model": "gpt-4o-mini",
+                "tokens": 529
+              }
+            ],
+            "text": [
+              "As the sun dips below the horizon, casting an ominous glow over the battlefield, Arjuna wrestles with doubt amidst the chaos of clashing wills. Beside him, Krishna embodies an unshakeable serenity, ready to guide his friend through the storm of destiny that looms ahead. The tension is palpable, a prelude to the epic confrontation that will etch their names into the annals of history.",
+              "As the conch shells echo across the battlefield, Arjuna's heart is heavy with the anguish of impending conflict, torn between duty and love. Krishna stands beside him, a beacon of cosmic clarity, guiding him through the storm of doubt that clouds his mind. With tears in his eyes, Arjuna grapples with the meaning of righteousness, but as Krishna’s thunderous wisdom washes over him, he finds strength in his destiny, ready to face the battle ahead.",
+              "As the first arrows soar through the air, the stillness shatters, giving way to the fierce clash of steel and the shadows of warriors converging on the battlefield. In this tumultuous moment, Arjuna stands resolute, embodying the profound weight of duty and sacrifice, as the ground beneath him becomes a testament to the valor and sorrow of a greater purpose. The scene lingers on his unwavering gaze, a silent vow to uphold righteousness even amidst the chaos, while the blood-soaked soil breathes the timeless truth of dharma."
+            ],
+            "model": [
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini"
+            ],
+            "tokens": [
+              386,
+              449,
+              529
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [
+              {
+                "text": "**🎞️ Scene 1 (0–5 sec)**\n\nThe camera sweeps across the expansive battlefield, capturing the vastness of the scene. The blood-red sky looms ominously overhead, casting an eerie glow on the assembled warriors. Banners, emblazoned with ancient symbols, flutter violently in the wind, resembling dark crows taking flight. The rumble of chariots reverberates, creating a rhythmic thud that resonates with the heartbeats of the soldiers.\n\nThe focus shifts to Arjuna, his chiseled features illuminated by the dramatic lighting, highlighting the tension in his expression. His brow furrows in deep contemplation, the grip on his intricately designed bow tightening as if it were an extension of his own conflicted spirit. The camera lingers on the subtle tremor of his hand, capturing the weight of his inner turmoil.\n\nBeside him, Krishna, seated in the chariot with an aura of divine serenity, gazes out over the battlefield. His eyes, pools of wisdom, reflect the chaos around them but remain untouched by it. The air is thick with the scent of impending war, and as the murmurs of fate weave through the ranks, a slow-motion moment captures Arjuna's hesitant breath, the tension mounting with each heartbeat, foreshadowing the epic clash to come.",
+                "model": "gpt-4o-mini",
+                "tokens": 1242
+              },
+              {
+                "text": "**⏱️ Scene 2 (5–20 sec)**\n\n*The camera opens wide to a grand battlefield, the horizon painted in hues of gold and crimson as the sun rises, casting dramatic shadows over the vast expanse. The sound of conch shells resonates, echoing through the air, commanding silence among the warriors. Arjuna, adorned in ornate armor that glints with the light of dawn, lowers his bow, his grip trembling as he wrestles with the turmoil within.*\n\n*The camera shifts to a close-up of Arjuna’s face, capturing the conflict in his eyes, which reflect the weight of kinship and duty. As he gazes across the battlefield, images of beloved family members flash before him—loved ones on the opposing side, their faces tinged with both love and enmity. The tension is palpable; the air thickens, and the ground rumbles subtly beneath the chariots as if responding to his inner turmoil.*\n\n*Krishna, radiant and divine, stands resolute beside him, his aura shimmering with ethereal light. He speaks with a voice that resonates like thunder, echoing the authority of the cosmos. The camera captures Krishna in a slow-motion pan, his presence commanding yet serene, illuminating the battlefield with a divine glow.*\n\n*Arjuna's eyes glisten with unshed tears as he cries out, “What is righteousness?” His voice, filled with anguish, reverberates through the stillness. The camera zooms in, highlighting the raw emotion etched onto his face.*\n\n*In response, Krishna’s voice deepens, imparting cosmic wisdom that transcends the moment. The ground shakes more violently, reverberating with the truth of Krishna’s words. As the light shifts, illuminating Arjuna’s face in a golden hue, he steels himself, determination igniting within him.*\n\n*With a powerful resolve, Arjuna rises, drawing his bow taut, the sun casting a dramatic glow that frames him as a hero poised for destiny. The scene culminates in a breathtaking slow-motion shot, capturing the moment of transformation as he embraces his path—a sacrifice for the greater good, ready to face the battle ahead.*",
+                "model": "gpt-4o-mini",
+                "tokens": 2038
+              },
+              {
+                "text": "**Scene 3: The Moment of Transformation**\n\n*INT. BATTLEFIELD - DAY*\n\n*The camera sweeps across a vast, grand battlefield, capturing the sprawling expanse of warriors clad in ornate armor. The sun breaks through dark clouds, casting dramatic shadows that dance across the earth, amplifying the tension in the air.*\n\n*With a sudden whoosh, a flurry of arrows is unleashed, slicing through the silence like a premonition of chaos. The camera follows the arrows in slow motion, glinting in the light as they find their mark, piercing the hearts of destiny.*\n\n*The clash of steel erupts, reverberating through the air—a symphony of war. The camera zooms in, capturing the intense faces of warriors, their eyes filled with determination and fear. Shadows of the fallen stretch across the blood-soaked soil, a stark reminder of the price of conflict.*\n\n*In the midst of this chaos, we focus on ARJUNA. He stands tall, a striking figure amidst the turmoil. With each clash of steel, his expression transforms; the weight of duty and sacrifice settles upon his shoulders like a mantle. The lighting shifts, illuminating his face in a divine glow, as if the gods themselves are witnessing his metamorphosis.*\n\n*As he raises his bow, the world around him slows. The camera captures the perspiration on his brow, the resolve in his eyes, and the deep breath he takes, embodying the essence of dharma. His silhouette is framed against the backdrop of a crimson sky, a warrior caught between the realms of fate and free will.*\n\n*The scene lingers on Arjuna’s determined gaze, a silent promise etched in the hearts of the fallen. The battlefield fades into a blur, leaving only the echoes of his unyielding spirit.*\n\n*The screen holds on the blood-soaked soil, whispering the eternal truth of righteousness, as Arjuna’s voice resonates:*\n\n**ARJUNA (V.O.)**  \n“In the dance of dharma, sacrifice is the path to salvation.”\n\n*As his words fade, the camera pulls back, revealing the vastness of the battlefield—a canvas painted with valor, sorrow, and the indomitable spirit of duty.* \n\n*FADE OUT.*",
+                "model": "gpt-4o-mini",
+                "tokens": 2079
+              }
+            ],
+            "text": [
+              "**🎞️ Scene 1 (0–5 sec)**\n\nThe camera sweeps across the expansive battlefield, capturing the vastness of the scene. The blood-red sky looms ominously overhead, casting an eerie glow on the assembled warriors. Banners, emblazoned with ancient symbols, flutter violently in the wind, resembling dark crows taking flight. The rumble of chariots reverberates, creating a rhythmic thud that resonates with the heartbeats of the soldiers.\n\nThe focus shifts to Arjuna, his chiseled features illuminated by the dramatic lighting, highlighting the tension in his expression. His brow furrows in deep contemplation, the grip on his intricately designed bow tightening as if it were an extension of his own conflicted spirit. The camera lingers on the subtle tremor of his hand, capturing the weight of his inner turmoil.\n\nBeside him, Krishna, seated in the chariot with an aura of divine serenity, gazes out over the battlefield. His eyes, pools of wisdom, reflect the chaos around them but remain untouched by it. The air is thick with the scent of impending war, and as the murmurs of fate weave through the ranks, a slow-motion moment captures Arjuna's hesitant breath, the tension mounting with each heartbeat, foreshadowing the epic clash to come.",
+              "**⏱️ Scene 2 (5–20 sec)**\n\n*The camera opens wide to a grand battlefield, the horizon painted in hues of gold and crimson as the sun rises, casting dramatic shadows over the vast expanse. The sound of conch shells resonates, echoing through the air, commanding silence among the warriors. Arjuna, adorned in ornate armor that glints with the light of dawn, lowers his bow, his grip trembling as he wrestles with the turmoil within.*\n\n*The camera shifts to a close-up of Arjuna’s face, capturing the conflict in his eyes, which reflect the weight of kinship and duty. As he gazes across the battlefield, images of beloved family members flash before him—loved ones on the opposing side, their faces tinged with both love and enmity. The tension is palpable; the air thickens, and the ground rumbles subtly beneath the chariots as if responding to his inner turmoil.*\n\n*Krishna, radiant and divine, stands resolute beside him, his aura shimmering with ethereal light. He speaks with a voice that resonates like thunder, echoing the authority of the cosmos. The camera captures Krishna in a slow-motion pan, his presence commanding yet serene, illuminating the battlefield with a divine glow.*\n\n*Arjuna's eyes glisten with unshed tears as he cries out, “What is righteousness?” His voice, filled with anguish, reverberates through the stillness. The camera zooms in, highlighting the raw emotion etched onto his face.*\n\n*In response, Krishna’s voice deepens, imparting cosmic wisdom that transcends the moment. The ground shakes more violently, reverberating with the truth of Krishna’s words. As the light shifts, illuminating Arjuna’s face in a golden hue, he steels himself, determination igniting within him.*\n\n*With a powerful resolve, Arjuna rises, drawing his bow taut, the sun casting a dramatic glow that frames him as a hero poised for destiny. The scene culminates in a breathtaking slow-motion shot, capturing the moment of transformation as he embraces his path—a sacrifice for the greater good, ready to face the battle ahead.*",
+              "**Scene 3: The Moment of Transformation**\n\n*INT. BATTLEFIELD - DAY*\n\n*The camera sweeps across a vast, grand battlefield, capturing the sprawling expanse of warriors clad in ornate armor. The sun breaks through dark clouds, casting dramatic shadows that dance across the earth, amplifying the tension in the air.*\n\n*With a sudden whoosh, a flurry of arrows is unleashed, slicing through the silence like a premonition of chaos. The camera follows the arrows in slow motion, glinting in the light as they find their mark, piercing the hearts of destiny.*\n\n*The clash of steel erupts, reverberating through the air—a symphony of war. The camera zooms in, capturing the intense faces of warriors, their eyes filled with determination and fear. Shadows of the fallen stretch across the blood-soaked soil, a stark reminder of the price of conflict.*\n\n*In the midst of this chaos, we focus on ARJUNA. He stands tall, a striking figure amidst the turmoil. With each clash of steel, his expression transforms; the weight of duty and sacrifice settles upon his shoulders like a mantle. The lighting shifts, illuminating his face in a divine glow, as if the gods themselves are witnessing his metamorphosis.*\n\n*As he raises his bow, the world around him slows. The camera captures the perspiration on his brow, the resolve in his eyes, and the deep breath he takes, embodying the essence of dharma. His silhouette is framed against the backdrop of a crimson sky, a warrior caught between the realms of fate and free will.*\n\n*The scene lingers on Arjuna’s determined gaze, a silent promise etched in the hearts of the fallen. The battlefield fades into a blur, leaving only the echoes of his unyielding spirit.*\n\n*The screen holds on the blood-soaked soil, whispering the eternal truth of righteousness, as Arjuna’s voice resonates:*\n\n**ARJUNA (V.O.)**  \n“In the dance of dharma, sacrifice is the path to salvation.”\n\n*As his words fade, the camera pulls back, revealing the vastness of the battlefield—a canvas painted with valor, sorrow, and the indomitable spirit of duty.* \n\n*FADE OUT.*"
+            ],
+            "model": [
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini"
+            ],
+            "tokens": [
+              1242,
+              2038,
+              2079
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [
+              {
+                "text": "**Cinematic Video Motion Prompt:** \n\nBegin with a sweeping aerial shot of a vast battlefield, the camera gliding low over the ground to capture the fluttering banners against the dramatic blood-red sky. Transition to a close-up of the chariots rumbling forward, wheels kicking up dust. Cut to a slow-motion shot of warriors in shimmering armor, their fierce expressions highlighting determination and fear. Focus in on Arjuna gripping his bow, the tension in his muscles palpable, before shifting to Krishna, whose serene gaze contrasts sharply with the chaos around them. The camera captures the swirling dust and the charged atmosphere, enhancing the sense of impending war as the sound of distant war cries and the rustling of armor fills the air, culminating in a powerful crescendo that symbolizes the weight of fate.",
+                "model": "gpt-4o-mini",
+                "tokens": 822
+              },
+              {
+                "text": "**Cinematic Video Motion Prompt:** \n\nBegin with a sweeping aerial shot of a vast battlefield, the sound of conch shells echoing in the distance. Transition to a close-up of Arjuna, his brow furrowed in anguish as he lowers his bow, the camera capturing the glimmer of tears in his eyes. Cut to a radiant Krishna, his presence commanding as he speaks with cosmic authority, the backdrop filled with swirling clouds and divine light. Insert quick flashes of family members, their faces filled with love and conflict, juxtaposed against the tension of the scene. The ground vibrates subtly as the chariots rumble, amplifying the emotional weight. Slowly zoom in on Arjuna's face, the internal struggle evident. As Arjuna cries out, the camera shakes slightly, mirroring his turmoil. In a powerful moment, as Krishna’s voice resonates like thunder, the sun breaks through the clouds, illuminating Arjuna's face. The shot freezes for a heartbeat as Arjuna steels himself, bow drawn, a determined expression marking his embrace of destiny. End with a wide shot of the battlefield, Arjuna standing resolute, framed by the rising sun, symbolizing hope and sacrifice.",
+                "model": "gpt-4o-mini",
+                "tokens": 1158
+              },
+              {
+                "text": "**Cinematic Video Motion Prompt:** \n\nOpen with a wide shot of a misty battlefield at dawn, the stillness broken by the sound of arrows slicing through the air. Cut to an intense close-up of arrows impacting their targets, splintering wood, and piercing armor, as the camera shakes slightly to convey the impact. Transition to a dynamic montage of warriors clashing, steel on steel, with quick cuts showcasing the chaos and fury of battle. Focus on Arjuna in the midst of the fray, his expression shifting from uncertainty to fierce determination as he draws his bow, embodying the essence of duty. The camera circles around him, capturing the swirling dust and shadows of warriors around him, creating a visceral sense of movement. As the battle rages, slow down the action momentarily, highlighting Arjuna’s resolute gaze, filled with purpose, against the backdrop of chaos. Fade out to a close-up of blood-soaked soil, the camera slowly pulling back to reveal the aftermath of the conflict, as whispered voiceover echoes Arjuna’s silent promise: “In the dance of dharma, sacrifice is the path to salvation.” The screen lingers on this poignant imagery, allowing the weight of the moment to resonate deeply.",
+                "model": "gpt-4o-mini",
+                "tokens": 1208
+              }
+            ],
+            "text": [
+              "**Cinematic Video Motion Prompt:** \n\nBegin with a sweeping aerial shot of a vast battlefield, the camera gliding low over the ground to capture the fluttering banners against the dramatic blood-red sky. Transition to a close-up of the chariots rumbling forward, wheels kicking up dust. Cut to a slow-motion shot of warriors in shimmering armor, their fierce expressions highlighting determination and fear. Focus in on Arjuna gripping his bow, the tension in his muscles palpable, before shifting to Krishna, whose serene gaze contrasts sharply with the chaos around them. The camera captures the swirling dust and the charged atmosphere, enhancing the sense of impending war as the sound of distant war cries and the rustling of armor fills the air, culminating in a powerful crescendo that symbolizes the weight of fate.",
+              "**Cinematic Video Motion Prompt:** \n\nBegin with a sweeping aerial shot of a vast battlefield, the sound of conch shells echoing in the distance. Transition to a close-up of Arjuna, his brow furrowed in anguish as he lowers his bow, the camera capturing the glimmer of tears in his eyes. Cut to a radiant Krishna, his presence commanding as he speaks with cosmic authority, the backdrop filled with swirling clouds and divine light. Insert quick flashes of family members, their faces filled with love and conflict, juxtaposed against the tension of the scene. The ground vibrates subtly as the chariots rumble, amplifying the emotional weight. Slowly zoom in on Arjuna's face, the internal struggle evident. As Arjuna cries out, the camera shakes slightly, mirroring his turmoil. In a powerful moment, as Krishna’s voice resonates like thunder, the sun breaks through the clouds, illuminating Arjuna's face. The shot freezes for a heartbeat as Arjuna steels himself, bow drawn, a determined expression marking his embrace of destiny. End with a wide shot of the battlefield, Arjuna standing resolute, framed by the rising sun, symbolizing hope and sacrifice.",
+              "**Cinematic Video Motion Prompt:** \n\nOpen with a wide shot of a misty battlefield at dawn, the stillness broken by the sound of arrows slicing through the air. Cut to an intense close-up of arrows impacting their targets, splintering wood, and piercing armor, as the camera shakes slightly to convey the impact. Transition to a dynamic montage of warriors clashing, steel on steel, with quick cuts showcasing the chaos and fury of battle. Focus on Arjuna in the midst of the fray, his expression shifting from uncertainty to fierce determination as he draws his bow, embodying the essence of duty. The camera circles around him, capturing the swirling dust and shadows of warriors around him, creating a visceral sense of movement. As the battle rages, slow down the action momentarily, highlighting Arjuna’s resolute gaze, filled with purpose, against the backdrop of chaos. Fade out to a close-up of blood-soaked soil, the camera slowly pulling back to reveal the aftermath of the conflict, as whispered voiceover echoes Arjuna’s silent promise: “In the dance of dharma, sacrifice is the path to salvation.” The screen lingers on this poignant imagery, allowing the weight of the moment to resonate deeply."
+            ],
+            "model": [
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini"
+            ],
+            "tokens": [
+              822,
+              1158,
+              1208
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-tts-all",
+        "nodeType": "text_to_speech",
+        "success": true,
+        "data": {
+          "type": "text_to_speech",
+          "output": {
+            "items": [
+              {
+                "audioUrl": "/home/usr2/code/output/speech_openai_1767004937558.mp3",
+                "text": "As the sun dips below the horizon, casting an ominous glow over the battlefield, Arjuna wrestles wit",
+                "voice": "af_bella"
+              },
+              {
+                "audioUrl": "/home/usr2/code/output/speech_openai_1767004937257.mp3",
+                "text": "As the conch shells echo across the battlefield, Arjuna's heart is heavy with the anguish of impendi",
+                "voice": "af_bella"
+              },
+              {
+                "audioUrl": "/home/usr2/code/output/speech_openai_1767004938561.mp3",
+                "text": "As the first arrows soar through the air, the stillness shatters, giving way to the fierce clash of ",
+                "voice": "af_bella"
+              }
+            ],
+            "audioUrl": [
+              "/home/usr2/code/output/speech_openai_1767004937558.mp3",
+              "/home/usr2/code/output/speech_openai_1767004937257.mp3",
+              "/home/usr2/code/output/speech_openai_1767004938561.mp3"
+            ],
+            "text": [
+              "As the sun dips below the horizon, casting an ominous glow over the battlefield, Arjuna wrestles wit",
+              "As the conch shells echo across the battlefield, Arjuna's heart is heavy with the anguish of impendi",
+              "As the first arrows soar through the air, the stillness shatters, giving way to the fierce clash of "
+            ],
+            "voice": [
+              "af_bella",
+              "af_bella",
+              "af_bella"
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_speech"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-all",
+        "nodeType": "text_to_image",
+        "success": true,
+        "data": {
+          "type": "text_to_image",
+          "output": {
+            "items": [
+              {
+                "imageUrl": "https://v3b.fal.media/files/b/0a883c4d/afG6IIIUqC7FQgKLL2xEE.png",
+                "prompt": "**🎞️ Scene 1 (0–5 sec)**\n\nThe camera sweeps across the expansive battlefield, capturing the vastness of the scene. The blood-red sky looms ominously overhead, casting an eerie glow on the assembled warriors. Banners, emblazoned with ancient symbols, flutter violently in the wind, resembling dark crows taking flight. The rumble of chariots reverberates, creating a rhythmic thud that resonates with the heartbeats of the soldiers.\n\nThe focus shifts to Arjuna, his chiseled features illuminated by the dramatic lighting, highlighting the tension in his expression. His brow furrows in deep contemplation, the grip on his intricately designed bow tightening as if it were an extension of his own conflicted spirit. The camera lingers on the subtle tremor of his hand, capturing the weight of his inner turmoil.\n\nBeside him, Krishna, seated in the chariot with an aura of divine serenity, gazes out over the battlefield. His eyes, pools of wisdom, reflect the chaos around them but remain untouched by it. The air is thick with the scent of impending war, and as the murmurs of fate weave through the ranks, a slow-motion moment captures Arjuna's hesitant breath, the tension mounting with each heartbeat, foreshadowing the epic clash to come.",
+                "aspectRatio": "16:9"
+              },
+              {
+                "imageUrl": "https://v3b.fal.media/files/b/0a883c4d/kdkjQak2b_H_kpqwHwZNa.png",
+                "prompt": "**⏱️ Scene 2 (5–20 sec)**\n\n*The camera opens wide to a grand battlefield, the horizon painted in hues of gold and crimson as the sun rises, casting dramatic shadows over the vast expanse. The sound of conch shells resonates, echoing through the air, commanding silence among the warriors. Arjuna, adorned in ornate armor that glints with the light of dawn, lowers his bow, his grip trembling as he wrestles with the turmoil within.*\n\n*The camera shifts to a close-up of Arjuna’s face, capturing the conflict in his eyes, which reflect the weight of kinship and duty. As he gazes across the battlefield, images of beloved family members flash before him—loved ones on the opposing side, their faces tinged with both love and enmity. The tension is palpable; the air thickens, and the ground rumbles subtly beneath the chariots as if responding to his inner turmoil.*\n\n*Krishna, radiant and divine, stands resolute beside him, his aura shimmering with ethereal light. He speaks with a voice that resonates like thunder, echoing the authority of the cosmos. The camera captures Krishna in a slow-motion pan, his presence commanding yet serene, illuminating the battlefield with a divine glow.*\n\n*Arjuna's eyes glisten with unshed tears as he cries out, “What is righteousness?” His voice, filled with anguish, reverberates through the stillness. The camera zooms in, highlighting the raw emotion etched onto his face.*\n\n*In response, Krishna’s voice deepens, imparting cosmic wisdom that transcends the moment. The ground shakes more violently, reverberating with the truth of Krishna’s words. As the light shifts, illuminating Arjuna’s face in a golden hue, he steels himself, determination igniting within him.*\n\n*With a powerful resolve, Arjuna rises, drawing his bow taut, the sun casting a dramatic glow that frames him as a hero poised for destiny. The scene culminates in a breathtaking slow-motion shot, capturing the moment of transformation as he embraces his path—a sacrifice for the greater good, ready to face the battle ahead.*",
+                "aspectRatio": "16:9"
+              },
+              {
+                "imageUrl": "https://v3b.fal.media/files/b/0a883c4d/DmDtgYKAAr6dY28LonOPV.png",
+                "prompt": "**Scene 3: The Moment of Transformation**\n\n*INT. BATTLEFIELD - DAY*\n\n*The camera sweeps across a vast, grand battlefield, capturing the sprawling expanse of warriors clad in ornate armor. The sun breaks through dark clouds, casting dramatic shadows that dance across the earth, amplifying the tension in the air.*\n\n*With a sudden whoosh, a flurry of arrows is unleashed, slicing through the silence like a premonition of chaos. The camera follows the arrows in slow motion, glinting in the light as they find their mark, piercing the hearts of destiny.*\n\n*The clash of steel erupts, reverberating through the air—a symphony of war. The camera zooms in, capturing the intense faces of warriors, their eyes filled with determination and fear. Shadows of the fallen stretch across the blood-soaked soil, a stark reminder of the price of conflict.*\n\n*In the midst of this chaos, we focus on ARJUNA. He stands tall, a striking figure amidst the turmoil. With each clash of steel, his expression transforms; the weight of duty and sacrifice settles upon his shoulders like a mantle. The lighting shifts, illuminating his face in a divine glow, as if the gods themselves are witnessing his metamorphosis.*\n\n*As he raises his bow, the world around him slows. The camera captures the perspiration on his brow, the resolve in his eyes, and the deep breath he takes, embodying the essence of dharma. His silhouette is framed against the backdrop of a crimson sky, a warrior caught between the realms of fate and free will.*\n\n*The scene lingers on Arjuna’s determined gaze, a silent promise etched in the hearts of the fallen. The battlefield fades into a blur, leaving only the echoes of his unyielding spirit.*\n\n*The screen holds on the blood-soaked soil, whispering the eternal truth of righteousness, as Arjuna’s voice resonates:*\n\n**ARJUNA (V.O.)**  \n“In the dance of dharma, sacrifice is the path to salvation.”\n\n*As his words fade, the camera pulls back, revealing the vastness of the battlefield—a canvas painted with valor, sorrow, and the indomitable spirit of duty.* \n\n*FADE OUT.*",
+                "aspectRatio": "16:9"
+              }
+            ],
+            "imageUrl": [
+              "https://v3b.fal.media/files/b/0a883c4d/afG6IIIUqC7FQgKLL2xEE.png",
+              "https://v3b.fal.media/files/b/0a883c4d/kdkjQak2b_H_kpqwHwZNa.png",
+              "https://v3b.fal.media/files/b/0a883c4d/DmDtgYKAAr6dY28LonOPV.png"
+            ],
+            "prompt": [
+              "**🎞️ Scene 1 (0–5 sec)**\n\nThe camera sweeps across the expansive battlefield, capturing the vastness of the scene. The blood-red sky looms ominously overhead, casting an eerie glow on the assembled warriors. Banners, emblazoned with ancient symbols, flutter violently in the wind, resembling dark crows taking flight. The rumble of chariots reverberates, creating a rhythmic thud that resonates with the heartbeats of the soldiers.\n\nThe focus shifts to Arjuna, his chiseled features illuminated by the dramatic lighting, highlighting the tension in his expression. His brow furrows in deep contemplation, the grip on his intricately designed bow tightening as if it were an extension of his own conflicted spirit. The camera lingers on the subtle tremor of his hand, capturing the weight of his inner turmoil.\n\nBeside him, Krishna, seated in the chariot with an aura of divine serenity, gazes out over the battlefield. His eyes, pools of wisdom, reflect the chaos around them but remain untouched by it. The air is thick with the scent of impending war, and as the murmurs of fate weave through the ranks, a slow-motion moment captures Arjuna's hesitant breath, the tension mounting with each heartbeat, foreshadowing the epic clash to come.",
+              "**⏱️ Scene 2 (5–20 sec)**\n\n*The camera opens wide to a grand battlefield, the horizon painted in hues of gold and crimson as the sun rises, casting dramatic shadows over the vast expanse. The sound of conch shells resonates, echoing through the air, commanding silence among the warriors. Arjuna, adorned in ornate armor that glints with the light of dawn, lowers his bow, his grip trembling as he wrestles with the turmoil within.*\n\n*The camera shifts to a close-up of Arjuna’s face, capturing the conflict in his eyes, which reflect the weight of kinship and duty. As he gazes across the battlefield, images of beloved family members flash before him—loved ones on the opposing side, their faces tinged with both love and enmity. The tension is palpable; the air thickens, and the ground rumbles subtly beneath the chariots as if responding to his inner turmoil.*\n\n*Krishna, radiant and divine, stands resolute beside him, his aura shimmering with ethereal light. He speaks with a voice that resonates like thunder, echoing the authority of the cosmos. The camera captures Krishna in a slow-motion pan, his presence commanding yet serene, illuminating the battlefield with a divine glow.*\n\n*Arjuna's eyes glisten with unshed tears as he cries out, “What is righteousness?” His voice, filled with anguish, reverberates through the stillness. The camera zooms in, highlighting the raw emotion etched onto his face.*\n\n*In response, Krishna’s voice deepens, imparting cosmic wisdom that transcends the moment. The ground shakes more violently, reverberating with the truth of Krishna’s words. As the light shifts, illuminating Arjuna’s face in a golden hue, he steels himself, determination igniting within him.*\n\n*With a powerful resolve, Arjuna rises, drawing his bow taut, the sun casting a dramatic glow that frames him as a hero poised for destiny. The scene culminates in a breathtaking slow-motion shot, capturing the moment of transformation as he embraces his path—a sacrifice for the greater good, ready to face the battle ahead.*",
+              "**Scene 3: The Moment of Transformation**\n\n*INT. BATTLEFIELD - DAY*\n\n*The camera sweeps across a vast, grand battlefield, capturing the sprawling expanse of warriors clad in ornate armor. The sun breaks through dark clouds, casting dramatic shadows that dance across the earth, amplifying the tension in the air.*\n\n*With a sudden whoosh, a flurry of arrows is unleashed, slicing through the silence like a premonition of chaos. The camera follows the arrows in slow motion, glinting in the light as they find their mark, piercing the hearts of destiny.*\n\n*The clash of steel erupts, reverberating through the air—a symphony of war. The camera zooms in, capturing the intense faces of warriors, their eyes filled with determination and fear. Shadows of the fallen stretch across the blood-soaked soil, a stark reminder of the price of conflict.*\n\n*In the midst of this chaos, we focus on ARJUNA. He stands tall, a striking figure amidst the turmoil. With each clash of steel, his expression transforms; the weight of duty and sacrifice settles upon his shoulders like a mantle. The lighting shifts, illuminating his face in a divine glow, as if the gods themselves are witnessing his metamorphosis.*\n\n*As he raises his bow, the world around him slows. The camera captures the perspiration on his brow, the resolve in his eyes, and the deep breath he takes, embodying the essence of dharma. His silhouette is framed against the backdrop of a crimson sky, a warrior caught between the realms of fate and free will.*\n\n*The scene lingers on Arjuna’s determined gaze, a silent promise etched in the hearts of the fallen. The battlefield fades into a blur, leaving only the echoes of his unyielding spirit.*\n\n*The screen holds on the blood-soaked soil, whispering the eternal truth of righteousness, as Arjuna’s voice resonates:*\n\n**ARJUNA (V.O.)**  \n“In the dance of dharma, sacrifice is the path to salvation.”\n\n*As his words fade, the camera pulls back, revealing the vastness of the battlefield—a canvas painted with valor, sorrow, and the indomitable spirit of duty.* \n\n*FADE OUT.*"
+            ],
+            "aspectRatio": [
+              "16:9",
+              "16:9",
+              "16:9"
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_image"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-all",
+        "nodeType": "image_to_video",
+        "success": true,
+        "data": {
+          "type": "image_to_video",
+          "output": {
+            "items": [
+              {
+                "videoUrl": "https://v3b.fal.media/files/b/0a883c5e/aRc5C7pL-lMvMzPFiJUDL_video.mp4",
+                "sourceImage": "https://v3b.fal.media/files/b/0a883c4d/afG6IIIUqC7FQgKLL2xEE.png",
+                "duration": "5"
+              },
+              {
+                "videoUrl": "https://v3b.fal.media/files/b/0a883c5c/vzaXNt739DcXhezdZ_M5S_video.mp4",
+                "sourceImage": "https://v3b.fal.media/files/b/0a883c4d/kdkjQak2b_H_kpqwHwZNa.png",
+                "duration": "5"
+              },
+              {
+                "videoUrl": "https://v3b.fal.media/files/b/0a883c5f/Q1Y4f3x83JKdTjHjnRg_x_video.mp4",
+                "sourceImage": "https://v3b.fal.media/files/b/0a883c4d/DmDtgYKAAr6dY28LonOPV.png",
+                "duration": "5"
+              }
+            ],
+            "videoUrl": [
+              "https://v3b.fal.media/files/b/0a883c5e/aRc5C7pL-lMvMzPFiJUDL_video.mp4",
+              "https://v3b.fal.media/files/b/0a883c5c/vzaXNt739DcXhezdZ_M5S_video.mp4",
+              "https://v3b.fal.media/files/b/0a883c5f/Q1Y4f3x83JKdTjHjnRg_x_video.mp4"
+            ],
+            "sourceImage": [
+              "https://v3b.fal.media/files/b/0a883c4d/afG6IIIUqC7FQgKLL2xEE.png",
+              "https://v3b.fal.media/files/b/0a883c4d/kdkjQak2b_H_kpqwHwZNa.png",
+              "https://v3b.fal.media/files/b/0a883c4d/DmDtgYKAAr6dY28LonOPV.png"
+            ],
+            "duration": [
+              "5",
+              "5",
+              "5"
+            ],
+            "itemsCount": 3,
+            "nodeType": "image_to_video"
+          }
+        }
+      },
+      {
+        "nodeId": "node-music-1",
+        "nodeType": "text_to_music",
+        "success": true,
+        "data": {
+          "type": "text_to_music",
+          "output": {
+            "audioUrl": "https://v3b.fal.media/files/b/0a883c63/DRlTmm8FVuO6erLqLPNpD_tmpsud60mpr.wav",
+            "prompt": "**🎞️ Scene 1 (0–5 sec)**  \nA vast battlefield stretches under a blood-red sky, banners fluttering like crows in the wind. Chariots rumble, and warriors clad in shimmering armor stand resolute. Arjuna, the great archer, grips his bow tightly, his face a mask of conflict, as Krishna, his charioteer, gazes with divine calmness. The air is thick with the scent of impending war and the murmurs of fate, echoing through the ages.\n\n**⏱️ Scene 2 (5–20 sec)**  \nAs the conch shells sound, Arjuna lowers his bow, his heart burdened by the weight of kin and duty. Krishna, radiant and unwavering, speaks with the authority of the cosmos. Arjuna’s mind flashes with images of beloved family members on the opposing side. The tension mounts; he falters, tears glistening in his eyes. “What is righteousness?” he cries, as the ground trembles beneath the chariots. Krishna’s voice, like thunder, answers with cosmic wisdom. Arjuna’s resolve steels as he rises, bow drawn, the sun illuminating his face as he embraces his destiny, a sacrifice for the greater good.\n\n**⏱️ Scene 3 (20–30 sec)**  \nThe first arrows fly, piercing the silence of hesitation. The clash of steel rings out as shadows of warriors fall upon the earth. In that moment of chaos, Arjuna transforms, embodying the essence of duty and sacrifice. The battlefield becomes a canvas of fate, painted with valor and sorrow. The scene fades with Arjuna’s determined gaze, a silent promise etched in the hearts of the fallen: “In the dance of dharma, sacrifice is the path to salvation.” The screen lingers on the blood-soaked soil, whispering the eternal truth of righteousness.",
+            "duration": "30",
+            "nodeType": "text_to_music"
+          }
+        }
+      },
+      {
+        "nodeId": "node-final-merge",
+        "nodeType": "edit_video",
+        "success": true,
+        "data": {
+          "type": "edit_video",
+          "output": {
+            "videoUrl": "http://localhost:3001/output/composed_1767005158882.mp4",
+            "localPath": "/home/usr2/code/output/composed_1767005158882.mp4",
+            "itemsCount": 3,
+            "nodeType": "edit_video"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "workflowId": "aa055a7b-e4a1-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Story to Scenes (Parallel Template)",
+    "status": "completed",
+    "startTime": "2025-12-29T10:32:24.183Z",
+    "endTime": "2025-12-29T10:33:58.937Z",
+    "durationMs": 94754,
+    "nodeCount": 10,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "**🎞️ Cinematic Mahabharata Short Story**\n\n**⏱️ Scene 1 (0–5 sec)**  \nThe sun sets over the vast battlefield of Kurukshetra, casting long shadows upon the crimson earth. Chariots rumble as valorous Kauravas and Pandavas prepare for war. Arjuna, the mighty archer, stands resolute, bow in hand, eyes glistening with uncertainty. Lord Krishna, his charioteer, emanates celestial calm, the weight of destiny upon his shoulders.\n\n**⏱️ Scene 2 (5–20 sec)**  \nThe war cry echoes, and arrows fly like rain. Arjuna hesitates, his heart torn between duty and kinship. “To slay kinsmen or to forsake dharma?” he murmurs, the bow trembling in his grasp. Krishna, with divine radiance, implores him, “Stand tall, O Partha, for the path of righteousness calls.” With a deep breath, Arjuna steadies his resolve, releasing a volley of arrows that pierce the gloom. Each strike, a sacrifice; each tear, a testament to fate’s unyielding grip.\n\n**⏱️ Scene 3 (20–30 sec)**  \nAs the battlefield quiets, the dust settles upon fallen warriors. Arjuna, now transformed, stands amidst the remnants of conflict. His face, a canvas of sorrow and acceptance, reflects the weight of choices made. The sun rises anew, illuminating the path of dharma as Krishna’s voice resonates softly, “In sacrifice, find strength; in duty, discover truth.” The scene lingers on Arjuna’s gaze, a promise of the trials yet to come.",
+            "model": "gpt-4o-mini",
+            "tokens": 1386,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-scenes-1",
+        "nodeType": "split_text",
+        "success": true,
+        "data": {
+          "type": "split_text",
+          "output": {
+            "segments": [],
+            "items": [],
+            "totalSegments": 0,
+            "nodeType": "split_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-narration-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-tts-all",
+        "nodeType": "text_to_speech",
+        "success": true,
+        "data": {
+          "type": "text_to_speech",
+          "output": {
+            "audioUrl": "/home/usr2/code/output/speech_openai_1767004355694.mp3",
+            "text": "Hello world",
+            "voice": "af_bella",
+            "nodeType": "text_to_speech"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-all",
+        "nodeType": "text_to_image",
+        "success": true,
+        "data": {
+          "type": "text_to_image",
+          "output": {
+            "imageUrl": "https://v3b.fal.media/files/b/0a883c13/CDMP1Zhwy2NZS8Wx-xW55.png",
+            "prompt": "A beautiful landscape",
+            "aspectRatio": "16:9",
+            "nodeType": "text_to_image"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-all",
+        "nodeType": "image_to_video",
+        "success": true,
+        "data": {
+          "type": "image_to_video",
+          "output": {
+            "videoUrl": "https://v3b.fal.media/files/b/0a883c15/hwKhHK65T_i18eop-0-Bg_video.mp4",
+            "sourceImage": "https://v3b.fal.media/files/b/0a883c13/CDMP1Zhwy2NZS8Wx-xW55.png",
+            "duration": "5",
+            "nodeType": "image_to_video"
+          }
+        }
+      },
+      {
+        "nodeId": "node-music-1",
+        "nodeType": "text_to_music",
+        "success": true,
+        "data": {
+          "type": "text_to_music",
+          "output": {
+            "audioUrl": "https://v3b.fal.media/files/b/0a883c1b/xiqGPaVwLRciLsBXN_TMS_tmp6p6o4hfc.wav",
+            "prompt": "**🎞️ Cinematic Mahabharata Short Story**\n\n**⏱️ Scene 1 (0–5 sec)**  \nThe sun sets over the vast battlefield of Kurukshetra, casting long shadows upon the crimson earth. Chariots rumble as valorous Kauravas and Pandavas prepare for war. Arjuna, the mighty archer, stands resolute, bow in hand, eyes glistening with uncertainty. Lord Krishna, his charioteer, emanates celestial calm, the weight of destiny upon his shoulders.\n\n**⏱️ Scene 2 (5–20 sec)**  \nThe war cry echoes, and arrows fly like rain. Arjuna hesitates, his heart torn between duty and kinship. “To slay kinsmen or to forsake dharma?” he murmurs, the bow trembling in his grasp. Krishna, with divine radiance, implores him, “Stand tall, O Partha, for the path of righteousness calls.” With a deep breath, Arjuna steadies his resolve, releasing a volley of arrows that pierce the gloom. Each strike, a sacrifice; each tear, a testament to fate’s unyielding grip.\n\n**⏱️ Scene 3 (20–30 sec)**  \nAs the battlefield quiets, the dust settles upon fallen warriors. Arjuna, now transformed, stands amidst the remnants of conflict. His face, a canvas of sorrow and acceptance, reflects the weight of choices made. The sun rises anew, illuminating the path of dharma as Krishna’s voice resonates softly, “In sacrifice, find strength; in duty, discover truth.” The scene lingers on Arjuna’s gaze, a promise of the trials yet to come.",
+            "duration": "30",
+            "nodeType": "text_to_music"
+          }
+        }
+      },
+      {
+        "nodeId": "node-final-merge",
+        "nodeType": "edit_video",
+        "success": true,
+        "data": {
+          "type": "edit_video",
+          "output": {
+            "videoUrl": "http://localhost:3001/output/composed_1767004437542.mp4",
+            "localPath": "/home/usr2/code/output/composed_1767004437542.mp4",
+            "nodeType": "edit_video"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "workflowId": "200fe51a-e489-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Story to Scenes (Parallel Template)",
+    "status": "completed",
+    "startTime": "2025-12-29T07:36:44.805Z",
+    "endTime": "2025-12-29T07:40:09.755Z",
+    "durationMs": 204950,
+    "nodeCount": 10,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "**Scene 1 (0–5 sec)**  \nThe sun sets over the vast battlefield of Kurukshetra, casting long shadows on the blood-soaked ground. Clad in resplendent armor, Arjuna stands upon his chariot, bow in hand, eyes filled with turmoil. Beside him, Lord Krishna, divine charioteer, gazes with unwavering calm, the golden aura of his presence illuminating the darkening sky. The air is thick with tension, as the armies of Kauravas and Pandavas prepare for the fateful clash.\n\n**Scene 2 (5–20 sec)**  \nArjuna, amidst the cacophony of conch shells and battle cries, lowers his bow, heart heavy with doubt. \"What is righteousness?\" he whispers, the question echoing in the stillness of his soul. Krishna, steadfast, raises a hand, revealing the cosmic form of the divine, myriad worlds swirling within. Arjuna's eyes widen with realization, the weight of his duty unfurling before him like a lotus blooming in dawn's light. With renewed conviction, he raises his bow, resolve igniting like a thousand suns, as he faces his kin across the field, ready to fulfill his dharma.\n\n**Scene 3 (20–30 sec)**  \nThe clash of steel reverberates through the air, as Arjuna unleashes his arrows, each shot a testament to sacrifice and fate. The camera pans across the battlefield, capturing the faces of warriors torn between duty and kinship. In the distance, the sun breaks through the clouds, casting a golden hue over the chaos. The final shot lingers on Arjuna’s determined visage, eyes reflecting the weight of destiny, as Krishna’s voice resonates softly, “In the heart of conflict lies the path to truth.” Silence envelops the scene, leaving only the heartbeat of fate echoing in the stillness.",
+            "model": "gpt-4o-mini",
+            "tokens": 1674,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-scenes-1",
+        "nodeType": "split_text",
+        "success": true,
+        "data": {
+          "type": "split_text",
+          "output": {
+            "segments": [],
+            "items": [],
+            "totalSegments": 0,
+            "nodeType": "split_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-narration-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-tts-all",
+        "nodeType": "text_to_speech",
+        "success": true,
+        "data": {
+          "type": "text_to_speech",
+          "output": {
+            "audioUrl": "/home/usr2/code/output/speech_openai_1766993819042.mp3",
+            "text": "Hello world",
+            "voice": "af_bella",
+            "nodeType": "text_to_speech"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-all",
+        "nodeType": "text_to_image",
+        "success": true,
+        "data": {
+          "type": "text_to_image",
+          "output": {
+            "imageUrl": "https://v3b.fal.media/files/b/0a8837f5/Uv_qzmKh-vvEXrqU2Y_ZN.png",
+            "prompt": "A beautiful landscape",
+            "aspectRatio": "16:9",
+            "nodeType": "text_to_image"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-all",
+        "nodeType": "image_to_video",
+        "success": true,
+        "data": {
+          "type": "image_to_video",
+          "output": {
+            "videoUrl": "https://v3b.fal.media/files/b/0a883805/1Hk85rTY_dv390PN_OL_H_video.mp4",
+            "sourceImage": "https://v3b.fal.media/files/b/0a8837f5/Uv_qzmKh-vvEXrqU2Y_ZN.png",
+            "duration": "5",
+            "nodeType": "image_to_video"
+          }
+        }
+      },
+      {
+        "nodeId": "node-music-1",
+        "nodeType": "text_to_music",
+        "success": true,
+        "data": {
+          "type": "text_to_music",
+          "output": {
+            "audioUrl": "https://v3b.fal.media/files/b/0a883808/2gqaQbKWaEzswon0zL1V2_tmp97y8pi5e.wav",
+            "prompt": "**Scene 1 (0–5 sec)**  \nThe sun sets over the vast battlefield of Kurukshetra, casting long shadows on the blood-soaked ground. Clad in resplendent armor, Arjuna stands upon his chariot, bow in hand, eyes filled with turmoil. Beside him, Lord Krishna, divine charioteer, gazes with unwavering calm, the golden aura of his presence illuminating the darkening sky. The air is thick with tension, as the armies of Kauravas and Pandavas prepare for the fateful clash.\n\n**Scene 2 (5–20 sec)**  \nArjuna, amidst the cacophony of conch shells and battle cries, lowers his bow, heart heavy with doubt. \"What is righteousness?\" he whispers, the question echoing in the stillness of his soul. Krishna, steadfast, raises a hand, revealing the cosmic form of the divine, myriad worlds swirling within. Arjuna's eyes widen with realization, the weight of his duty unfurling before him like a lotus blooming in dawn's light. With renewed conviction, he raises his bow, resolve igniting like a thousand suns, as he faces his kin across the field, ready to fulfill his dharma.\n\n**Scene 3 (20–30 sec)**  \nThe clash of steel reverberates through the air, as Arjuna unleashes his arrows, each shot a testament to sacrifice and fate. The camera pans across the battlefield, capturing the faces of warriors torn between duty and kinship. In the distance, the sun breaks through the clouds, casting a golden hue over the chaos. The final shot lingers on Arjuna’s determined visage, eyes reflecting the weight of destiny, as Krishna’s voice resonates softly, “In the heart of conflict lies the path to truth.” Silence envelops the scene, leaving only the heartbeat of fate echoing in the stillness.",
+            "duration": "30",
+            "nodeType": "text_to_music"
+          }
+        }
+      },
+      {
+        "nodeId": "node-final-merge",
+        "nodeType": "edit_video",
+        "success": true,
+        "data": {
+          "type": "edit_video",
+          "output": {
+            "videoUrl": "http://localhost:3001/output/composed_1766994007804.mp4",
+            "localPath": "/home/usr2/code/output/composed_1766994007804.mp4",
+            "nodeType": "edit_video"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "workflowId": "27e1009f-e487-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Story to Scenes (Parallel Template)",
+    "status": "completed",
+    "startTime": "2025-12-29T07:22:38.926Z",
+    "endTime": "2025-12-29T07:25:18.619Z",
+    "durationMs": 159693,
+    "nodeCount": 10,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "**🎞️ Scene 1 (0–5 sec)**  \nThe sun rises over the sacred land of Kurukshetra, casting golden rays on the battlefield. Armies stand poised, chariots gleaming, as the conch shells resonate—a prelude to destiny. In the center, Arjuna, the valiant son of Pandu, grips his bow, his heart heavy with turmoil. Beside him, Lord Krishna, divine charioteer, gazes with serene wisdom.\n\n**⏱️ Scene 2 (5–20 sec)**  \nArjuna's gaze sweeps over the opposing ranks, spotting beloved kin and venerable teachers. His hands tremble; the bow slips, the arrows fall. “How can I strike my own blood?” he laments, voice cracking with anguish. Krishna, unwavering, speaks of duty: “In battle lies your dharma. A warrior must stand firm. Seek the righteous path.” The wind stirs, the tension sharpens. Arjuna nods, resolve igniting like a flame—he rises, bow drawn, ready to fulfill his fateful role.\n\n**⏱️ Scene 3 (20–30 sec)**  \nAs the first arrow flies, a moment freezes—time hangs heavy with the weight of choices made. The clash of fate echoes; the ground trembles beneath the warriors’ feet. The camera pulls back, revealing the vastness of the battlefield. The sun sets, casting shadows of conflict—dharma and adharma entwined. A single tear falls from Arjuna's eye, a testament to sacrifice and the burden of righteousness. The screen fades to black, leaving only the sound of the conch, a haunting reminder of the eternal struggle.",
+            "model": "gpt-4o-mini",
+            "tokens": 1415,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-scenes-1",
+        "nodeType": "split_text",
+        "success": true,
+        "data": {
+          "type": "split_text",
+          "output": {
+            "segments": [],
+            "items": [],
+            "totalSegments": 0,
+            "nodeType": "split_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-narration-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-tts-all",
+        "nodeType": "text_to_speech",
+        "success": true,
+        "data": {
+          "type": "text_to_speech",
+          "output": {
+            "audioUrl": "/home/usr2/output/speech_openai_1766992969352.mp3",
+            "text": "Hello world",
+            "voice": "af_bella",
+            "nodeType": "text_to_speech"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-all",
+        "nodeType": "text_to_image",
+        "success": true,
+        "data": {
+          "type": "text_to_image",
+          "output": {
+            "imageUrl": "https://v3b.fal.media/files/b/0a8837a1/t-L93I5wWJQ_vyf44oKYI.png",
+            "prompt": "A beautiful landscape",
+            "aspectRatio": "16:9",
+            "nodeType": "text_to_image"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-all",
+        "nodeType": "image_to_video",
+        "success": true,
+        "data": {
+          "type": "image_to_video",
+          "output": {
+            "videoUrl": "https://v3b.fal.media/files/b/0a8837ac/CpA-TkUYDwXq6d-Ns4Hnq_video.mp4",
+            "sourceImage": "https://v3b.fal.media/files/b/0a8837a1/t-L93I5wWJQ_vyf44oKYI.png",
+            "duration": "5",
+            "nodeType": "image_to_video"
+          }
+        }
+      },
+      {
+        "nodeId": "node-music-1",
+        "nodeType": "text_to_music",
+        "success": true,
+        "data": {
+          "type": "text_to_music",
+          "output": {
+            "audioUrl": "https://v3b.fal.media/files/b/0a8837af/OEPtMHNzsmalMTaQV6oz-_tmp22o_zsml.wav",
+            "prompt": "**🎞️ Scene 1 (0–5 sec)**  \nThe sun rises over the sacred land of Kurukshetra, casting golden rays on the battlefield. Armies stand poised, chariots gleaming, as the conch shells resonate—a prelude to destiny. In the center, Arjuna, the valiant son of Pandu, grips his bow, his heart heavy with turmoil. Beside him, Lord Krishna, divine charioteer, gazes with serene wisdom.\n\n**⏱️ Scene 2 (5–20 sec)**  \nArjuna's gaze sweeps over the opposing ranks, spotting beloved kin and venerable teachers. His hands tremble; the bow slips, the arrows fall. “How can I strike my own blood?” he laments, voice cracking with anguish. Krishna, unwavering, speaks of duty: “In battle lies your dharma. A warrior must stand firm. Seek the righteous path.” The wind stirs, the tension sharpens. Arjuna nods, resolve igniting like a flame—he rises, bow drawn, ready to fulfill his fateful role.\n\n**⏱️ Scene 3 (20–30 sec)**  \nAs the first arrow flies, a moment freezes—time hangs heavy with the weight of choices made. The clash of fate echoes; the ground trembles beneath the warriors’ feet. The camera pulls back, revealing the vastness of the battlefield. The sun sets, casting shadows of conflict—dharma and adharma entwined. A single tear falls from Arjuna's eye, a testament to sacrifice and the burden of righteousness. The screen fades to black, leaving only the sound of the conch, a haunting reminder of the eternal struggle.",
+            "duration": "30",
+            "nodeType": "text_to_music"
+          }
+        }
+      },
+      {
+        "nodeId": "node-final-merge",
+        "nodeType": "edit_video",
+        "success": true,
+        "data": {
+          "type": "edit_video",
+          "output": {
+            "videoUrl": "http://localhost:3001/output/composed_1766993117050.mp4",
+            "localPath": "/home/usr2/output/composed_1766993117050.mp4",
+            "nodeType": "edit_video"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "workflowId": "f4476d64-e485-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Story to Scenes (Parallel Template)",
+    "status": "failed",
+    "startTime": "2025-12-29T07:14:02.859Z",
+    "endTime": "2025-12-29T07:16:23.417Z",
+    "durationMs": 140558,
+    "nodeCount": 10,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "**🎞️ Scene 1 (0–5 sec)**  \nThe sun rises over the vast, arid plains of Kurukshetra, casting long shadows upon a battlefield adorned with banners of valor. Clad in resplendent armor, Arjuna stands upon his chariot, bow in hand, his heart heavy with dread. Beside him, Krishna, divine charioteer, radiates a calm that pierces through the clamor of impending war.\n\n**⏱️ Scene 2 (5–20 sec)**  \nAs conch shells blare, the ground trembles beneath the weight of warriors ready to clash. Arjuna’s gaze falls upon his kin, the familiar faces of elders and brothers, now enemies in the throes of fate. He falters, bow trembling, as the cries of righteousness and kinship echo in his soul. Krishna, with a gaze unwavering, implores, “To stand down is to deny your dharma.” The chariot wheels turn, and with a deep inhalation, Arjuna raises his bow, the string taut with resolve. The first arrow flies, piercing the air—a declaration of duty entwined with sacrifice.\n\n**⏱️ Scene 3 (20–30 sec)**  \nThe battlefield erupts into chaos, dust swirling amidst the clash of steel and cries of anguish. In the aftermath, the sun sets, casting a crimson hue over the fallen. Arjuna stands amidst the remnants, the weight of destiny heavy upon him. A silent oath lingers in the air, the bittersweet truth of sacrifice etched in his heart: \"In duty lies the essence of existence.\" The frame freezes, capturing his solemn vow against the backdrop of a world transformed.",
+            "model": "gpt-4o-mini",
+            "tokens": 1446,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-scenes-1",
+        "nodeType": "split_text",
+        "success": true,
+        "data": {
+          "type": "split_text",
+          "output": {
+            "segments": [],
+            "items": [],
+            "totalSegments": 0,
+            "nodeType": "split_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-narration-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-tts-all",
+        "nodeType": "text_to_speech",
+        "success": true,
+        "data": {
+          "type": "text_to_speech",
+          "output": {
+            "audioUrl": "http://localhost:3002/output/speech_openai_1766992455497.mp3",
+            "text": "Hello world",
+            "voice": "af_bella",
+            "nodeType": "text_to_speech"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-all",
+        "nodeType": "text_to_image",
+        "success": true,
+        "data": {
+          "type": "text_to_image",
+          "output": {
+            "imageUrl": "https://v3b.fal.media/files/b/0a88376d/6YuevB7LATWFXhCmCYbsd.png",
+            "prompt": "A beautiful landscape",
+            "aspectRatio": "16:9",
+            "nodeType": "text_to_image"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-all",
+        "nodeType": "image_to_video",
+        "success": true,
+        "data": {
+          "type": "image_to_video",
+          "output": {
+            "videoUrl": "https://v3b.fal.media/files/b/0a883776/JnQ1zbFQXjWDOtGYTZFQ6_video.mp4",
+            "sourceImage": "https://v3b.fal.media/files/b/0a88376d/6YuevB7LATWFXhCmCYbsd.png",
+            "duration": "5",
+            "nodeType": "image_to_video"
+          }
+        }
+      },
+      {
+        "nodeId": "node-music-1",
+        "nodeType": "text_to_music",
+        "success": true,
+        "data": {
+          "type": "text_to_music",
+          "output": {
+            "audioUrl": "https://v3b.fal.media/files/b/0a88377a/CQBC_WTsEPmsXQ27cU21w_tmpete9d61o.wav",
+            "prompt": "**🎞️ Scene 1 (0–5 sec)**  \nThe sun rises over the vast, arid plains of Kurukshetra, casting long shadows upon a battlefield adorned with banners of valor. Clad in resplendent armor, Arjuna stands upon his chariot, bow in hand, his heart heavy with dread. Beside him, Krishna, divine charioteer, radiates a calm that pierces through the clamor of impending war.\n\n**⏱️ Scene 2 (5–20 sec)**  \nAs conch shells blare, the ground trembles beneath the weight of warriors ready to clash. Arjuna’s gaze falls upon his kin, the familiar faces of elders and brothers, now enemies in the throes of fate. He falters, bow trembling, as the cries of righteousness and kinship echo in his soul. Krishna, with a gaze unwavering, implores, “To stand down is to deny your dharma.” The chariot wheels turn, and with a deep inhalation, Arjuna raises his bow, the string taut with resolve. The first arrow flies, piercing the air—a declaration of duty entwined with sacrifice.\n\n**⏱️ Scene 3 (20–30 sec)**  \nThe battlefield erupts into chaos, dust swirling amidst the clash of steel and cries of anguish. In the aftermath, the sun sets, casting a crimson hue over the fallen. Arjuna stands amidst the remnants, the weight of destiny heavy upon him. A silent oath lingers in the air, the bittersweet truth of sacrifice etched in his heart: \"In duty lies the essence of existence.\" The frame freezes, capturing his solemn vow against the backdrop of a world transformed.",
+            "duration": "30",
+            "nodeType": "text_to_music"
+          }
+        }
+      },
+      {
+        "nodeId": "node-final-merge",
+        "nodeType": "edit_video",
+        "success": false,
+        "error": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers\n  built with gcc 13 (Ubuntu 13.2.0-23ubuntu3)\n  configuration: --prefix=/usr --extra-version=3ubuntu5 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libf"
+      }
+    ]
+  },
+  {
+    "workflowId": "48e91069-e482-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Story to Scenes (Parallel Template)",
+    "status": "failed",
+    "startTime": "2025-12-29T06:47:46.860Z",
+    "endTime": "2025-12-29T06:50:09.478Z",
+    "durationMs": 142618,
+    "nodeCount": 10,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "**Scene 1 (0–5 sec)**  \nUnder a vast, storm-laden sky, the battlefield of Kurukshetra stretches endlessly. Armored chariots gleam ominously as warriors stand resolute. Arjuna, his brow furrowed in turmoil, grips his bow tightly, while Krishna, his charioteer, gazes with serene intensity, embodying divine wisdom. Tension crackles in the air, as the drums of war echo the clash of fate.\n\n**Scene 2 (5–20 sec)**  \nArjuna, faced with kin and mentors on the opposing side, hesitates. He lowers his bow, despair etched upon his face as arrows rain down around him. Krishna, radiant and unwavering, speaks with fervor, revealing the path of dharma. The turmoil within Arjuna swells as he recalls the bonds of duty and righteousness. With a surge of determination, he raises his bow once more, his eyes aflame with purpose. Arjuna draws the string back, the world around him falling silent, then releases the arrow—symbolizing the weight of choice, the sacrifice of familial ties for a greater truth.\n\n**Scene 3 (20–30 sec)**  \nAs the arrow flies, time halts. The battlefield is suspended in a breath, warriors frozen in anticipation. The ethereal glow of Krishna’s presence illuminates Arjuna, who stands transformed—warrior and disciple. The arrow finds its mark, igniting the flames of destiny. The camera lingers on Arjuna’s resolute face, reflecting the profound weight of his decision, as a voice whispers through the air: “In the face of duty, hearts must often break.” The screen fades to darkness, leaving only the echo of a conch shell reverberating through eternity.",
+            "model": "gpt-4o-mini",
+            "tokens": 1571,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-scenes-1",
+        "nodeType": "split_text",
+        "success": true,
+        "data": {
+          "type": "split_text",
+          "output": {
+            "segments": [],
+            "items": [],
+            "totalSegments": 0,
+            "nodeType": "split_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-narration-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [],
+            "itemsCount": 0,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-tts-all",
+        "nodeType": "text_to_speech",
+        "success": true,
+        "data": {
+          "type": "text_to_speech",
+          "output": {
+            "audioUrl": "http://localhost:3002/output/speech_openai_1766990874854.mp3",
+            "text": "Hello world",
+            "voice": "af_bella",
+            "nodeType": "text_to_speech"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-all",
+        "nodeType": "text_to_image",
+        "success": true,
+        "data": {
+          "type": "text_to_image",
+          "output": {
+            "imageUrl": "https://v3b.fal.media/files/b/0a8836cf/2SPrifZA7uugp1gDs6avg.png",
+            "prompt": "A beautiful landscape",
+            "aspectRatio": "16:9",
+            "nodeType": "text_to_image"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-all",
+        "nodeType": "image_to_video",
+        "success": true,
+        "data": {
+          "type": "image_to_video",
+          "output": {
+            "videoUrl": "https://v3b.fal.media/files/b/0a8836d9/uhARnzu3UJrTImGP7a2Lp_video.mp4",
+            "sourceImage": "https://v3b.fal.media/files/b/0a8836cf/2SPrifZA7uugp1gDs6avg.png",
+            "duration": "5",
+            "nodeType": "image_to_video"
+          }
+        }
+      },
+      {
+        "nodeId": "node-music-1",
+        "nodeType": "text_to_music",
+        "success": true,
+        "data": {
+          "type": "text_to_music",
+          "output": {
+            "audioUrl": "https://v3b.fal.media/files/b/0a8836dc/Pht4qvxgdYjVajMBsW5hk_tmph3bnx_3_.wav",
+            "prompt": "**Scene 1 (0–5 sec)**  \nUnder a vast, storm-laden sky, the battlefield of Kurukshetra stretches endlessly. Armored chariots gleam ominously as warriors stand resolute. Arjuna, his brow furrowed in turmoil, grips his bow tightly, while Krishna, his charioteer, gazes with serene intensity, embodying divine wisdom. Tension crackles in the air, as the drums of war echo the clash of fate.\n\n**Scene 2 (5–20 sec)**  \nArjuna, faced with kin and mentors on the opposing side, hesitates. He lowers his bow, despair etched upon his face as arrows rain down around him. Krishna, radiant and unwavering, speaks with fervor, revealing the path of dharma. The turmoil within Arjuna swells as he recalls the bonds of duty and righteousness. With a surge of determination, he raises his bow once more, his eyes aflame with purpose. Arjuna draws the string back, the world around him falling silent, then releases the arrow—symbolizing the weight of choice, the sacrifice of familial ties for a greater truth.\n\n**Scene 3 (20–30 sec)**  \nAs the arrow flies, time halts. The battlefield is suspended in a breath, warriors frozen in anticipation. The ethereal glow of Krishna’s presence illuminates Arjuna, who stands transformed—warrior and disciple. The arrow finds its mark, igniting the flames of destiny. The camera lingers on Arjuna’s resolute face, reflecting the profound weight of his decision, as a voice whispers through the air: “In the face of duty, hearts must often break.” The screen fades to darkness, leaving only the echo of a conch shell reverberating through eternity.",
+            "duration": "30",
+            "nodeType": "text_to_music"
+          }
+        }
+      },
+      {
+        "nodeId": "node-final-merge",
+        "nodeType": "edit_video",
+        "success": false,
+        "error": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers\n  built with gcc 13 (Ubuntu 13.2.0-23ubuntu3)\n  configuration: --prefix=/usr --extra-version=3ubuntu5 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libf"
+      }
+    ]
+  },
+  {
     "workflowId": "4f05f795-e15b-11f0-922e-8e98c6eac3ff",
     "workflowName": "Test Workflow",
     "status": "failed",
