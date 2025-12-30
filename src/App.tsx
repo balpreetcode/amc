@@ -2,12 +2,19 @@ import { WorkflowProvider, useWorkflowContext } from './context/WorkflowContext'
 import { WorkflowCanvas } from './components/WorkflowCanvas'
 import { NodePropertiesPanel } from './components/NodePropertiesPanel'
 import { ExecutionHistory } from './components/ExecutionHistory'
-import React, { useState } from 'react'
+import { Templates } from './components/Templates'
+import  { useState } from 'react'
 import './App.css'
 
 function AppContent() {
   const { execution, runWorkflow, stopWorkflow, workflow } = useWorkflowContext();
-  const [activeTab, setActiveTab] = useState<'builder' | 'history'>('builder');
+  const [activeTab, setActiveTab] = useState<'builder' | 'history' | 'templates'>('builder');
+
+  const saveAsTemplate = () => {
+    // Navigate to templates page
+    // Backend functionality will be implemented later
+    setActiveTab('templates');
+  };
 
   return (
     <div className="app">
@@ -20,6 +27,13 @@ function AppContent() {
           {execution.error && (
             <span className="error-badge">{execution.error}</span>
           )}
+          <button
+            className="btn-template"
+            onClick={saveAsTemplate}
+            disabled={workflow.nodes.length === 0}
+          >
+            Save As Template
+          </button>
           {execution.isRunning ? (
             <button className="btn-danger" onClick={stopWorkflow}>
               ⏹ Stop
@@ -49,6 +63,12 @@ function AppContent() {
         >
           Execution History
         </button>
+        <button
+          className={`tab-btn ${activeTab === 'templates' ? 'active' : ''}`}
+          onClick={() => setActiveTab('templates')}
+        >
+          Templates
+        </button>
       </div>
 
       <main className="app-main">
@@ -59,8 +79,10 @@ function AppContent() {
             </div>
             <NodePropertiesPanel />
           </>
-        ) : (
+        ) : activeTab === 'history' ? (
           <ExecutionHistory />
+        ) : (
+          <Templates />
         )}
       </main>
     </div>

@@ -1,5 +1,357 @@
 [
   {
+    "workflowId": "81ae49d3-e542-11f0-922e-8e98c6eac3ff",
+    "workflowName": "Story to Scenes (Parallel Template)",
+    "status": "completed",
+    "startTime": "2025-12-30T05:43:45.477Z",
+    "endTime": "2025-12-30T05:48:25.803Z",
+    "durationMs": 280326,
+    "nodeCount": 10,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "### 🎞️ SCENE 1 (0–10 seconds) — Danger Introduced\n\n**Visuals:**\nA serene forest scene suddenly erupts into chaos as a baby deer is trapped under a fallen tree, its small body trembling. The heavy rain pours down, creating a muddy pool around it. The camera pans slowly, capturing the worried expressions of nearby hikers who freeze in shock, their faces reflecting fear and urgency.\n\n**Audio:**\nThe sound of heavy rain pelting the ground, the rustle of leaves, and the distant rumble of thunder build tension. A soft, anxious music score begins to play, enhancing the mood of impending danger.\n\n---\n\n### 🎞️ SCENE 2 (10–20 seconds) — The Rescue\n\n**Visuals:**\nSuddenly, a scruffy rescue dog, bright-eyed and energetic, appears in the frame. The camera shifts to slow motion as the dog spots the trapped deer. It dashes through the mud, leaping with determination. Close-ups reveal the dog's intense gaze, showcasing its bravery and focus. \n\nIn quick cuts, the dog barks loudly, rallying the hikers. The camera captures the dog's paws pushing against the fallen tree, its body straining with effort. The music swells with hope and courage, making the viewer's heart race.\n\n---\n\n### 🎞️ SCENE 3 (20–30 seconds) — Life Saved\n\n**Visuals:**\nWith a final push, the tree shifts, and the baby deer stumbles free, visibly shaken but alive. The hikers rush in, their faces lighting up with relief and gratitude as they gently check on the deer. The dog stands nearby, tail wagging slightly, yet calm and proud.\n\nThe camera captures the emotional moment; a close-up of the deer's wide eyes, the hikers embracing each other, and the dog looking on with quiet satisfaction. \n\n**Ending Shot:**\nAs the scene fades, text appears on the screen:  \n“Sometimes heroes walk on four legs.”  \n\n**Audio:**\nThe music transitions into a warm, uplifting melody, leaving viewers with a sense of relief and emotional closure.",
+            "model": "gpt-4o-mini",
+            "tokens": 1896,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-scenes-1",
+        "nodeType": "split_text",
+        "success": true,
+        "data": {
+          "type": "split_text",
+          "output": {
+            "segments": [
+              {
+                "index": 0,
+                "text": "### 🎞️ SCENE 1 (0–10 seconds) — Danger Introduced **Visuals:** A serene forest scene suddenly erupts into chaos as a baby deer is trapped under a fallen tree, its small body trembling. The heavy rain pours down, creating a muddy pool around it. The camera pans slowly, capturing the worried expressions of nearby hikers who freeze in shock, their faces reflecting fear and urgency. **Audio:** The sound of heavy rain pelting the ground, the rustle of leaves, and the distant rumble of thunder build tension. A soft, anxious music score begins to play, enhancing the mood of impending danger. --- ### 🎞️ SCENE 2 (10–20 seconds) — The Rescue **Visuals:** Suddenly, a scruffy rescue dog, bright-eyed and energetic, appears in the frame.",
+                "duration": 10
+              },
+              {
+                "index": 1,
+                "text": "The camera shifts to slow motion as the dog spots the trapped deer. It dashes through the mud, leaping with determination. Close-ups reveal the dog's intense gaze, showcasing its bravery and focus. In quick cuts, the dog barks loudly, rallying the hikers. The camera captures the dog's paws pushing against the fallen tree, its body straining with effort. The music swells with hope and courage, making the viewer's heart race.",
+                "duration": 10
+              },
+              {
+                "index": 2,
+                "text": "--- ### 🎞️ SCENE 3 (20–30 seconds) — Life Saved **Visuals:** With a final push, the tree shifts, and the baby deer stumbles free, visibly shaken but alive. The hikers rush in, their faces lighting up with relief and gratitude as they gently check on the deer. The dog stands nearby, tail wagging slightly, yet calm and proud. The camera captures the emotional moment; a close-up of the deer's wide eyes, the hikers embracing each other, and the dog looking on with quiet satisfaction. **Ending Shot:** As the scene fades, text appears on the screen: “Sometimes heroes walk on four legs.” **Audio:** The music transitions into a warm, uplifting melody, leaving viewers with a sense of relief and emotional closure.",
+                "duration": 10
+              }
+            ],
+            "items": [
+              "### 🎞️ SCENE 1 (0–10 seconds) — Danger Introduced **Visuals:** A serene forest scene suddenly erupts into chaos as a baby deer is trapped under a fallen tree, its small body trembling. The heavy rain pours down, creating a muddy pool around it. The camera pans slowly, capturing the worried expressions of nearby hikers who freeze in shock, their faces reflecting fear and urgency. **Audio:** The sound of heavy rain pelting the ground, the rustle of leaves, and the distant rumble of thunder build tension. A soft, anxious music score begins to play, enhancing the mood of impending danger. --- ### 🎞️ SCENE 2 (10–20 seconds) — The Rescue **Visuals:** Suddenly, a scruffy rescue dog, bright-eyed and energetic, appears in the frame.",
+              "The camera shifts to slow motion as the dog spots the trapped deer. It dashes through the mud, leaping with determination. Close-ups reveal the dog's intense gaze, showcasing its bravery and focus. In quick cuts, the dog barks loudly, rallying the hikers. The camera captures the dog's paws pushing against the fallen tree, its body straining with effort. The music swells with hope and courage, making the viewer's heart race.",
+              "--- ### 🎞️ SCENE 3 (20–30 seconds) — Life Saved **Visuals:** With a final push, the tree shifts, and the baby deer stumbles free, visibly shaken but alive. The hikers rush in, their faces lighting up with relief and gratitude as they gently check on the deer. The dog stands nearby, tail wagging slightly, yet calm and proud. The camera captures the emotional moment; a close-up of the deer's wide eyes, the hikers embracing each other, and the dog looking on with quiet satisfaction. **Ending Shot:** As the scene fades, text appears on the screen: “Sometimes heroes walk on four legs.” **Audio:** The music transitions into a warm, uplifting melody, leaving viewers with a sense of relief and emotional closure."
+            ],
+            "totalSegments": 3,
+            "nodeType": "split_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-narration-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [
+              {
+                "text": "In the heart of the stormy forest, a desperate scene unfolds as a baby deer quivers beneath a fallen tree, its plight unnoticed by the world. Nearby hikers stand frozen, their faces etched with fear, as the heavy rain pounds the earth, amplifying the tension. Just as hope seems dim, a scruffy rescue dog bursts into view, a beacon of determination ready to face the chaos and bring a glimmer of salvation.",
+                "model": "gpt-4o-mini",
+                "tokens": 406
+              },
+              {
+                "text": "In a breathtaking display of loyalty and courage, the dog charges through the muddy terrain, its eyes locked on the trapped deer. Each powerful leap encapsulates its determination, while the urgent barks echo through the forest, summoning the hikers to join the rescue. As the dog pushes against the fallen tree, muscles taut with effort, the triumphant music crescendos, igniting a spark of hope in the hearts of all who witness the unfolding drama.",
+                "model": "gpt-4o-mini",
+                "tokens": 450
+              },
+              {
+                "text": "With a final heave, the tree shifts, freeing the trembling baby deer, a fragile life spared against the odds. The hikers rush in, their faces glowing with relief as they tenderly check on the fawn, while the dog stands proudly by, embodying the unsung hero of the moment. As the screen fades, the poignant message lingers, reminding us that sometimes, true heroes come with four legs and a wagging tail.",
+                "model": "gpt-4o-mini",
+                "tokens": 403
+              }
+            ],
+            "text": [
+              "In the heart of the stormy forest, a desperate scene unfolds as a baby deer quivers beneath a fallen tree, its plight unnoticed by the world. Nearby hikers stand frozen, their faces etched with fear, as the heavy rain pounds the earth, amplifying the tension. Just as hope seems dim, a scruffy rescue dog bursts into view, a beacon of determination ready to face the chaos and bring a glimmer of salvation.",
+              "In a breathtaking display of loyalty and courage, the dog charges through the muddy terrain, its eyes locked on the trapped deer. Each powerful leap encapsulates its determination, while the urgent barks echo through the forest, summoning the hikers to join the rescue. As the dog pushes against the fallen tree, muscles taut with effort, the triumphant music crescendos, igniting a spark of hope in the hearts of all who witness the unfolding drama.",
+              "With a final heave, the tree shifts, freeing the trembling baby deer, a fragile life spared against the odds. The hikers rush in, their faces glowing with relief as they tenderly check on the fawn, while the dog stands proudly by, embodying the unsung hero of the moment. As the screen fades, the poignant message lingers, reminding us that sometimes, true heroes come with four legs and a wagging tail."
+            ],
+            "model": [
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini"
+            ],
+            "tokens": [
+              406,
+              450,
+              403
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [
+              {
+                "text": "With a determined look, the dog races through the forest, its fur glistening with raindrops. The camera captures the dog’s intense focus and powerful strides as it navigates the muddy terrain, its paws kicking up splashes of water. The background blurs slightly in a shallow depth of field, emphasizing the dog's noble mission. As it approaches the fallen tree, the camera switches to a low angle, showcasing the dog's bravery against the towering trunk. \n\n**Audio:** The music swells, transitioning to a more uplifting theme, while the sound of the dog’s panting and the crunch of wet leaves beneath its paws become prominent. The anxious murmurs of the hikers are faintly heard, their voices filled with hope as they witness the dog’s approach.\n\n---\n\n### 🎞️ SCENE 3 (20–30 seconds) — The Struggle **Visuals:** The dog halts in front of the trapped baby deer, its eyes filled with empathy. The camera zooms in on the deer’s fearful gaze, contrasting with the dog’s unwavering determination. The dog circles the fallen tree, assessing the situation, and then begins to bark encouragingly, trying to comfort the frightened creature. \n\n**Audio:** The music shifts to a softer, poignant melody, underscoring the emotional connection between the dog and the deer. The rain continues to pour, creating a symphony of sounds that amplifies the tension, while the hiker’s gasps can be heard in the background, their anticipation palpable.\n\n---\n\n### 🎞️ SCENE 4 (30–40 seconds) — The Climb **Visuals:** With a burst of energy, the dog leaps onto the tree, its powerful legs propelling it upward. The camera captures the intricate details of its fur, soaked yet shiny, and the fierce determination etched across its face. As the dog digs its claws into the bark, the camera cuts to a close-up of the deer, its trembling body slowly calming as it senses the dog’s bravery.\n\n**Audio:** The sound of the rain intensifies, mingling with the dog’s rhythmic breathing and the soft whimper of the deer. The music swells to a crescendo, illustrating the gravity of the moment as the dog reaches the apex of its climb.\n\n---\n\n### 🎞️ SCENE 5 (40–50 seconds) — The Breakthrough **Visuals:** The dog finds a sturdy branch and begins to tug at it, pulling with all its might. The camera captures the raw strength in its muscles as it strains against the weight of the fallen tree. The hiker's faces are now a mixture of hope and disbelief, their eyes glued to the scene unfolding before them.\n\n**Audio:** A dramatic orchestral swell accompanies the dog's efforts, emphasizing the intensity of the moment. The sound of creaking wood echoes as the tree shifts slightly, giving a glimmer of hope.\n\n---\n\n### 🎞️ SCENE 6 (50–60 seconds) — The Triumph **Visuals:** With one final, powerful tug, the dog manages to lift the branch just enough for the baby deer to wriggle free. The camera captures the moment in slow motion as the deer stumbles out, shaking off the mud and rain. The dog, panting and exhausted, drops the branch and turns to the deer, tail wagging in triumph.\n\n**Audio:** The music reaches a triumphant peak, filled with emotion as the sound of the rain begins to lighten. The relieved cheers of the hikers fill the air, blending with the joyful barks of the dog. The camera zooms out to show the forest scene, now transformed from chaos to harmony as the deer and dog share a moment of connection.\n\n---\n\n### 🎞️ SCENE 7 (60–70 seconds) — A New Beginning **Visuals:** The deer, now free, cautiously approaches the dog, nuzzling its side as if to thank it. The camera captures this heartwarming moment in a close-up, highlighting the bond formed between two unlikely heroes. The rain begins to taper off, sunlight breaking through the clouds, casting a soft glow over the scene.\n\n**Audio:** The music transitions to a gentle, uplifting melody, symbolizing hope and new beginnings. The sound of the rain fades, replaced by the soft rustle of leaves and the distant chirping of birds returning to life.\n\n---\n\n### 🎞️ SCENE 8 (70–80 seconds) — Final Shot **Visuals:** The camera pulls back, showcasing the forest returning to its serene state, the dog and deer now side by side, ready to face whatever comes next. This final shot captures the essence of bravery, friendship, and resilience, leaving the audience with a sense of warmth and inspiration.\n\n**Audio:** The music gently fades, leaving behind the peaceful sounds of nature, as the screen slowly transitions to black, the story of courage echoing in the hearts of those who witnessed the brave act.",
+                "model": "gpt-4o-mini",
+                "tokens": 4541
+              },
+              {
+                "text": "As the scene unfolds, the camera captures the lush, verdant surroundings of a sun-dappled forest, where beams of light filter through the canopy, casting a warm glow on the scene. The air is thick with tension as the dog, a strong and noble breed, locks eyes with the trapped deer, its body taut with purpose. \n\nIn slow motion, the dog's muscles ripple beneath its glossy fur as it charges through the muddy underbrush, sending droplets of earth flying in all directions. The camera zooms in, focusing on the dog's intense gaze—eyes filled with determination and an unwavering spirit, reminiscent of a hero in a moment of truth.\n\nThe sound of the dog's barks echoes through the forest, sharp and commanding, cutting through the stillness as it rallies the nearby hikers. Quick cuts show their startled expressions, a mix of concern and awe as they respond to the urgent call of the brave canine.\n\nAs the action intensifies, the camera captures the dog’s powerful limbs as it leaps toward the fallen tree, its paws digging into the soft earth, straining against the weight of the obstacle. The close-ups reveal the sheen of sweat glistening on its fur, each breath visible in the cool air—a testament to its tireless effort.\n\nWith the music swelling, a stirring orchestral score rises, imbued with a sense of hope and courage, setting the emotional tone of the moment. The viewers feel the adrenaline as the camera shifts angles, showcasing the dog's steadfast determination, the tension in its body as it pushes against the heavy trunk.\n\nFinally, the scene culminates in a breathtaking moment—a surge of energy as the dog manages to lift the tree just enough for the deer to escape. The camera captures the deer’s grateful gaze, a silent exchange of understanding between two souls, before it dashes off into the safety of the forest. \n\nThe screen fades to black, leaving the audience with a lingering sense of admiration for the bravery and loyalty embodied by the dog—a true hero.",
+                "model": "gpt-4o-mini",
+                "tokens": 1982
+              },
+              {
+                "text": "**SCENE 3: Life Saved**\n\n**[Visuals]**  \nThe camera opens with a wide shot of the forest, sunlight filtering through the leaves, casting a warm glow over the scene. In the foreground, a fallen tree looms ominously, its heavy branches still trapping a frightened baby deer. The brave dog, a golden retriever with a shiny coat glistening in the dappled light, stands resolutely beside the tree. Its eyes are focused and alert, ears perked up, showcasing its unwavering determination.\n\nWith a swift and powerful movement, the dog lunges toward the tree, barking fiercely to draw attention as it paws at the base with strength and agility. The ground trembles slightly as the hikers, who have just arrived on the scene, watch in awe. The camera shifts to a close-up of the dog’s intense gaze, capturing the determination in its expressive eyes.\n\nAs the dog gives one final push, the tree shifts, and the baby deer stumbles free, its legs trembling. The camera captures a close-up of the deer’s wide, frightened eyes, reflecting the sunlight and the tension of the moment. The hikers rush in, their faces lighting up with relief and gratitude; one kneels to check on the deer, gently running a hand along its back, while another embraces a companion, tears of joy in their eyes.\n\nThe dog stands nearby, now calmer but still alert, its tail wagging slowly, proud of its accomplishment. The camera pans to a soft focus on the deer's expression, showcasing the relief and gratitude reflected in its wide eyes. \n\n**[Ending Shot]**  \nAs the emotional moment settles, the camera pulls back to reveal the entire scene: the relieved hikers, the saved deer, and the proud dog, all framed by the serene beauty of the forest. The screen fades gently to black, and text appears: “Sometimes heroes walk on four legs.” \n\n**[Audio]**  \nThe music transitions into a warm, uplifting melody, filled with strings and soft piano notes, enveloping the audience in a sense of relief and emotional closure, leaving them with the heartwarming message of the scene.",
+                "model": "gpt-4o-mini",
+                "tokens": 2035
+              }
+            ],
+            "text": [
+              "With a determined look, the dog races through the forest, its fur glistening with raindrops. The camera captures the dog’s intense focus and powerful strides as it navigates the muddy terrain, its paws kicking up splashes of water. The background blurs slightly in a shallow depth of field, emphasizing the dog's noble mission. As it approaches the fallen tree, the camera switches to a low angle, showcasing the dog's bravery against the towering trunk. \n\n**Audio:** The music swells, transitioning to a more uplifting theme, while the sound of the dog’s panting and the crunch of wet leaves beneath its paws become prominent. The anxious murmurs of the hikers are faintly heard, their voices filled with hope as they witness the dog’s approach.\n\n---\n\n### 🎞️ SCENE 3 (20–30 seconds) — The Struggle **Visuals:** The dog halts in front of the trapped baby deer, its eyes filled with empathy. The camera zooms in on the deer’s fearful gaze, contrasting with the dog’s unwavering determination. The dog circles the fallen tree, assessing the situation, and then begins to bark encouragingly, trying to comfort the frightened creature. \n\n**Audio:** The music shifts to a softer, poignant melody, underscoring the emotional connection between the dog and the deer. The rain continues to pour, creating a symphony of sounds that amplifies the tension, while the hiker’s gasps can be heard in the background, their anticipation palpable.\n\n---\n\n### 🎞️ SCENE 4 (30–40 seconds) — The Climb **Visuals:** With a burst of energy, the dog leaps onto the tree, its powerful legs propelling it upward. The camera captures the intricate details of its fur, soaked yet shiny, and the fierce determination etched across its face. As the dog digs its claws into the bark, the camera cuts to a close-up of the deer, its trembling body slowly calming as it senses the dog’s bravery.\n\n**Audio:** The sound of the rain intensifies, mingling with the dog’s rhythmic breathing and the soft whimper of the deer. The music swells to a crescendo, illustrating the gravity of the moment as the dog reaches the apex of its climb.\n\n---\n\n### 🎞️ SCENE 5 (40–50 seconds) — The Breakthrough **Visuals:** The dog finds a sturdy branch and begins to tug at it, pulling with all its might. The camera captures the raw strength in its muscles as it strains against the weight of the fallen tree. The hiker's faces are now a mixture of hope and disbelief, their eyes glued to the scene unfolding before them.\n\n**Audio:** A dramatic orchestral swell accompanies the dog's efforts, emphasizing the intensity of the moment. The sound of creaking wood echoes as the tree shifts slightly, giving a glimmer of hope.\n\n---\n\n### 🎞️ SCENE 6 (50–60 seconds) — The Triumph **Visuals:** With one final, powerful tug, the dog manages to lift the branch just enough for the baby deer to wriggle free. The camera captures the moment in slow motion as the deer stumbles out, shaking off the mud and rain. The dog, panting and exhausted, drops the branch and turns to the deer, tail wagging in triumph.\n\n**Audio:** The music reaches a triumphant peak, filled with emotion as the sound of the rain begins to lighten. The relieved cheers of the hikers fill the air, blending with the joyful barks of the dog. The camera zooms out to show the forest scene, now transformed from chaos to harmony as the deer and dog share a moment of connection.\n\n---\n\n### 🎞️ SCENE 7 (60–70 seconds) — A New Beginning **Visuals:** The deer, now free, cautiously approaches the dog, nuzzling its side as if to thank it. The camera captures this heartwarming moment in a close-up, highlighting the bond formed between two unlikely heroes. The rain begins to taper off, sunlight breaking through the clouds, casting a soft glow over the scene.\n\n**Audio:** The music transitions to a gentle, uplifting melody, symbolizing hope and new beginnings. The sound of the rain fades, replaced by the soft rustle of leaves and the distant chirping of birds returning to life.\n\n---\n\n### 🎞️ SCENE 8 (70–80 seconds) — Final Shot **Visuals:** The camera pulls back, showcasing the forest returning to its serene state, the dog and deer now side by side, ready to face whatever comes next. This final shot captures the essence of bravery, friendship, and resilience, leaving the audience with a sense of warmth and inspiration.\n\n**Audio:** The music gently fades, leaving behind the peaceful sounds of nature, as the screen slowly transitions to black, the story of courage echoing in the hearts of those who witnessed the brave act.",
+              "As the scene unfolds, the camera captures the lush, verdant surroundings of a sun-dappled forest, where beams of light filter through the canopy, casting a warm glow on the scene. The air is thick with tension as the dog, a strong and noble breed, locks eyes with the trapped deer, its body taut with purpose. \n\nIn slow motion, the dog's muscles ripple beneath its glossy fur as it charges through the muddy underbrush, sending droplets of earth flying in all directions. The camera zooms in, focusing on the dog's intense gaze—eyes filled with determination and an unwavering spirit, reminiscent of a hero in a moment of truth.\n\nThe sound of the dog's barks echoes through the forest, sharp and commanding, cutting through the stillness as it rallies the nearby hikers. Quick cuts show their startled expressions, a mix of concern and awe as they respond to the urgent call of the brave canine.\n\nAs the action intensifies, the camera captures the dog’s powerful limbs as it leaps toward the fallen tree, its paws digging into the soft earth, straining against the weight of the obstacle. The close-ups reveal the sheen of sweat glistening on its fur, each breath visible in the cool air—a testament to its tireless effort.\n\nWith the music swelling, a stirring orchestral score rises, imbued with a sense of hope and courage, setting the emotional tone of the moment. The viewers feel the adrenaline as the camera shifts angles, showcasing the dog's steadfast determination, the tension in its body as it pushes against the heavy trunk.\n\nFinally, the scene culminates in a breathtaking moment—a surge of energy as the dog manages to lift the tree just enough for the deer to escape. The camera captures the deer’s grateful gaze, a silent exchange of understanding between two souls, before it dashes off into the safety of the forest. \n\nThe screen fades to black, leaving the audience with a lingering sense of admiration for the bravery and loyalty embodied by the dog—a true hero.",
+              "**SCENE 3: Life Saved**\n\n**[Visuals]**  \nThe camera opens with a wide shot of the forest, sunlight filtering through the leaves, casting a warm glow over the scene. In the foreground, a fallen tree looms ominously, its heavy branches still trapping a frightened baby deer. The brave dog, a golden retriever with a shiny coat glistening in the dappled light, stands resolutely beside the tree. Its eyes are focused and alert, ears perked up, showcasing its unwavering determination.\n\nWith a swift and powerful movement, the dog lunges toward the tree, barking fiercely to draw attention as it paws at the base with strength and agility. The ground trembles slightly as the hikers, who have just arrived on the scene, watch in awe. The camera shifts to a close-up of the dog’s intense gaze, capturing the determination in its expressive eyes.\n\nAs the dog gives one final push, the tree shifts, and the baby deer stumbles free, its legs trembling. The camera captures a close-up of the deer’s wide, frightened eyes, reflecting the sunlight and the tension of the moment. The hikers rush in, their faces lighting up with relief and gratitude; one kneels to check on the deer, gently running a hand along its back, while another embraces a companion, tears of joy in their eyes.\n\nThe dog stands nearby, now calmer but still alert, its tail wagging slowly, proud of its accomplishment. The camera pans to a soft focus on the deer's expression, showcasing the relief and gratitude reflected in its wide eyes. \n\n**[Ending Shot]**  \nAs the emotional moment settles, the camera pulls back to reveal the entire scene: the relieved hikers, the saved deer, and the proud dog, all framed by the serene beauty of the forest. The screen fades gently to black, and text appears: “Sometimes heroes walk on four legs.” \n\n**[Audio]**  \nThe music transitions into a warm, uplifting melody, filled with strings and soft piano notes, enveloping the audience in a sense of relief and emotional closure, leaving them with the heartwarming message of the scene."
+            ],
+            "model": [
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini"
+            ],
+            "tokens": [
+              4541,
+              1982,
+              2035
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [
+              {
+                "text": "**Prompt:** As the camera captures the chaotic aftermath of the fallen tree, the focus shifts to the trembling baby deer caught in the rain-soaked forest. Utilize a close-up shot to emphasize the deer’s wide, frightened eyes, contrasting with the worried hikers in the background. Slowly tilt the camera upwards to reveal the heavy rain streaming down, pooling in the mud, amplifying the sense of urgency. The crescendo of the anxious musical score intensifies as the frame suddenly cuts to a vibrant, scruffy rescue dog bursting onto the scene. The camera follows the dog in a dynamic, quick-paced tracking shot, showcasing its determination as it leaps through puddles, adding a glimmer of hope amidst the chaos.",
+                "model": "gpt-4o-mini",
+                "tokens": 714
+              },
+              {
+                "text": "**Cinematic Video Motion Prompt:** \n\nBegin with a wide shot of a muddy forest, the atmosphere thick with tension. As the dog spots the trapped deer, transition to slow motion, capturing the dog's fierce determination. Zoom in on the dog's intense gaze, highlighting its bravery. Cut to quick, dynamic shots of the dog dashing through the mud, water splashing around its paws. Show close-ups of its barks echoing through the trees, rallying the hikers nearby. Transition to a detailed shot of the dog's paws pushing against the fallen tree, muscles straining with effort. As the music swells with hope and courage, alternate between the dog's focused expression and the urgency of the situation, building a crescendo that keeps the viewer on the edge of their seat.",
+                "model": "gpt-4o-mini",
+                "tokens": 764
+              },
+              {
+                "text": "**Prompt:** Capture the moment as the tree shifts dramatically, revealing the baby deer stumbling free. Use a slow-motion effect to highlight the deer's shaky legs and wide eyes filled with shock. Transition to close-ups of the hikers' faces, showing relief and gratitude as they rush to comfort the deer. Include a shot of the dog standing proudly nearby, its tail wagging in a gentle display of loyalty. As the scene progresses, weave in emotional music that swells to a warm, uplifting melody. Conclude with a sweeping shot of the group embracing, as the screen fades to the text: “Sometimes heroes walk on four legs.”",
+                "model": "gpt-4o-mini",
+                "tokens": 621
+              }
+            ],
+            "text": [
+              "**Prompt:** As the camera captures the chaotic aftermath of the fallen tree, the focus shifts to the trembling baby deer caught in the rain-soaked forest. Utilize a close-up shot to emphasize the deer’s wide, frightened eyes, contrasting with the worried hikers in the background. Slowly tilt the camera upwards to reveal the heavy rain streaming down, pooling in the mud, amplifying the sense of urgency. The crescendo of the anxious musical score intensifies as the frame suddenly cuts to a vibrant, scruffy rescue dog bursting onto the scene. The camera follows the dog in a dynamic, quick-paced tracking shot, showcasing its determination as it leaps through puddles, adding a glimmer of hope amidst the chaos.",
+              "**Cinematic Video Motion Prompt:** \n\nBegin with a wide shot of a muddy forest, the atmosphere thick with tension. As the dog spots the trapped deer, transition to slow motion, capturing the dog's fierce determination. Zoom in on the dog's intense gaze, highlighting its bravery. Cut to quick, dynamic shots of the dog dashing through the mud, water splashing around its paws. Show close-ups of its barks echoing through the trees, rallying the hikers nearby. Transition to a detailed shot of the dog's paws pushing against the fallen tree, muscles straining with effort. As the music swells with hope and courage, alternate between the dog's focused expression and the urgency of the situation, building a crescendo that keeps the viewer on the edge of their seat.",
+              "**Prompt:** Capture the moment as the tree shifts dramatically, revealing the baby deer stumbling free. Use a slow-motion effect to highlight the deer's shaky legs and wide eyes filled with shock. Transition to close-ups of the hikers' faces, showing relief and gratitude as they rush to comfort the deer. Include a shot of the dog standing proudly nearby, its tail wagging in a gentle display of loyalty. As the scene progresses, weave in emotional music that swells to a warm, uplifting melody. Conclude with a sweeping shot of the group embracing, as the screen fades to the text: “Sometimes heroes walk on four legs.”"
+            ],
+            "model": [
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini"
+            ],
+            "tokens": [
+              714,
+              764,
+              621
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-tts-all",
+        "nodeType": "text_to_speech",
+        "success": true,
+        "data": {
+          "type": "text_to_speech",
+          "output": {
+            "items": [
+              {
+                "audioUrl": "/home/usr2/code/output/speech_openai_1767073466366.mp3",
+                "text": "In the heart of the stormy forest, a desperate scene unfolds as a baby deer quivers beneath a fallen",
+                "voice": "af_bella"
+              },
+              {
+                "audioUrl": "/home/usr2/code/output/speech_openai_1767073466411.mp3",
+                "text": "In a breathtaking display of loyalty and courage, the dog charges through the muddy terrain, its eye",
+                "voice": "af_bella"
+              },
+              {
+                "audioUrl": "/home/usr2/code/output/speech_openai_1767073468104.mp3",
+                "text": "With a final heave, the tree shifts, freeing the trembling baby deer, a fragile life spared against ",
+                "voice": "af_bella"
+              }
+            ],
+            "audioUrl": [
+              "/home/usr2/code/output/speech_openai_1767073466366.mp3",
+              "/home/usr2/code/output/speech_openai_1767073466411.mp3",
+              "/home/usr2/code/output/speech_openai_1767073468104.mp3"
+            ],
+            "text": [
+              "In the heart of the stormy forest, a desperate scene unfolds as a baby deer quivers beneath a fallen",
+              "In a breathtaking display of loyalty and courage, the dog charges through the muddy terrain, its eye",
+              "With a final heave, the tree shifts, freeing the trembling baby deer, a fragile life spared against "
+            ],
+            "voice": [
+              "af_bella",
+              "af_bella",
+              "af_bella"
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_speech"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-all",
+        "nodeType": "text_to_image",
+        "success": true,
+        "data": {
+          "type": "text_to_image",
+          "output": {
+            "items": [
+              {
+                "imageUrl": "https://v3b.fal.media/files/b/0a885712/Fbt74QwpiBpK91sf0sQx0.png",
+                "prompt": "With a determined look, the dog races through the forest, its fur glistening with raindrops. The camera captures the dog’s intense focus and powerful strides as it navigates the muddy terrain, its paws kicking up splashes of water. The background blurs slightly in a shallow depth of field, emphasizing the dog's noble mission. As it approaches the fallen tree, the camera switches to a low angle, showcasing the dog's bravery against the towering trunk. \n\n**Audio:** The music swells, transitioning to a more uplifting theme, while the sound of the dog’s panting and the crunch of wet leaves beneath its paws become prominent. The anxious murmurs of the hikers are faintly heard, their voices filled with hope as they witness the dog’s approach.\n\n---\n\n### 🎞️ SCENE 3 (20–30 seconds) — The Struggle **Visuals:** The dog halts in front of the trapped baby deer, its eyes filled with empathy. The camera zooms in on the deer’s fearful gaze, contrasting with the dog’s unwavering determination. The dog circles the fallen tree, assessing the situation, and then begins to bark encouragingly, trying to comfort the frightened creature. \n\n**Audio:** The music shifts to a softer, poignant melody, underscoring the emotional connection between the dog and the deer. The rain continues to pour, creating a symphony of sounds that amplifies the tension, while the hiker’s gasps can be heard in the background, their anticipation palpable.\n\n---\n\n### 🎞️ SCENE 4 (30–40 seconds) — The Climb **Visuals:** With a burst of energy, the dog leaps onto the tree, its powerful legs propelling it upward. The camera captures the intricate details of its fur, soaked yet shiny, and the fierce determination etched across its face. As the dog digs its claws into the bark, the camera cuts to a close-up of the deer, its trembling body slowly calming as it senses the dog’s bravery.\n\n**Audio:** The sound of the rain intensifies, mingling with the dog’s rhythmic breathing and the soft whimper of the deer. The music swells to a crescendo, illustrating the gravity of the moment as the dog reaches the apex of its climb.\n\n---\n\n### 🎞️ SCENE 5 (40–50 seconds) — The Breakthrough **Visuals:** The dog finds a sturdy branch and begins to tug at it, pulling with all its might. The camera captures the raw strength in its muscles as it strains against the weight of the fallen tree. The hiker's faces are now a mixture of hope and disbelief, their eyes glued to the scene unfolding before them.\n\n**Audio:** A dramatic orchestral swell accompanies the dog's efforts, emphasizing the intensity of the moment. The sound of creaking wood echoes as the tree shifts slightly, giving a glimmer of hope.\n\n---\n\n### 🎞️ SCENE 6 (50–60 seconds) — The Triumph **Visuals:** With one final, powerful tug, the dog manages to lift the branch just enough for the baby deer to wriggle free. The camera captures the moment in slow motion as the deer stumbles out, shaking off the mud and rain. The dog, panting and exhausted, drops the branch and turns to the deer, tail wagging in triumph.\n\n**Audio:** The music reaches a triumphant peak, filled with emotion as the sound of the rain begins to lighten. The relieved cheers of the hikers fill the air, blending with the joyful barks of the dog. The camera zooms out to show the forest scene, now transformed from chaos to harmony as the deer and dog share a moment of connection.\n\n---\n\n### 🎞️ SCENE 7 (60–70 seconds) — A New Beginning **Visuals:** The deer, now free, cautiously approaches the dog, nuzzling its side as if to thank it. The camera captures this heartwarming moment in a close-up, highlighting the bond formed between two unlikely heroes. The rain begins to taper off, sunlight breaking through the clouds, casting a soft glow over the scene.\n\n**Audio:** The music transitions to a gentle, uplifting melody, symbolizing hope and new beginnings. The sound of the rain fades, replaced by the soft rustle of leaves and the distant chirping of birds returning to life.\n\n---\n\n### 🎞️ SCENE 8 (70–80 seconds) — Final Shot **Visuals:** The camera pulls back, showcasing the forest returning to its serene state, the dog and deer now side by side, ready to face whatever comes next. This final shot captures the essence of bravery, friendship, and resilience, leaving the audience with a sense of warmth and inspiration.\n\n**Audio:** The music gently fades, leaving behind the peaceful sounds of nature, as the screen slowly transitions to black, the story of courage echoing in the hearts of those who witnessed the brave act.",
+                "aspectRatio": "16:9"
+              },
+              {
+                "imageUrl": "https://v3b.fal.media/files/b/0a885712/Zf7sT3xXBWx6YzAy31aXp.png",
+                "prompt": "As the scene unfolds, the camera captures the lush, verdant surroundings of a sun-dappled forest, where beams of light filter through the canopy, casting a warm glow on the scene. The air is thick with tension as the dog, a strong and noble breed, locks eyes with the trapped deer, its body taut with purpose. \n\nIn slow motion, the dog's muscles ripple beneath its glossy fur as it charges through the muddy underbrush, sending droplets of earth flying in all directions. The camera zooms in, focusing on the dog's intense gaze—eyes filled with determination and an unwavering spirit, reminiscent of a hero in a moment of truth.\n\nThe sound of the dog's barks echoes through the forest, sharp and commanding, cutting through the stillness as it rallies the nearby hikers. Quick cuts show their startled expressions, a mix of concern and awe as they respond to the urgent call of the brave canine.\n\nAs the action intensifies, the camera captures the dog’s powerful limbs as it leaps toward the fallen tree, its paws digging into the soft earth, straining against the weight of the obstacle. The close-ups reveal the sheen of sweat glistening on its fur, each breath visible in the cool air—a testament to its tireless effort.\n\nWith the music swelling, a stirring orchestral score rises, imbued with a sense of hope and courage, setting the emotional tone of the moment. The viewers feel the adrenaline as the camera shifts angles, showcasing the dog's steadfast determination, the tension in its body as it pushes against the heavy trunk.\n\nFinally, the scene culminates in a breathtaking moment—a surge of energy as the dog manages to lift the tree just enough for the deer to escape. The camera captures the deer’s grateful gaze, a silent exchange of understanding between two souls, before it dashes off into the safety of the forest. \n\nThe screen fades to black, leaving the audience with a lingering sense of admiration for the bravery and loyalty embodied by the dog—a true hero.",
+                "aspectRatio": "16:9"
+              },
+              {
+                "imageUrl": "https://v3b.fal.media/files/b/0a885712/L3r8mVqXKcCp6SoY-kU7Y.png",
+                "prompt": "**SCENE 3: Life Saved**\n\n**[Visuals]**  \nThe camera opens with a wide shot of the forest, sunlight filtering through the leaves, casting a warm glow over the scene. In the foreground, a fallen tree looms ominously, its heavy branches still trapping a frightened baby deer. The brave dog, a golden retriever with a shiny coat glistening in the dappled light, stands resolutely beside the tree. Its eyes are focused and alert, ears perked up, showcasing its unwavering determination.\n\nWith a swift and powerful movement, the dog lunges toward the tree, barking fiercely to draw attention as it paws at the base with strength and agility. The ground trembles slightly as the hikers, who have just arrived on the scene, watch in awe. The camera shifts to a close-up of the dog’s intense gaze, capturing the determination in its expressive eyes.\n\nAs the dog gives one final push, the tree shifts, and the baby deer stumbles free, its legs trembling. The camera captures a close-up of the deer’s wide, frightened eyes, reflecting the sunlight and the tension of the moment. The hikers rush in, their faces lighting up with relief and gratitude; one kneels to check on the deer, gently running a hand along its back, while another embraces a companion, tears of joy in their eyes.\n\nThe dog stands nearby, now calmer but still alert, its tail wagging slowly, proud of its accomplishment. The camera pans to a soft focus on the deer's expression, showcasing the relief and gratitude reflected in its wide eyes. \n\n**[Ending Shot]**  \nAs the emotional moment settles, the camera pulls back to reveal the entire scene: the relieved hikers, the saved deer, and the proud dog, all framed by the serene beauty of the forest. The screen fades gently to black, and text appears: “Sometimes heroes walk on four legs.” \n\n**[Audio]**  \nThe music transitions into a warm, uplifting melody, filled with strings and soft piano notes, enveloping the audience in a sense of relief and emotional closure, leaving them with the heartwarming message of the scene.",
+                "aspectRatio": "16:9"
+              }
+            ],
+            "imageUrl": [
+              "https://v3b.fal.media/files/b/0a885712/Fbt74QwpiBpK91sf0sQx0.png",
+              "https://v3b.fal.media/files/b/0a885712/Zf7sT3xXBWx6YzAy31aXp.png",
+              "https://v3b.fal.media/files/b/0a885712/L3r8mVqXKcCp6SoY-kU7Y.png"
+            ],
+            "prompt": [
+              "With a determined look, the dog races through the forest, its fur glistening with raindrops. The camera captures the dog’s intense focus and powerful strides as it navigates the muddy terrain, its paws kicking up splashes of water. The background blurs slightly in a shallow depth of field, emphasizing the dog's noble mission. As it approaches the fallen tree, the camera switches to a low angle, showcasing the dog's bravery against the towering trunk. \n\n**Audio:** The music swells, transitioning to a more uplifting theme, while the sound of the dog’s panting and the crunch of wet leaves beneath its paws become prominent. The anxious murmurs of the hikers are faintly heard, their voices filled with hope as they witness the dog’s approach.\n\n---\n\n### 🎞️ SCENE 3 (20–30 seconds) — The Struggle **Visuals:** The dog halts in front of the trapped baby deer, its eyes filled with empathy. The camera zooms in on the deer’s fearful gaze, contrasting with the dog’s unwavering determination. The dog circles the fallen tree, assessing the situation, and then begins to bark encouragingly, trying to comfort the frightened creature. \n\n**Audio:** The music shifts to a softer, poignant melody, underscoring the emotional connection between the dog and the deer. The rain continues to pour, creating a symphony of sounds that amplifies the tension, while the hiker’s gasps can be heard in the background, their anticipation palpable.\n\n---\n\n### 🎞️ SCENE 4 (30–40 seconds) — The Climb **Visuals:** With a burst of energy, the dog leaps onto the tree, its powerful legs propelling it upward. The camera captures the intricate details of its fur, soaked yet shiny, and the fierce determination etched across its face. As the dog digs its claws into the bark, the camera cuts to a close-up of the deer, its trembling body slowly calming as it senses the dog’s bravery.\n\n**Audio:** The sound of the rain intensifies, mingling with the dog’s rhythmic breathing and the soft whimper of the deer. The music swells to a crescendo, illustrating the gravity of the moment as the dog reaches the apex of its climb.\n\n---\n\n### 🎞️ SCENE 5 (40–50 seconds) — The Breakthrough **Visuals:** The dog finds a sturdy branch and begins to tug at it, pulling with all its might. The camera captures the raw strength in its muscles as it strains against the weight of the fallen tree. The hiker's faces are now a mixture of hope and disbelief, their eyes glued to the scene unfolding before them.\n\n**Audio:** A dramatic orchestral swell accompanies the dog's efforts, emphasizing the intensity of the moment. The sound of creaking wood echoes as the tree shifts slightly, giving a glimmer of hope.\n\n---\n\n### 🎞️ SCENE 6 (50–60 seconds) — The Triumph **Visuals:** With one final, powerful tug, the dog manages to lift the branch just enough for the baby deer to wriggle free. The camera captures the moment in slow motion as the deer stumbles out, shaking off the mud and rain. The dog, panting and exhausted, drops the branch and turns to the deer, tail wagging in triumph.\n\n**Audio:** The music reaches a triumphant peak, filled with emotion as the sound of the rain begins to lighten. The relieved cheers of the hikers fill the air, blending with the joyful barks of the dog. The camera zooms out to show the forest scene, now transformed from chaos to harmony as the deer and dog share a moment of connection.\n\n---\n\n### 🎞️ SCENE 7 (60–70 seconds) — A New Beginning **Visuals:** The deer, now free, cautiously approaches the dog, nuzzling its side as if to thank it. The camera captures this heartwarming moment in a close-up, highlighting the bond formed between two unlikely heroes. The rain begins to taper off, sunlight breaking through the clouds, casting a soft glow over the scene.\n\n**Audio:** The music transitions to a gentle, uplifting melody, symbolizing hope and new beginnings. The sound of the rain fades, replaced by the soft rustle of leaves and the distant chirping of birds returning to life.\n\n---\n\n### 🎞️ SCENE 8 (70–80 seconds) — Final Shot **Visuals:** The camera pulls back, showcasing the forest returning to its serene state, the dog and deer now side by side, ready to face whatever comes next. This final shot captures the essence of bravery, friendship, and resilience, leaving the audience with a sense of warmth and inspiration.\n\n**Audio:** The music gently fades, leaving behind the peaceful sounds of nature, as the screen slowly transitions to black, the story of courage echoing in the hearts of those who witnessed the brave act.",
+              "As the scene unfolds, the camera captures the lush, verdant surroundings of a sun-dappled forest, where beams of light filter through the canopy, casting a warm glow on the scene. The air is thick with tension as the dog, a strong and noble breed, locks eyes with the trapped deer, its body taut with purpose. \n\nIn slow motion, the dog's muscles ripple beneath its glossy fur as it charges through the muddy underbrush, sending droplets of earth flying in all directions. The camera zooms in, focusing on the dog's intense gaze—eyes filled with determination and an unwavering spirit, reminiscent of a hero in a moment of truth.\n\nThe sound of the dog's barks echoes through the forest, sharp and commanding, cutting through the stillness as it rallies the nearby hikers. Quick cuts show their startled expressions, a mix of concern and awe as they respond to the urgent call of the brave canine.\n\nAs the action intensifies, the camera captures the dog’s powerful limbs as it leaps toward the fallen tree, its paws digging into the soft earth, straining against the weight of the obstacle. The close-ups reveal the sheen of sweat glistening on its fur, each breath visible in the cool air—a testament to its tireless effort.\n\nWith the music swelling, a stirring orchestral score rises, imbued with a sense of hope and courage, setting the emotional tone of the moment. The viewers feel the adrenaline as the camera shifts angles, showcasing the dog's steadfast determination, the tension in its body as it pushes against the heavy trunk.\n\nFinally, the scene culminates in a breathtaking moment—a surge of energy as the dog manages to lift the tree just enough for the deer to escape. The camera captures the deer’s grateful gaze, a silent exchange of understanding between two souls, before it dashes off into the safety of the forest. \n\nThe screen fades to black, leaving the audience with a lingering sense of admiration for the bravery and loyalty embodied by the dog—a true hero.",
+              "**SCENE 3: Life Saved**\n\n**[Visuals]**  \nThe camera opens with a wide shot of the forest, sunlight filtering through the leaves, casting a warm glow over the scene. In the foreground, a fallen tree looms ominously, its heavy branches still trapping a frightened baby deer. The brave dog, a golden retriever with a shiny coat glistening in the dappled light, stands resolutely beside the tree. Its eyes are focused and alert, ears perked up, showcasing its unwavering determination.\n\nWith a swift and powerful movement, the dog lunges toward the tree, barking fiercely to draw attention as it paws at the base with strength and agility. The ground trembles slightly as the hikers, who have just arrived on the scene, watch in awe. The camera shifts to a close-up of the dog’s intense gaze, capturing the determination in its expressive eyes.\n\nAs the dog gives one final push, the tree shifts, and the baby deer stumbles free, its legs trembling. The camera captures a close-up of the deer’s wide, frightened eyes, reflecting the sunlight and the tension of the moment. The hikers rush in, their faces lighting up with relief and gratitude; one kneels to check on the deer, gently running a hand along its back, while another embraces a companion, tears of joy in their eyes.\n\nThe dog stands nearby, now calmer but still alert, its tail wagging slowly, proud of its accomplishment. The camera pans to a soft focus on the deer's expression, showcasing the relief and gratitude reflected in its wide eyes. \n\n**[Ending Shot]**  \nAs the emotional moment settles, the camera pulls back to reveal the entire scene: the relieved hikers, the saved deer, and the proud dog, all framed by the serene beauty of the forest. The screen fades gently to black, and text appears: “Sometimes heroes walk on four legs.” \n\n**[Audio]**  \nThe music transitions into a warm, uplifting melody, filled with strings and soft piano notes, enveloping the audience in a sense of relief and emotional closure, leaving them with the heartwarming message of the scene."
+            ],
+            "aspectRatio": [
+              "16:9",
+              "16:9",
+              "16:9"
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_image"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-all",
+        "nodeType": "image_to_video",
+        "success": true,
+        "data": {
+          "type": "image_to_video",
+          "output": {
+            "items": [
+              {
+                "videoUrl": "https://v3b.fal.media/files/b/0a885722/rXI7_oK0SjGJGr6-7LAS7_video.mp4",
+                "sourceImage": "https://v3b.fal.media/files/b/0a885712/Fbt74QwpiBpK91sf0sQx0.png",
+                "duration": "5"
+              },
+              {
+                "videoUrl": "https://v3b.fal.media/files/b/0a885724/um22Nf5sgDRjIkW1wrpAn_video.mp4",
+                "sourceImage": "https://v3b.fal.media/files/b/0a885712/Zf7sT3xXBWx6YzAy31aXp.png",
+                "duration": "5"
+              },
+              {
+                "videoUrl": "https://v3b.fal.media/files/b/0a885725/CMlpMPnqU7lC5vOO25ll2_video.mp4",
+                "sourceImage": "https://v3b.fal.media/files/b/0a885712/L3r8mVqXKcCp6SoY-kU7Y.png",
+                "duration": "5"
+              }
+            ],
+            "videoUrl": [
+              "https://v3b.fal.media/files/b/0a885722/rXI7_oK0SjGJGr6-7LAS7_video.mp4",
+              "https://v3b.fal.media/files/b/0a885724/um22Nf5sgDRjIkW1wrpAn_video.mp4",
+              "https://v3b.fal.media/files/b/0a885725/CMlpMPnqU7lC5vOO25ll2_video.mp4"
+            ],
+            "sourceImage": [
+              "https://v3b.fal.media/files/b/0a885712/Fbt74QwpiBpK91sf0sQx0.png",
+              "https://v3b.fal.media/files/b/0a885712/Zf7sT3xXBWx6YzAy31aXp.png",
+              "https://v3b.fal.media/files/b/0a885712/L3r8mVqXKcCp6SoY-kU7Y.png"
+            ],
+            "duration": [
+              "5",
+              "5",
+              "5"
+            ],
+            "itemsCount": 3,
+            "nodeType": "image_to_video"
+          }
+        }
+      },
+      {
+        "nodeId": "node-music-1",
+        "nodeType": "text_to_music",
+        "success": true,
+        "data": {
+          "type": "text_to_music",
+          "output": {
+            "audioUrl": "https://v3b.fal.media/files/b/0a885729/Sx7qY4VoL806Qi5M9ZP8g_tmp04ar0qgi.wav",
+            "prompt": "### 🎞️ SCENE 1 (0–10 seconds) — Danger Introduced\n\n**Visuals:**\nA serene forest scene suddenly erupts into chaos as a baby deer is trapped under a fallen tree, its small body trembling. The heavy rain pours down, creating a muddy pool around it. The camera pans slowly, capturing the worried expressions of nearby hikers who freeze in shock, their faces reflecting fear and urgency.\n\n**Audio:**\nThe sound of heavy rain pelting the ground, the rustle of leaves, and the distant rumble of thunder build tension. A soft, anxious music score begins to play, enhancing the mood of impending danger.\n\n---\n\n### 🎞️ SCENE 2 (10–20 seconds) — The Rescue\n\n**Visuals:**\nSuddenly, a scruffy rescue dog, bright-eyed and energetic, appears in the frame. The camera shifts to slow motion as the dog spots the trapped deer. It dashes through the mud, leaping with determination. Close-ups reveal the dog's intense gaze, showcasing its bravery and focus. \n\nIn quick cuts, the dog barks loudly, rallying the hikers. The camera captures the dog's paws pushing against the fallen tree, its body straining with effort. The music swells with hope and courage, making the viewer's heart race.\n\n---\n\n### 🎞️ SCENE 3 (20–30 seconds) — Life Saved\n\n**Visuals:**\nWith a final push, the tree shifts, and the baby deer stumbles free, visibly shaken but alive. The hikers rush in, their faces lighting up with relief and gratitude as they gently check on the deer. The dog stands nearby, tail wagging slightly, yet calm and proud.\n\nThe camera captures the emotional moment; a close-up of the deer's wide eyes, the hikers embracing each other, and the dog looking on with quiet satisfaction. \n\n**Ending Shot:**\nAs the scene fades, text appears on the screen:  \n“Sometimes heroes walk on four legs.”  \n\n**Audio:**\nThe music transitions into a warm, uplifting melody, leaving viewers with a sense of relief and emotional closure.",
+            "duration": "30",
+            "nodeType": "text_to_music"
+          }
+        }
+      },
+      {
+        "nodeId": "node-final-merge",
+        "nodeType": "edit_video",
+        "success": true,
+        "data": {
+          "type": "edit_video",
+          "output": {
+            "videoUrl": "http://localhost:3002/output/composed_1767073702375.mp4",
+            "localPath": "/home/usr2/code/output/composed_1767073702375.mp4",
+            "itemsCount": 3,
+            "nodeType": "edit_video"
+          }
+        }
+      }
+    ],
+    "videoUrl": "http://localhost:3002/output/composed_1767073702375.mp4"
+  },
+  {
     "workflowId": "f1bf1ab8-e537-11f0-922e-8e98c6eac3ff",
     "workflowName": "Story to Scenes (Parallel Template)",
     "status": "completed",
