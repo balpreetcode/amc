@@ -1,5 +1,357 @@
 [
   {
+    "workflowId": "3d4f2039-e577-11f0-be00-d2fa87f4af24",
+    "workflowName": "Animal Stories (Template)",
+    "status": "completed",
+    "startTime": "2025-12-30T12:01:14.095Z",
+    "endTime": "2025-12-30T12:04:48.340Z",
+    "durationMs": 214245,
+    "nodeCount": 10,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "**🎞️ SCENE 1 (0–10 seconds) — Danger Introduced**\n\n*Visuals*: The scene opens with a wide shot of a flooded street, rain pouring heavily. The camera slowly pans to a small child, visibly panicked, standing on a ledge of debris, water swirling dangerously below. The child's eyes are wide with fear. Nearby, an elderly person is slumped on the ground, struggling for breath, surrounded by onlookers who are frozen in shock. A close-up reveals a baby animal—perhaps a kitten—trapped under a piece of wood, mewling weakly. \n\n*Audio*: The sound of rain pelting the ground, the rush of water, muffled gasps from onlookers, and a distant, desperate cry of the kitten create a tense atmosphere.\n\n*Mood*: Fear, urgency, silence broken by tension.\n\n---\n\n**🎞️ SCENE 2 (10–20 seconds) — The Rescue**\n\n*Visuals*: A scruffy dog, perhaps a golden retriever mix, emerges from the shadows, eyes darting around. The camera captures the dog's determined expression in close-up as it spots the child in danger. In slow-motion, the dog sprints towards the child, barking loudly to alert nearby adults. The camera shifts to fast cuts of the dog navigating through debris, pushing against a fallen branch to create a path, and finally guiding the child away from the edge.\n\n*Audio*: The sound transitions to a hopeful score, swelling with emotion as the dog barks courageously. The sound of the rushing water fades slightly, replaced by the intense heartbeat of the music.\n\n*Mood*: Courage, hope, rising emotional music.\n\n---\n\n**🎞️ SCENE 3 (20–30 seconds) — Life Saved**\n\n*Visuals*: The flooded area has calmed, and the camera captures the child, now safe in the arms of a relieved adult, breathing heavily but unharmed. The elderly person is being helped up by bystanders, tears of relief in their eyes. The kitten is gently freed by a child, its tiny body shaking but alive. The camera then pans to the dog, standing quietly, observing the scene with a calm demeanor, its fur glistening in the softening rain.\n\n*Ending Shot*: The screen fades to black, and bold white text appears: “Sometimes heroes walk on four legs.”\n\n*Audio*: A soothing, emotional melody plays softly, evoking warmth and gratitude as the scene closes.\n\n*Mood*: Relief, warmth, emotional closure.",
+            "model": "gpt-4o-mini",
+            "tokens": 2249,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-scenes-1",
+        "nodeType": "split_text",
+        "success": true,
+        "data": {
+          "type": "split_text",
+          "output": {
+            "segments": [
+              {
+                "index": 0,
+                "text": "**🎞️ SCENE 1 (0–10 seconds) — Danger Introduced**\n*Visuals*: The scene opens with a wide shot of a flooded street, rain pouring heavily. The camera slowly pans to a small child, visibly panicked, standing on a ledge of debris, water swirling dangerously below. The child's eyes are wide with fear. Nearby, an elderly person is slumped on the ground, struggling for breath, surrounded by onlookers who are frozen in shock. A close-up reveals a baby animal—perhaps a kitten—trapped under a piece of wood, mewling weakly. \n*Audio*: The sound of rain pelting the ground, the rush of water, muffled gasps from onlookers, and a distant, desperate cry of the kitten create a tense atmosphere.\n*Mood*: Fear, urgency, silence broken by tension.\n---",
+                "duration": 10
+              },
+              {
+                "index": 1,
+                "text": "**🎞️ SCENE 2 (10–20 seconds) — The Rescue**\n*Visuals*: A scruffy dog, perhaps a golden retriever mix, emerges from the shadows, eyes darting around. The camera captures the dog's determined expression in close-up as it spots the child in danger. In slow-motion, the dog sprints towards the child, barking loudly to alert nearby adults. The camera shifts to fast cuts of the dog navigating through debris, pushing against a fallen branch to create a path, and finally guiding the child away from the edge.\n*Audio*: The sound transitions to a hopeful score, swelling with emotion as the dog barks courageously. The sound of the rushing water fades slightly, replaced by the intense heartbeat of the music.\n*Mood*: Courage, hope, rising emotional music.\n---",
+                "duration": 10
+              },
+              {
+                "index": 2,
+                "text": "**🎞️ SCENE 3 (20–30 seconds) — Life Saved**\n*Visuals*: The flooded area has calmed, and the camera captures the child, now safe in the arms of a relieved adult, breathing heavily but unharmed. The elderly person is being helped up by bystanders, tears of relief in their eyes. The kitten is gently freed by a child, its tiny body shaking but alive. The camera then pans to the dog, standing quietly, observing the scene with a calm demeanor, its fur glistening in the softening rain.\n*Ending Shot*: The screen fades to black, and bold white text appears: “Sometimes heroes walk on four legs.”\n*Audio*: A soothing, emotional melody plays softly, evoking warmth and gratitude as the scene closes.\n*Mood*: Relief, warmth, emotional closure.",
+                "duration": 10
+              }
+            ],
+            "items": [
+              "**🎞️ SCENE 1 (0–10 seconds) — Danger Introduced**\n*Visuals*: The scene opens with a wide shot of a flooded street, rain pouring heavily. The camera slowly pans to a small child, visibly panicked, standing on a ledge of debris, water swirling dangerously below. The child's eyes are wide with fear. Nearby, an elderly person is slumped on the ground, struggling for breath, surrounded by onlookers who are frozen in shock. A close-up reveals a baby animal—perhaps a kitten—trapped under a piece of wood, mewling weakly. \n*Audio*: The sound of rain pelting the ground, the rush of water, muffled gasps from onlookers, and a distant, desperate cry of the kitten create a tense atmosphere.\n*Mood*: Fear, urgency, silence broken by tension.\n---",
+              "**🎞️ SCENE 2 (10–20 seconds) — The Rescue**\n*Visuals*: A scruffy dog, perhaps a golden retriever mix, emerges from the shadows, eyes darting around. The camera captures the dog's determined expression in close-up as it spots the child in danger. In slow-motion, the dog sprints towards the child, barking loudly to alert nearby adults. The camera shifts to fast cuts of the dog navigating through debris, pushing against a fallen branch to create a path, and finally guiding the child away from the edge.\n*Audio*: The sound transitions to a hopeful score, swelling with emotion as the dog barks courageously. The sound of the rushing water fades slightly, replaced by the intense heartbeat of the music.\n*Mood*: Courage, hope, rising emotional music.\n---",
+              "**🎞️ SCENE 3 (20–30 seconds) — Life Saved**\n*Visuals*: The flooded area has calmed, and the camera captures the child, now safe in the arms of a relieved adult, breathing heavily but unharmed. The elderly person is being helped up by bystanders, tears of relief in their eyes. The kitten is gently freed by a child, its tiny body shaking but alive. The camera then pans to the dog, standing quietly, observing the scene with a calm demeanor, its fur glistening in the softening rain.\n*Ending Shot*: The screen fades to black, and bold white text appears: “Sometimes heroes walk on four legs.”\n*Audio*: A soothing, emotional melody plays softly, evoking warmth and gratitude as the scene closes.\n*Mood*: Relief, warmth, emotional closure."
+            ],
+            "totalSegments": 3,
+            "nodeType": "split_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-narration-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [
+              {
+                "text": "As the relentless rain pours down, the flooded street transforms into a scene of chaos and despair. A small child clings to a precarious ledge, eyes wide with terror, while an elderly figure gasps for breath nearby, surrounded by paralyzed onlookers. The faint, desperate cries of a trapped kitten pierce the heavy atmosphere, amplifying the urgency of the moment.",
+                "model": "gpt-4o-mini",
+                "tokens": 364
+              },
+              {
+                "text": "As the scruffy golden retriever mix emerges from the shadows, its eyes filled with determination, a sense of urgency fills the air. With a courageous bark, the dog races towards the child in peril, navigating through the chaos with unwavering resolve. In a heart-pounding moment, it pushes aside debris, guiding the child to safety, embodying the true spirit of heroism.",
+                "model": "gpt-4o-mini",
+                "tokens": 370
+              },
+              {
+                "text": "As the storm subsides, a wave of relief washes over the scene; a child is cradled safely in the arms of a grateful adult, their breaths heavy with the weight of survival. Nearby, an elderly person is lifted to their feet, tears glistening in their eyes, while a child tenderly frees a trembling kitten, its life preserved against the odds. The camera lingers on a serene dog, its calm presence a quiet testament to the unspoken bond of loyalty and courage, as the screen fades to black, leaving behind a poignant reminder that sometimes, heroes walk on four legs.",
+                "model": "gpt-4o-mini",
+                "tokens": 563
+              }
+            ],
+            "text": [
+              "As the relentless rain pours down, the flooded street transforms into a scene of chaos and despair. A small child clings to a precarious ledge, eyes wide with terror, while an elderly figure gasps for breath nearby, surrounded by paralyzed onlookers. The faint, desperate cries of a trapped kitten pierce the heavy atmosphere, amplifying the urgency of the moment.",
+              "As the scruffy golden retriever mix emerges from the shadows, its eyes filled with determination, a sense of urgency fills the air. With a courageous bark, the dog races towards the child in peril, navigating through the chaos with unwavering resolve. In a heart-pounding moment, it pushes aside debris, guiding the child to safety, embodying the true spirit of heroism.",
+              "As the storm subsides, a wave of relief washes over the scene; a child is cradled safely in the arms of a grateful adult, their breaths heavy with the weight of survival. Nearby, an elderly person is lifted to their feet, tears glistening in their eyes, while a child tenderly frees a trembling kitten, its life preserved against the odds. The camera lingers on a serene dog, its calm presence a quiet testament to the unspoken bond of loyalty and courage, as the screen fades to black, leaving behind a poignant reminder that sometimes, heroes walk on four legs."
+            ],
+            "model": [
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini"
+            ],
+            "tokens": [
+              364,
+              370,
+              563
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [
+              {
+                "text": "**🎞️ SCENE 2 (10–20 seconds) — The Hero Emerges**  \n*Visuals*: A quick, intense close-up of a brave German Shepherd, fur glistening with rain, ears perked forward, eyes sharp and filled with determination. The camera transitions to a low-angle shot to emphasize the dog's size and bravery as it leaps into the chaos. The surrounding environment blurs slightly, focusing on the dog's frantic movements. It bounds toward the child first, barking urgently to get their attention.  \n*Audio*: The sound of thundering paws hitting the wet pavement, the dog's barks echoing over the sound of the storm, interspersed with the gasps of the crowd as they begin to react. The kitten’s cries grow louder, heightening the tension.  \n*Mood*: Courage, determination, a spark of hope amidst despair.\n\n---\n\n**🎞️ SCENE 3 (20–30 seconds) — The Rescue Begins**  \n*Visuals*: The German Shepherd races through the rain toward the trapped kitten. A close-up of the dog’s determined face, rain droplets glistening on its fur, reveals fierce concentration. The camera captures the kitten’s terror and desperation, its tiny body shivering beneath the wood. The dog skillfully maneuvers past debris, showcasing a fluid motion, while splashes of water erupt around its paws.  \n*Audio*: The sound of water splashing, the tension of the kitten’s cries mixed with the rhythm of the dog’s breaths, and a heartbeat-like thump growing louder as the action intensifies.  \n*Mood*: Tension, desperation, adrenaline.\n\n---\n\n**🎞️ SCENE 4 (30–40 seconds) — The Climax**  \n*Visuals*: The dog reaches the kitten, sniffs it to calm it, then uses its strong body to carefully nudge the piece of wood aside. The camera captures a slow-motion shot of the kitten finally being freed, its small body stumbling into the open. The surrounding crowd gasps collectively, eyes wide as hope flares.  \n*Audio*: A rising crescendo of inspiring music fills the background; the sound of the rain begins to soften, highlighting the moment of triumph. The relieved meow of the kitten joins the symphony of sounds as the dog barks in encouragement.  \n*Mood*: Triumph, relief, joy.\n\n---\n\n**🎞️ SCENE 5 (40–50 seconds) — Lives Saved, Bonds Formed**  \n*Visuals*: The German Shepherd turns to the frightened child, gently nudging its hand with a wet nose. The child looks down, a mixture of fear and gratitude reflected in their eyes. The camera pans to the elderly person, who is being assisted by others, as hope is restored. The final shot zooms out, capturing the rain tapering off, revealing a brighter sky, as the dog stands firm and proud, its silhouette against the softening storm.  \n*Audio*: The music swells with a hopeful theme, echoing through the scene. The chatter of the crowd slowly comes back, filled with relief and gratitude. The pitter-patter of the rain becomes a soft backdrop, turning into a melody of hope.  \n*Mood*: Hope, connection, gratitude. \n\n---\n\n**🎞️ SCENE 6 (50–60 seconds) — Resolution**  \n*Visuals*: A heartwarming close-up of the German Shepherd and the rescued kitten sharing a moment, the kitten snuggling against the dog’s warm fur. The camera captures the tears of joy in the child's eyes and the relieved smiles of onlookers, creating a powerful montage of emotion.  \n*Audio*: A soothing instrumental melody plays, underscoring the happiness in the air. The distant sounds of laughter and cheer from the crowd create a heartening atmosphere as the scene fades to black.  \n*Mood*: Celebration, unity, love. \n\n---\n\n*Final Frame*: The screen fades to black with the words \"Heroes Come in All Shapes and Sizes\" appearing, leaving the audience lingering in the warmth of the moment, evoking a deep emotional resonance.",
+                "model": "gpt-4o-mini",
+                "tokens": 3692
+              },
+              {
+                "text": "**🎞️ SCENE 2 (10–20 seconds) — The Rescue**\n\n*Visuals*: The scene opens with deep shadows draping over a chaotic landscape, remnants of a recent disaster. A scruffy golden retriever mix emerges from the dimness, its fur eerily glistening in the dwindling light. The camera zooms in on the dog’s expressive eyes, filled with a fierce determination. As it spots a small child teetering dangerously close to the edge of a crumbling bank, the world around them fades into a blur. In a dramatic slow-motion sequence, the dog launches itself into action, powerful legs propelling it forward with unrelenting urgency. \n\nThe dog barks loudly, the sound echoing with an alarmed urgency that pierces the air. The camera transitions to a series of fast-paced cuts, showcasing the dog weaving skillfully through the debris—swiftly dodging jagged bits of wood and scattered rubble. With sheer force and determination, it pushes against a heavy fallen branch, creating a path for the child. The clatter of debris echoes as the dog looks back, urging the child to follow. \n\nFinally, the scene captures a heart-stopping moment as the dog leaps in front of the child, guiding them away from the perilous edge, its body blocking any potential danger. The camera lingers on the dog’s alert stance, fur ruffled yet majestic, eyes locked onto the child with unwavering commitment.\n\n*Audio*: The soundtrack transitions to a hopeful orchestral score, swelling with emotion as the dog barks fiercely, embodying raw courage. The chaotic sounds of rushing water and destruction ebb away, replaced by the steady, intense heartbeat of the music, underscoring the gravity and heroism of the moment.\n\n*Mood*: The atmosphere is thick with courage and hope, an emotional crescendo painting the bravery of the dog as both a protector and a savior, as the heartbeat of the score beats in sync with the rising tension and ultimate relief of the rescue.",
+                "model": "gpt-4o-mini",
+                "tokens": 1918
+              },
+              {
+                "text": "**🎞️ SCENE 3 (20–30 seconds) — Life Saved**\n\n*Visuals*: The sun begins to break through the dissipating clouds, casting a golden hue over the recently flooded area. The camera captures a close-up of a child, now cradled in the arms of a relieved adult. The child’s wide eyes blink in disbelief, chest rising and falling with heavy breaths, a small smile forming as they realize they're safe. Nearby, an elderly person, supported by two kind bystanders, wipes the tears from their cheeks, gratitude etched on their weathered face. \n\nIn the foreground, a young child kneels beside a trembling kitten, gently coaxing it from a bush where it had taken refuge. The kitten’s tiny body shakes, but its soft mew is a testament to life, bringing a collective sigh of relief from the onlookers.\n\nAs the camera shifts, we see the dog — the quiet hero of the moment — standing a few paces away. Its fur glistens with droplets from the rain, and its deep, expressive eyes reflect a calm pride. The dog watches the unfolding scene, embodying a sense of duty fulfilled as it stands watch over its human companions. \n\n*Ending Shot*: The camera lingers on the dog for a moment, capturing the serene strength in its stance. Slowly, the screen fades to black. Bold white text materializes: “Sometimes heroes walk on four legs.” \n\n*Audio*: A soothing, emotional melody begins to play softly, weaving through the visuals. Strings swell gently, evoking warmth and gratitude, wrapping the viewer in an embrace of relief as the scene closes.\n\n*Mood*: The atmosphere is filled with relief and warmth, creating an overall sensation of emotional closure, a perfect tribute to the unsung heroes that exist in our lives.",
+                "model": "gpt-4o-mini",
+                "tokens": 1692
+              }
+            ],
+            "text": [
+              "**🎞️ SCENE 2 (10–20 seconds) — The Hero Emerges**  \n*Visuals*: A quick, intense close-up of a brave German Shepherd, fur glistening with rain, ears perked forward, eyes sharp and filled with determination. The camera transitions to a low-angle shot to emphasize the dog's size and bravery as it leaps into the chaos. The surrounding environment blurs slightly, focusing on the dog's frantic movements. It bounds toward the child first, barking urgently to get their attention.  \n*Audio*: The sound of thundering paws hitting the wet pavement, the dog's barks echoing over the sound of the storm, interspersed with the gasps of the crowd as they begin to react. The kitten’s cries grow louder, heightening the tension.  \n*Mood*: Courage, determination, a spark of hope amidst despair.\n\n---\n\n**🎞️ SCENE 3 (20–30 seconds) — The Rescue Begins**  \n*Visuals*: The German Shepherd races through the rain toward the trapped kitten. A close-up of the dog’s determined face, rain droplets glistening on its fur, reveals fierce concentration. The camera captures the kitten’s terror and desperation, its tiny body shivering beneath the wood. The dog skillfully maneuvers past debris, showcasing a fluid motion, while splashes of water erupt around its paws.  \n*Audio*: The sound of water splashing, the tension of the kitten’s cries mixed with the rhythm of the dog’s breaths, and a heartbeat-like thump growing louder as the action intensifies.  \n*Mood*: Tension, desperation, adrenaline.\n\n---\n\n**🎞️ SCENE 4 (30–40 seconds) — The Climax**  \n*Visuals*: The dog reaches the kitten, sniffs it to calm it, then uses its strong body to carefully nudge the piece of wood aside. The camera captures a slow-motion shot of the kitten finally being freed, its small body stumbling into the open. The surrounding crowd gasps collectively, eyes wide as hope flares.  \n*Audio*: A rising crescendo of inspiring music fills the background; the sound of the rain begins to soften, highlighting the moment of triumph. The relieved meow of the kitten joins the symphony of sounds as the dog barks in encouragement.  \n*Mood*: Triumph, relief, joy.\n\n---\n\n**🎞️ SCENE 5 (40–50 seconds) — Lives Saved, Bonds Formed**  \n*Visuals*: The German Shepherd turns to the frightened child, gently nudging its hand with a wet nose. The child looks down, a mixture of fear and gratitude reflected in their eyes. The camera pans to the elderly person, who is being assisted by others, as hope is restored. The final shot zooms out, capturing the rain tapering off, revealing a brighter sky, as the dog stands firm and proud, its silhouette against the softening storm.  \n*Audio*: The music swells with a hopeful theme, echoing through the scene. The chatter of the crowd slowly comes back, filled with relief and gratitude. The pitter-patter of the rain becomes a soft backdrop, turning into a melody of hope.  \n*Mood*: Hope, connection, gratitude. \n\n---\n\n**🎞️ SCENE 6 (50–60 seconds) — Resolution**  \n*Visuals*: A heartwarming close-up of the German Shepherd and the rescued kitten sharing a moment, the kitten snuggling against the dog’s warm fur. The camera captures the tears of joy in the child's eyes and the relieved smiles of onlookers, creating a powerful montage of emotion.  \n*Audio*: A soothing instrumental melody plays, underscoring the happiness in the air. The distant sounds of laughter and cheer from the crowd create a heartening atmosphere as the scene fades to black.  \n*Mood*: Celebration, unity, love. \n\n---\n\n*Final Frame*: The screen fades to black with the words \"Heroes Come in All Shapes and Sizes\" appearing, leaving the audience lingering in the warmth of the moment, evoking a deep emotional resonance.",
+              "**🎞️ SCENE 2 (10–20 seconds) — The Rescue**\n\n*Visuals*: The scene opens with deep shadows draping over a chaotic landscape, remnants of a recent disaster. A scruffy golden retriever mix emerges from the dimness, its fur eerily glistening in the dwindling light. The camera zooms in on the dog’s expressive eyes, filled with a fierce determination. As it spots a small child teetering dangerously close to the edge of a crumbling bank, the world around them fades into a blur. In a dramatic slow-motion sequence, the dog launches itself into action, powerful legs propelling it forward with unrelenting urgency. \n\nThe dog barks loudly, the sound echoing with an alarmed urgency that pierces the air. The camera transitions to a series of fast-paced cuts, showcasing the dog weaving skillfully through the debris—swiftly dodging jagged bits of wood and scattered rubble. With sheer force and determination, it pushes against a heavy fallen branch, creating a path for the child. The clatter of debris echoes as the dog looks back, urging the child to follow. \n\nFinally, the scene captures a heart-stopping moment as the dog leaps in front of the child, guiding them away from the perilous edge, its body blocking any potential danger. The camera lingers on the dog’s alert stance, fur ruffled yet majestic, eyes locked onto the child with unwavering commitment.\n\n*Audio*: The soundtrack transitions to a hopeful orchestral score, swelling with emotion as the dog barks fiercely, embodying raw courage. The chaotic sounds of rushing water and destruction ebb away, replaced by the steady, intense heartbeat of the music, underscoring the gravity and heroism of the moment.\n\n*Mood*: The atmosphere is thick with courage and hope, an emotional crescendo painting the bravery of the dog as both a protector and a savior, as the heartbeat of the score beats in sync with the rising tension and ultimate relief of the rescue.",
+              "**🎞️ SCENE 3 (20–30 seconds) — Life Saved**\n\n*Visuals*: The sun begins to break through the dissipating clouds, casting a golden hue over the recently flooded area. The camera captures a close-up of a child, now cradled in the arms of a relieved adult. The child’s wide eyes blink in disbelief, chest rising and falling with heavy breaths, a small smile forming as they realize they're safe. Nearby, an elderly person, supported by two kind bystanders, wipes the tears from their cheeks, gratitude etched on their weathered face. \n\nIn the foreground, a young child kneels beside a trembling kitten, gently coaxing it from a bush where it had taken refuge. The kitten’s tiny body shakes, but its soft mew is a testament to life, bringing a collective sigh of relief from the onlookers.\n\nAs the camera shifts, we see the dog — the quiet hero of the moment — standing a few paces away. Its fur glistens with droplets from the rain, and its deep, expressive eyes reflect a calm pride. The dog watches the unfolding scene, embodying a sense of duty fulfilled as it stands watch over its human companions. \n\n*Ending Shot*: The camera lingers on the dog for a moment, capturing the serene strength in its stance. Slowly, the screen fades to black. Bold white text materializes: “Sometimes heroes walk on four legs.” \n\n*Audio*: A soothing, emotional melody begins to play softly, weaving through the visuals. Strings swell gently, evoking warmth and gratitude, wrapping the viewer in an embrace of relief as the scene closes.\n\n*Mood*: The atmosphere is filled with relief and warmth, creating an overall sensation of emotional closure, a perfect tribute to the unsung heroes that exist in our lives."
+            ],
+            "model": [
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini"
+            ],
+            "tokens": [
+              3692,
+              1918,
+              1692
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [
+              {
+                "text": "**🎞️ CINEMATIC VIDEO MOTION PROMPT**  \n*Begin with a sweeping aerial shot of the flooded street, capturing the chaos below as rain cascades down. Transition to a slow-motion close-up of the child's terrified face, eyes darting around, reflecting the turmoil. Cut to a shaky handheld shot of the elderly person, gasping for air, with the camera shaking slightly to convey panic. Zoom in on the onlookers, their expressions frozen in shock, as the sound of their muffled gasps fills the air. Finally, focus on the trapped kitten, its tiny body trembling under the wood, as the distant cry pierces through the rain's relentless drumming. Use a low, ominous score to heighten the tension, interspersed with the natural sounds of the storm and the kitten's mewling, creating a palpable sense of urgency and fear.*",
+                "model": "gpt-4o-mini",
+                "tokens": 809
+              },
+              {
+                "text": "**🎥 PROMPT**: Begin with a close-up of a scruffy golden retriever mix emerging from the shadows, its eyes wide and alert. Capture the determination in its expression as it spots a child in danger. Transition to slow-motion as the dog bolts forward, barking fiercely to alert nearby adults. Use fast cuts to showcase the dog's agility as it navigates through debris, pushing against a fallen branch to clear a path. Conclude with a shot of the dog guiding the child away from the edge, all while a hopeful score swells in the background, emphasizing courage and hope, with the heartbeat of the music intensifying as the scene unfolds.",
+                "model": "gpt-4o-mini",
+                "tokens": 634
+              },
+              {
+                "text": "**Cinematic Video Motion Prompt**: Begin with a slow, sweeping aerial shot of the tranquil, post-flood landscape, transitioning to a close-up of the relieved adult cradling the child, their heavy breaths echoing the tension that has just subsided. Cut to a medium shot of the elderly person being assisted by bystanders, capturing the tears of relief streaming down their face. Shift focus to a child gently releasing the trembling kitten, emphasizing its fragile state yet undeniable vitality. As the camera pans to the dog, frame it in a serene close-up, highlighting its calm presence amidst the chaos. Gradually pull back to reveal the entire scene, then fade to black as the poignant text “Sometimes heroes walk on four legs” emerges in bold white. Throughout, a soothing, emotional melody swells, enveloping the viewer in a sense of warmth and gratitude, culminating in a heartfelt closure.",
+                "model": "gpt-4o-mini",
+                "tokens": 896
+              }
+            ],
+            "text": [
+              "**🎞️ CINEMATIC VIDEO MOTION PROMPT**  \n*Begin with a sweeping aerial shot of the flooded street, capturing the chaos below as rain cascades down. Transition to a slow-motion close-up of the child's terrified face, eyes darting around, reflecting the turmoil. Cut to a shaky handheld shot of the elderly person, gasping for air, with the camera shaking slightly to convey panic. Zoom in on the onlookers, their expressions frozen in shock, as the sound of their muffled gasps fills the air. Finally, focus on the trapped kitten, its tiny body trembling under the wood, as the distant cry pierces through the rain's relentless drumming. Use a low, ominous score to heighten the tension, interspersed with the natural sounds of the storm and the kitten's mewling, creating a palpable sense of urgency and fear.*",
+              "**🎥 PROMPT**: Begin with a close-up of a scruffy golden retriever mix emerging from the shadows, its eyes wide and alert. Capture the determination in its expression as it spots a child in danger. Transition to slow-motion as the dog bolts forward, barking fiercely to alert nearby adults. Use fast cuts to showcase the dog's agility as it navigates through debris, pushing against a fallen branch to clear a path. Conclude with a shot of the dog guiding the child away from the edge, all while a hopeful score swells in the background, emphasizing courage and hope, with the heartbeat of the music intensifying as the scene unfolds.",
+              "**Cinematic Video Motion Prompt**: Begin with a slow, sweeping aerial shot of the tranquil, post-flood landscape, transitioning to a close-up of the relieved adult cradling the child, their heavy breaths echoing the tension that has just subsided. Cut to a medium shot of the elderly person being assisted by bystanders, capturing the tears of relief streaming down their face. Shift focus to a child gently releasing the trembling kitten, emphasizing its fragile state yet undeniable vitality. As the camera pans to the dog, frame it in a serene close-up, highlighting its calm presence amidst the chaos. Gradually pull back to reveal the entire scene, then fade to black as the poignant text “Sometimes heroes walk on four legs” emerges in bold white. Throughout, a soothing, emotional melody swells, enveloping the viewer in a sense of warmth and gratitude, culminating in a heartfelt closure."
+            ],
+            "model": [
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini"
+            ],
+            "tokens": [
+              809,
+              634,
+              896
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-tts-all",
+        "nodeType": "text_to_speech",
+        "success": true,
+        "data": {
+          "type": "text_to_speech",
+          "output": {
+            "items": [
+              {
+                "audioUrl": "http://localhost:3002/output/speech_openai_1767096113644.mp3",
+                "text": "As the relentless rain pours down, the flooded street transforms into a scene of chaos and despair. ",
+                "voice": "af_bella"
+              },
+              {
+                "audioUrl": "http://localhost:3002/output/speech_openai_1767096113443.mp3",
+                "text": "As the scruffy golden retriever mix emerges from the shadows, its eyes filled with determination, a ",
+                "voice": "af_bella"
+              },
+              {
+                "audioUrl": "http://localhost:3002/output/speech_openai_1767096117440.mp3",
+                "text": "As the storm subsides, a wave of relief washes over the scene; a child is cradled safely in the arms",
+                "voice": "af_bella"
+              }
+            ],
+            "audioUrl": [
+              "http://localhost:3002/output/speech_openai_1767096113644.mp3",
+              "http://localhost:3002/output/speech_openai_1767096113443.mp3",
+              "http://localhost:3002/output/speech_openai_1767096117440.mp3"
+            ],
+            "text": [
+              "As the relentless rain pours down, the flooded street transforms into a scene of chaos and despair. ",
+              "As the scruffy golden retriever mix emerges from the shadows, its eyes filled with determination, a ",
+              "As the storm subsides, a wave of relief washes over the scene; a child is cradled safely in the arms"
+            ],
+            "voice": [
+              "af_bella",
+              "af_bella",
+              "af_bella"
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_speech"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-all",
+        "nodeType": "text_to_image",
+        "success": true,
+        "data": {
+          "type": "text_to_image",
+          "output": {
+            "items": [
+              {
+                "imageUrl": "https://v3b.fal.media/files/b/0a885feb/lWa_WV_0p-Kk5rPxHcz53.png",
+                "prompt": "**🎞️ SCENE 2 (10–20 seconds) — The Hero Emerges**  \n*Visuals*: A quick, intense close-up of a brave German Shepherd, fur glistening with rain, ears perked forward, eyes sharp and filled with determination. The camera transitions to a low-angle shot to emphasize the dog's size and bravery as it leaps into the chaos. The surrounding environment blurs slightly, focusing on the dog's frantic movements. It bounds toward the child first, barking urgently to get their attention.  \n*Audio*: The sound of thundering paws hitting the wet pavement, the dog's barks echoing over the sound of the storm, interspersed with the gasps of the crowd as they begin to react. The kitten’s cries grow louder, heightening the tension.  \n*Mood*: Courage, determination, a spark of hope amidst despair.\n\n---\n\n**🎞️ SCENE 3 (20–30 seconds) — The Rescue Begins**  \n*Visuals*: The German Shepherd races through the rain toward the trapped kitten. A close-up of the dog’s determined face, rain droplets glistening on its fur, reveals fierce concentration. The camera captures the kitten’s terror and desperation, its tiny body shivering beneath the wood. The dog skillfully maneuvers past debris, showcasing a fluid motion, while splashes of water erupt around its paws.  \n*Audio*: The sound of water splashing, the tension of the kitten’s cries mixed with the rhythm of the dog’s breaths, and a heartbeat-like thump growing louder as the action intensifies.  \n*Mood*: Tension, desperation, adrenaline.\n\n---\n\n**🎞️ SCENE 4 (30–40 seconds) — The Climax**  \n*Visuals*: The dog reaches the kitten, sniffs it to calm it, then uses its strong body to carefully nudge the piece of wood aside. The camera captures a slow-motion shot of the kitten finally being freed, its small body stumbling into the open. The surrounding crowd gasps collectively, eyes wide as hope flares.  \n*Audio*: A rising crescendo of inspiring music fills the background; the sound of the rain begins to soften, highlighting the moment of triumph. The relieved meow of the kitten joins the symphony of sounds as the dog barks in encouragement.  \n*Mood*: Triumph, relief, joy.\n\n---\n\n**🎞️ SCENE 5 (40–50 seconds) — Lives Saved, Bonds Formed**  \n*Visuals*: The German Shepherd turns to the frightened child, gently nudging its hand with a wet nose. The child looks down, a mixture of fear and gratitude reflected in their eyes. The camera pans to the elderly person, who is being assisted by others, as hope is restored. The final shot zooms out, capturing the rain tapering off, revealing a brighter sky, as the dog stands firm and proud, its silhouette against the softening storm.  \n*Audio*: The music swells with a hopeful theme, echoing through the scene. The chatter of the crowd slowly comes back, filled with relief and gratitude. The pitter-patter of the rain becomes a soft backdrop, turning into a melody of hope.  \n*Mood*: Hope, connection, gratitude. \n\n---\n\n**🎞️ SCENE 6 (50–60 seconds) — Resolution**  \n*Visuals*: A heartwarming close-up of the German Shepherd and the rescued kitten sharing a moment, the kitten snuggling against the dog’s warm fur. The camera captures the tears of joy in the child's eyes and the relieved smiles of onlookers, creating a powerful montage of emotion.  \n*Audio*: A soothing instrumental melody plays, underscoring the happiness in the air. The distant sounds of laughter and cheer from the crowd create a heartening atmosphere as the scene fades to black.  \n*Mood*: Celebration, unity, love. \n\n---\n\n*Final Frame*: The screen fades to black with the words \"Heroes Come in All Shapes and Sizes\" appearing, leaving the audience lingering in the warmth of the moment, evoking a deep emotional resonance.",
+                "aspectRatio": "16:9"
+              },
+              {
+                "imageUrl": "https://v3b.fal.media/files/b/0a885feb/3xYShTd0elcGU26l_yX18.png",
+                "prompt": "**🎞️ SCENE 2 (10–20 seconds) — The Rescue**\n\n*Visuals*: The scene opens with deep shadows draping over a chaotic landscape, remnants of a recent disaster. A scruffy golden retriever mix emerges from the dimness, its fur eerily glistening in the dwindling light. The camera zooms in on the dog’s expressive eyes, filled with a fierce determination. As it spots a small child teetering dangerously close to the edge of a crumbling bank, the world around them fades into a blur. In a dramatic slow-motion sequence, the dog launches itself into action, powerful legs propelling it forward with unrelenting urgency. \n\nThe dog barks loudly, the sound echoing with an alarmed urgency that pierces the air. The camera transitions to a series of fast-paced cuts, showcasing the dog weaving skillfully through the debris—swiftly dodging jagged bits of wood and scattered rubble. With sheer force and determination, it pushes against a heavy fallen branch, creating a path for the child. The clatter of debris echoes as the dog looks back, urging the child to follow. \n\nFinally, the scene captures a heart-stopping moment as the dog leaps in front of the child, guiding them away from the perilous edge, its body blocking any potential danger. The camera lingers on the dog’s alert stance, fur ruffled yet majestic, eyes locked onto the child with unwavering commitment.\n\n*Audio*: The soundtrack transitions to a hopeful orchestral score, swelling with emotion as the dog barks fiercely, embodying raw courage. The chaotic sounds of rushing water and destruction ebb away, replaced by the steady, intense heartbeat of the music, underscoring the gravity and heroism of the moment.\n\n*Mood*: The atmosphere is thick with courage and hope, an emotional crescendo painting the bravery of the dog as both a protector and a savior, as the heartbeat of the score beats in sync with the rising tension and ultimate relief of the rescue.",
+                "aspectRatio": "16:9"
+              },
+              {
+                "imageUrl": "https://v3b.fal.media/files/b/0a885feb/Fk6g-tpRJ92Pnw3TJ0Stp.png",
+                "prompt": "**🎞️ SCENE 3 (20–30 seconds) — Life Saved**\n\n*Visuals*: The sun begins to break through the dissipating clouds, casting a golden hue over the recently flooded area. The camera captures a close-up of a child, now cradled in the arms of a relieved adult. The child’s wide eyes blink in disbelief, chest rising and falling with heavy breaths, a small smile forming as they realize they're safe. Nearby, an elderly person, supported by two kind bystanders, wipes the tears from their cheeks, gratitude etched on their weathered face. \n\nIn the foreground, a young child kneels beside a trembling kitten, gently coaxing it from a bush where it had taken refuge. The kitten’s tiny body shakes, but its soft mew is a testament to life, bringing a collective sigh of relief from the onlookers.\n\nAs the camera shifts, we see the dog — the quiet hero of the moment — standing a few paces away. Its fur glistens with droplets from the rain, and its deep, expressive eyes reflect a calm pride. The dog watches the unfolding scene, embodying a sense of duty fulfilled as it stands watch over its human companions. \n\n*Ending Shot*: The camera lingers on the dog for a moment, capturing the serene strength in its stance. Slowly, the screen fades to black. Bold white text materializes: “Sometimes heroes walk on four legs.” \n\n*Audio*: A soothing, emotional melody begins to play softly, weaving through the visuals. Strings swell gently, evoking warmth and gratitude, wrapping the viewer in an embrace of relief as the scene closes.\n\n*Mood*: The atmosphere is filled with relief and warmth, creating an overall sensation of emotional closure, a perfect tribute to the unsung heroes that exist in our lives.",
+                "aspectRatio": "16:9"
+              }
+            ],
+            "imageUrl": [
+              "https://v3b.fal.media/files/b/0a885feb/lWa_WV_0p-Kk5rPxHcz53.png",
+              "https://v3b.fal.media/files/b/0a885feb/3xYShTd0elcGU26l_yX18.png",
+              "https://v3b.fal.media/files/b/0a885feb/Fk6g-tpRJ92Pnw3TJ0Stp.png"
+            ],
+            "prompt": [
+              "**🎞️ SCENE 2 (10–20 seconds) — The Hero Emerges**  \n*Visuals*: A quick, intense close-up of a brave German Shepherd, fur glistening with rain, ears perked forward, eyes sharp and filled with determination. The camera transitions to a low-angle shot to emphasize the dog's size and bravery as it leaps into the chaos. The surrounding environment blurs slightly, focusing on the dog's frantic movements. It bounds toward the child first, barking urgently to get their attention.  \n*Audio*: The sound of thundering paws hitting the wet pavement, the dog's barks echoing over the sound of the storm, interspersed with the gasps of the crowd as they begin to react. The kitten’s cries grow louder, heightening the tension.  \n*Mood*: Courage, determination, a spark of hope amidst despair.\n\n---\n\n**🎞️ SCENE 3 (20–30 seconds) — The Rescue Begins**  \n*Visuals*: The German Shepherd races through the rain toward the trapped kitten. A close-up of the dog’s determined face, rain droplets glistening on its fur, reveals fierce concentration. The camera captures the kitten’s terror and desperation, its tiny body shivering beneath the wood. The dog skillfully maneuvers past debris, showcasing a fluid motion, while splashes of water erupt around its paws.  \n*Audio*: The sound of water splashing, the tension of the kitten’s cries mixed with the rhythm of the dog’s breaths, and a heartbeat-like thump growing louder as the action intensifies.  \n*Mood*: Tension, desperation, adrenaline.\n\n---\n\n**🎞️ SCENE 4 (30–40 seconds) — The Climax**  \n*Visuals*: The dog reaches the kitten, sniffs it to calm it, then uses its strong body to carefully nudge the piece of wood aside. The camera captures a slow-motion shot of the kitten finally being freed, its small body stumbling into the open. The surrounding crowd gasps collectively, eyes wide as hope flares.  \n*Audio*: A rising crescendo of inspiring music fills the background; the sound of the rain begins to soften, highlighting the moment of triumph. The relieved meow of the kitten joins the symphony of sounds as the dog barks in encouragement.  \n*Mood*: Triumph, relief, joy.\n\n---\n\n**🎞️ SCENE 5 (40–50 seconds) — Lives Saved, Bonds Formed**  \n*Visuals*: The German Shepherd turns to the frightened child, gently nudging its hand with a wet nose. The child looks down, a mixture of fear and gratitude reflected in their eyes. The camera pans to the elderly person, who is being assisted by others, as hope is restored. The final shot zooms out, capturing the rain tapering off, revealing a brighter sky, as the dog stands firm and proud, its silhouette against the softening storm.  \n*Audio*: The music swells with a hopeful theme, echoing through the scene. The chatter of the crowd slowly comes back, filled with relief and gratitude. The pitter-patter of the rain becomes a soft backdrop, turning into a melody of hope.  \n*Mood*: Hope, connection, gratitude. \n\n---\n\n**🎞️ SCENE 6 (50–60 seconds) — Resolution**  \n*Visuals*: A heartwarming close-up of the German Shepherd and the rescued kitten sharing a moment, the kitten snuggling against the dog’s warm fur. The camera captures the tears of joy in the child's eyes and the relieved smiles of onlookers, creating a powerful montage of emotion.  \n*Audio*: A soothing instrumental melody plays, underscoring the happiness in the air. The distant sounds of laughter and cheer from the crowd create a heartening atmosphere as the scene fades to black.  \n*Mood*: Celebration, unity, love. \n\n---\n\n*Final Frame*: The screen fades to black with the words \"Heroes Come in All Shapes and Sizes\" appearing, leaving the audience lingering in the warmth of the moment, evoking a deep emotional resonance.",
+              "**🎞️ SCENE 2 (10–20 seconds) — The Rescue**\n\n*Visuals*: The scene opens with deep shadows draping over a chaotic landscape, remnants of a recent disaster. A scruffy golden retriever mix emerges from the dimness, its fur eerily glistening in the dwindling light. The camera zooms in on the dog’s expressive eyes, filled with a fierce determination. As it spots a small child teetering dangerously close to the edge of a crumbling bank, the world around them fades into a blur. In a dramatic slow-motion sequence, the dog launches itself into action, powerful legs propelling it forward with unrelenting urgency. \n\nThe dog barks loudly, the sound echoing with an alarmed urgency that pierces the air. The camera transitions to a series of fast-paced cuts, showcasing the dog weaving skillfully through the debris—swiftly dodging jagged bits of wood and scattered rubble. With sheer force and determination, it pushes against a heavy fallen branch, creating a path for the child. The clatter of debris echoes as the dog looks back, urging the child to follow. \n\nFinally, the scene captures a heart-stopping moment as the dog leaps in front of the child, guiding them away from the perilous edge, its body blocking any potential danger. The camera lingers on the dog’s alert stance, fur ruffled yet majestic, eyes locked onto the child with unwavering commitment.\n\n*Audio*: The soundtrack transitions to a hopeful orchestral score, swelling with emotion as the dog barks fiercely, embodying raw courage. The chaotic sounds of rushing water and destruction ebb away, replaced by the steady, intense heartbeat of the music, underscoring the gravity and heroism of the moment.\n\n*Mood*: The atmosphere is thick with courage and hope, an emotional crescendo painting the bravery of the dog as both a protector and a savior, as the heartbeat of the score beats in sync with the rising tension and ultimate relief of the rescue.",
+              "**🎞️ SCENE 3 (20–30 seconds) — Life Saved**\n\n*Visuals*: The sun begins to break through the dissipating clouds, casting a golden hue over the recently flooded area. The camera captures a close-up of a child, now cradled in the arms of a relieved adult. The child’s wide eyes blink in disbelief, chest rising and falling with heavy breaths, a small smile forming as they realize they're safe. Nearby, an elderly person, supported by two kind bystanders, wipes the tears from their cheeks, gratitude etched on their weathered face. \n\nIn the foreground, a young child kneels beside a trembling kitten, gently coaxing it from a bush where it had taken refuge. The kitten’s tiny body shakes, but its soft mew is a testament to life, bringing a collective sigh of relief from the onlookers.\n\nAs the camera shifts, we see the dog — the quiet hero of the moment — standing a few paces away. Its fur glistens with droplets from the rain, and its deep, expressive eyes reflect a calm pride. The dog watches the unfolding scene, embodying a sense of duty fulfilled as it stands watch over its human companions. \n\n*Ending Shot*: The camera lingers on the dog for a moment, capturing the serene strength in its stance. Slowly, the screen fades to black. Bold white text materializes: “Sometimes heroes walk on four legs.” \n\n*Audio*: A soothing, emotional melody begins to play softly, weaving through the visuals. Strings swell gently, evoking warmth and gratitude, wrapping the viewer in an embrace of relief as the scene closes.\n\n*Mood*: The atmosphere is filled with relief and warmth, creating an overall sensation of emotional closure, a perfect tribute to the unsung heroes that exist in our lives."
+            ],
+            "aspectRatio": [
+              "16:9",
+              "16:9",
+              "16:9"
+            ],
+            "itemsCount": 3,
+            "nodeType": "text_to_image"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-all",
+        "nodeType": "image_to_video",
+        "success": true,
+        "data": {
+          "type": "image_to_video",
+          "output": {
+            "items": [
+              {
+                "videoUrl": "https://v3b.fal.media/files/b/0a885ff7/o783540ZAD3PMH21nRVKe_video.mp4",
+                "sourceImage": "https://v3b.fal.media/files/b/0a885feb/lWa_WV_0p-Kk5rPxHcz53.png",
+                "duration": "5"
+              },
+              {
+                "videoUrl": "https://v3b.fal.media/files/b/0a885ff8/J4xQ5EXV_rU0siGsnvEJh_video.mp4",
+                "sourceImage": "https://v3b.fal.media/files/b/0a885feb/3xYShTd0elcGU26l_yX18.png",
+                "duration": "5"
+              },
+              {
+                "videoUrl": "https://v3b.fal.media/files/b/0a885ff5/W_7GSKfN9SMvRP4C5vuKj_video.mp4",
+                "sourceImage": "https://v3b.fal.media/files/b/0a885feb/Fk6g-tpRJ92Pnw3TJ0Stp.png",
+                "duration": "5"
+              }
+            ],
+            "videoUrl": [
+              "https://v3b.fal.media/files/b/0a885ff7/o783540ZAD3PMH21nRVKe_video.mp4",
+              "https://v3b.fal.media/files/b/0a885ff8/J4xQ5EXV_rU0siGsnvEJh_video.mp4",
+              "https://v3b.fal.media/files/b/0a885ff5/W_7GSKfN9SMvRP4C5vuKj_video.mp4"
+            ],
+            "sourceImage": [
+              "https://v3b.fal.media/files/b/0a885feb/lWa_WV_0p-Kk5rPxHcz53.png",
+              "https://v3b.fal.media/files/b/0a885feb/3xYShTd0elcGU26l_yX18.png",
+              "https://v3b.fal.media/files/b/0a885feb/Fk6g-tpRJ92Pnw3TJ0Stp.png"
+            ],
+            "duration": [
+              "5",
+              "5",
+              "5"
+            ],
+            "itemsCount": 3,
+            "nodeType": "image_to_video"
+          }
+        }
+      },
+      {
+        "nodeId": "node-music-1",
+        "nodeType": "text_to_music",
+        "success": true,
+        "data": {
+          "type": "text_to_music",
+          "output": {
+            "audioUrl": "https://v3b.fal.media/files/b/0a885ffb/jyaG5nn19Cb7n3n7v7M2n_tmpamonrbn7.wav",
+            "prompt": "**🎞️ SCENE 1 (0–10 seconds) — Danger Introduced**\n\n*Visuals*: The scene opens with a wide shot of a flooded street, rain pouring heavily. The camera slowly pans to a small child, visibly panicked, standing on a ledge of debris, water swirling dangerously below. The child's eyes are wide with fear. Nearby, an elderly person is slumped on the ground, struggling for breath, surrounded by onlookers who are frozen in shock. A close-up reveals a baby animal—perhaps a kitten—trapped under a piece of wood, mewling weakly. \n\n*Audio*: The sound of rain pelting the ground, the rush of water, muffled gasps from onlookers, and a distant, desperate cry of the kitten create a tense atmosphere.\n\n*Mood*: Fear, urgency, silence broken by tension.\n\n---\n\n**🎞️ SCENE 2 (10–20 seconds) — The Rescue**\n\n*Visuals*: A scruffy dog, perhaps a golden retriever mix, emerges from the shadows, eyes darting around. The camera captures the dog's determined expression in close-up as it spots the child in danger. In slow-motion, the dog sprints towards the child, barking loudly to alert nearby adults. The camera shifts to fast cuts of the dog navigating through debris, pushing against a fallen branch to create a path, and finally guiding the child away from the edge.\n\n*Audio*: The sound transitions to a hopeful score, swelling with emotion as the dog barks courageously. The sound of the rushing water fades slightly, replaced by the intense heartbeat of the music.\n\n*Mood*: Courage, hope, rising emotional music.\n\n---\n\n**🎞️ SCENE 3 (20–30 seconds) — Life Saved**\n\n*Visuals*: The flooded area has calmed, and the camera captures the child, now safe in the arms of a relieved adult, breathing heavily but unharmed. The elderly person is being helped up by bystanders, tears of relief in their eyes. The kitten is gently freed by a child, its tiny body shaking but alive. The camera then pans to the dog, standing quietly, observing the scene with a calm demeanor, its fur glistening in the softening rain.\n\n*Ending Shot*: The screen fades to black, and bold white text appears: “Sometimes heroes walk on four legs.”\n\n*Audio*: A soothing, emotional melody plays softly, evoking warmth and gratitude as the scene closes.\n\n*Mood*: Relief, warmth, emotional closure.",
+            "duration": "30",
+            "nodeType": "text_to_music"
+          }
+        }
+      },
+      {
+        "nodeId": "node-final-merge",
+        "nodeType": "edit_video",
+        "success": true,
+        "data": {
+          "type": "edit_video",
+          "output": {
+            "videoUrl": "http://localhost:3002/output/composed_1767096285043.mp4",
+            "localPath": "/home/usr2/code/output/composed_1767096285043.mp4",
+            "itemsCount": 3,
+            "nodeType": "edit_video"
+          }
+        }
+      }
+    ],
+    "videoUrl": "http://localhost:3002/output/composed_1767096285043.mp4"
+  },
+  {
     "workflowId": "f53d40e3-e572-11f0-be00-d2fa87f4af24",
     "workflowName": "Story to Scenes (Parallel Template)",
     "status": "completed",

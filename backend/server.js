@@ -978,6 +978,24 @@ async function executeTask(task) {
     }
 }
 
+async function checkAndSaveWorkflowHistory(task) {
+    try {
+        // After completing a task, check if this was the last task in the workflow
+        const workflowId = task.workflowInstanceId;
+        if (!workflowId) return;
+
+        // Fetch the full workflow status
+        const response = await conductor.get(`/workflow/${workflowId}`);
+        const workflow = response.data;
+
+        // Save history if workflow is complete or failed
+        maybeSaveHistory(workflow);
+    } catch (error) {
+        // Don't fail the task if history check fails
+        console.error('[History] Failed to check workflow completion:', error.message);
+    }
+}
+
 function startWorkerPoller(taskType) {
     const loop = async () => {
         while (true) {
@@ -988,6 +1006,9 @@ function startWorkerPoller(taskType) {
                     continue;
                 }
                 await executeTask(task);
+
+                // After task execution, check if workflow is complete and save history
+                await checkAndSaveWorkflowHistory(task);
             } catch (error) {
                 console.error(`[Worker] Polling error for ${taskType}:`, error.message);
                 await delay(POLL_INTERVAL_MS);
