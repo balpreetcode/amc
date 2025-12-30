@@ -13,9 +13,9 @@ const { generateMusic } = require('./generators/music');
 const { generateSpeech } = require('./generators/speech');
 const { generateImageOpenAI, editImageOpenAI } = require('./generators/openai-image');
 const { composeVideo, concatAudioUrls, concatVideoUrls } = require('./generators/ffmpeg');
+const db = require('./db');
 
 const HISTORY_FILE = path.join(__dirname, 'workflow-history.json');
-const TEMPLATES_FILE = path.join(__dirname, 'templates.json');
 const CONDUCTOR_URL = process.env.CONDUCTOR_URL || 'https://p5200.winds-os.com/api';
 const CONTENT_SERVICE_URL = process.env.CONTENT_SERVICE_URL; // Optional external service for face_swap, lip_sync, etc.
 const WORKER_ID = process.env.WORKER_ID || `worker-${process.pid}`;
@@ -1171,25 +1171,14 @@ app.get('/workflow/:id/results', async (req, res) => {
     }
 });
 
-// Template Helper Functions
-function loadTemplates() {
-    if (fs.existsSync(TEMPLATES_FILE)) {
-        const data = fs.readFileSync(TEMPLATES_FILE, 'utf8');
-        return JSON.parse(data);
-    }
-    return [];
-}
-
-function saveTemplates(templates) {
-    fs.writeFileSync(TEMPLATES_FILE, JSON.stringify(templates, null, 2));
-}
+// Template functions now use PostgreSQL (see db.js)
 
 // Template API Endpoints
 
 // GET /templates - Fetch all templates
-app.get('/templates', (req, res) => {
+app.get('/templates', async (req, res) => {
     try {
-        const templates = loadTemplates();
+        const templates = await db.getAllTemplates();
         res.json(templates);
     } catch (err) {
         console.error('[Templates] Error loading templates:', err.message);
@@ -1198,11 +1187,10 @@ app.get('/templates', (req, res) => {
 });
 
 // GET /template/:id - Fetch single template
-app.get('/template/:id', (req, res) => {
+app.get('/template/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const templates = loadTemplates();
-        const template = templates.find(t => t.id === id);
+        const template = await db.getTemplateById(id);
 
         if (!template) {
             return res.status(404).json({ error: 'Template not found' });
@@ -1216,7 +1204,7 @@ app.get('/template/:id', (req, res) => {
 });
 
 // POST /template - Create new template
-app.post('/template', (req, res) => {
+app.post('/template', async (req, res) => {
     try {
         const { name, description, nodes, videoPreview } = req.body;
 
@@ -1224,10 +1212,9 @@ app.post('/template', (req, res) => {
             return res.status(400).json({ error: 'Name and nodes are required' });
         }
 
-        const templates = loadTemplates();
-
         // Check for duplicate names
-        if (templates.some(t => t.name === name)) {
+        const existingTemplate = await db.getTemplateByName(name);
+        if (existingTemplate) {
             return res.status(409).json({
                 error: 'Template with this name already exists',
                 suggestion: `${name} (Copy)`
@@ -1246,11 +1233,10 @@ app.post('/template', (req, res) => {
             templateVersion: 1
         };
 
-        templates.unshift(template);
-        saveTemplates(templates);
+        const createdTemplate = await db.createTemplate(template);
 
-        console.log('[Templates] Created template:', template.name);
-        res.json({ success: true, template });
+        console.log('[Templates] Created template:', createdTemplate.name);
+        res.json({ success: true, template: createdTemplate });
     } catch (err) {
         console.error('[Templates] Error creating template:', err.message);
         res.status(500).json({ error: 'Failed to create template' });
@@ -1258,39 +1244,36 @@ app.post('/template', (req, res) => {
 });
 
 // PUT /template/:id - Update template
-app.put('/template/:id', (req, res) => {
+app.put('/template/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { name, description, nodes, videoPreview } = req.body;
 
-        const templates = loadTemplates();
-        const index = templates.findIndex(t => t.id === id);
-
-        if (index === -1) {
+        // Check if template exists
+        const existingTemplate = await db.getTemplateById(id);
+        if (!existingTemplate) {
             return res.status(404).json({ error: 'Template not found' });
         }
 
         // Check for duplicate names (excluding current template)
-        if (name && templates.some((t, i) => i !== index && t.name === name)) {
-            return res.status(409).json({ error: 'Template with this name already exists' });
+        if (name && name !== existingTemplate.name) {
+            const duplicateTemplate = await db.getTemplateByName(name);
+            if (duplicateTemplate) {
+                return res.status(409).json({ error: 'Template with this name already exists' });
+            }
         }
 
-        const template = templates[index];
+        // Prepare updates
+        const updates = {};
+        if (name !== undefined) updates.name = name;
+        if (description !== undefined) updates.description = description;
+        if (nodes !== undefined) updates.nodes = nodes;
+        if (videoPreview !== undefined) updates.videoPreview = videoPreview;
 
-        // Update fields
-        if (name) template.name = name;
-        if (description !== undefined) template.description = description;
-        if (nodes) {
-            template.nodes = nodes;
-            template.nodeCount = nodes.length;
-        }
-        if (videoPreview !== undefined) template.videoPreview = videoPreview;
-        template.lastModified = new Date().toISOString();
+        const updatedTemplate = await db.updateTemplate(id, updates);
 
-        saveTemplates(templates);
-
-        console.log('[Templates] Updated template:', template.name);
-        res.json({ success: true, template });
+        console.log('[Templates] Updated template:', updatedTemplate.name);
+        res.json({ success: true, template: updatedTemplate });
     } catch (err) {
         console.error('[Templates] Error updating template:', err.message);
         res.status(500).json({ error: 'Failed to update template' });
@@ -1298,18 +1281,15 @@ app.put('/template/:id', (req, res) => {
 });
 
 // DELETE /template/:id - Delete template
-app.delete('/template/:id', (req, res) => {
+app.delete('/template/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const templates = loadTemplates();
-        const filtered = templates.filter(t => t.id !== id);
+        const deleted = await db.deleteTemplate(id);
 
-        if (filtered.length === templates.length) {
+        if (!deleted) {
             return res.status(404).json({ error: 'Template not found' });
         }
-
-        saveTemplates(filtered);
 
         console.log('[Templates] Deleted template:', id);
         res.json({ success: true });
@@ -1324,8 +1304,7 @@ app.post('/template/:id/generate', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const templates = loadTemplates();
-        const template = templates.find(t => t.id === id);
+        const template = await db.getTemplateById(id);
 
         if (!template) {
             return res.status(404).json({ error: 'Template not found' });
@@ -1392,11 +1371,19 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', service: 'workflow-backend', conductorUrl: CONDUCTOR_URL });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`🚀 Workflow Backend running on http://localhost:${PORT}`);
     console.log(`🧭 Conductor API at ${CONDUCTOR_URL}`);
     if (CONTENT_SERVICE_URL) {
         console.log(`🔗 External content service at ${CONTENT_SERVICE_URL}`);
+    }
+
+    // Initialize PostgreSQL database
+    try {
+        await db.initializeDatabase();
+        console.log('✅ PostgreSQL database initialized');
+    } catch (error) {
+        console.error('❌ Failed to initialize database:', error.message);
     }
 
     const workerTaskTypes = [...new Set([
