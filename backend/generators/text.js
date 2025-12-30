@@ -15,7 +15,7 @@ const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
  * @param {string} model - OpenAI model to use
  * @returns {Promise<string>} Generated text
  */
-async function generateText(prompt, systemPrompt = '', model = 'gpt-4o-mini') {
+async function generateText(prompt, systemPrompt = '', model = 'gpt-4o-mini', temperature = 0.7) {
     const messages = [];
 
     if (systemPrompt) {
@@ -23,12 +23,14 @@ async function generateText(prompt, systemPrompt = '', model = 'gpt-4o-mini') {
     }
     messages.push({ role: 'user', content: prompt });
 
+    console.log(`[OpenAI] Request - Model: ${model}, Temperature: ${temperature}`);
+
     const response = await axios.post(
         OPENAI_API_URL,
         {
             model,
             messages,
-            temperature: 0.7
+            temperature
         },
         {
             headers: {

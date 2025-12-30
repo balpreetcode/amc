@@ -55,8 +55,27 @@ const nodeProcessors = {
         const prompt = config.prompt || 'Write a short creative story.';
         const systemPrompt = config.systemPrompt || '';
         const model = config.model || 'gpt-4o-mini';
+        const temperature = config.temperature !== undefined ? config.temperature : 0.7;
 
-        const text = await generateText(prompt, systemPrompt, model);
+        // Show FULL input for debugging
+        console.log('  📥 INPUT:');
+        console.log('    Raw config:', JSON.stringify(config, null, 2));
+        if (systemPrompt) {
+            console.log(`    System: ${systemPrompt}`);
+        }
+        if (typeof prompt === 'string') {
+            console.log(`    Prompt (FULL):\n${prompt}`);
+        } else {
+            console.log(`    Prompt (Array/Object): ${JSON.stringify(prompt)}`);
+        }
+        console.log(`    Temperature: ${temperature}`);
+
+        const text = await generateText(prompt, systemPrompt, model, temperature);
+
+        // Show output
+        console.log('\n  📤 OUTPUT:');
+        console.log(`    ${text}\n`);
+
         return {
             type: 'text_to_text',
             output: { text, model, tokens: text.length }
@@ -275,6 +294,14 @@ const nodeProcessors = {
                         items: extractedScenes.map(segment => segment.text),
                         totalSegments: extractedScenes.length
                     };
+
+                    console.log('\n  📤 OUTPUT: Split into', extractedScenes.length, 'scenes');
+                    extractedScenes.forEach((segment, index) => {
+                        console.log(`\n    🎬 Scene ${index + 1} (${segment.duration}s):`);
+                        console.log(`       ${segment.text.substring(0, 150)}${segment.text.length > 150 ? '...' : ''}`);
+                    });
+                    console.log('');
+
                     return {
                         type: 'split_text',
                         output
@@ -291,12 +318,28 @@ const nodeProcessors = {
             if (items.length === 0) {
                 console.log('[split_text] Array mode: got empty array, falling back to text extraction');
                 const extractedScenes = fallbackSegmentsFromText(source);
+
+                console.log('\n  📤 OUTPUT: Split into', extractedScenes.length, 'scenes');
+                extractedScenes.forEach((segment, index) => {
+                    console.log(`\n    🎬 Scene ${index + 1} (${segment.duration}s):`);
+                    console.log(`       ${segment.text.substring(0, 150)}${segment.text.length > 150 ? '...' : ''}`);
+                });
+                console.log('');
+
                 return {
                     type: 'split_text',
                     output: { segments: extractedScenes, items: extractedScenes.map(segment => segment.text), totalSegments: extractedScenes.length }
                 };
             }
             const segments = buildSegmentsFromArray(items);
+
+            console.log('\n  📤 OUTPUT: Split into', segments.length, 'scenes');
+            segments.forEach((segment, index) => {
+                console.log(`\n    🎬 Scene ${index + 1} (${segment.duration}s):`);
+                console.log(`       ${segment.text.substring(0, 150)}${segment.text.length > 150 ? '...' : ''}`);
+            });
+            console.log('');
+
             return {
                 type: 'split_text',
                 output: { segments, items: segments.map(segment => segment.text), totalSegments: segments.length }
@@ -313,6 +356,14 @@ const nodeProcessors = {
                 throw new Error('Array path did not resolve to an array');
             }
             const segments = buildSegmentsFromArray(items);
+
+            console.log('\n  📤 OUTPUT: Split into', segments.length, 'scenes');
+            segments.forEach((segment, index) => {
+                console.log(`\n    🎬 Scene ${index + 1} (${segment.duration}s):`);
+                console.log(`       ${segment.text.substring(0, 150)}${segment.text.length > 150 ? '...' : ''}`);
+            });
+            console.log('');
+
             return {
                 type: 'split_text',
                 output: { segments, items: segments.map(segment => segment.text), totalSegments: segments.length }
@@ -332,6 +383,14 @@ const nodeProcessors = {
                 totalSegments: preFormattedScenes.length
             };
             console.log('[split_text] Returning output with', output.items.length, 'items');
+
+            console.log('\n  📤 OUTPUT: Split into', preFormattedScenes.length, 'scenes');
+            preFormattedScenes.forEach((segment, index) => {
+                console.log(`\n    🎬 Scene ${index + 1} (${segment.duration}s):`);
+                console.log(`       ${segment.text.substring(0, 150)}${segment.text.length > 150 ? '...' : ''}`);
+            });
+            console.log('');
+
             return {
                 type: 'split_text',
                 output
@@ -355,6 +414,15 @@ const nodeProcessors = {
 
         console.log('[split_text] Final segments count:', segments.length);
         const output = { segments, items: segments.map(segment => segment.text), totalSegments: segments.length };
+
+        // Console log for split scenes
+        console.log('\n  📤 OUTPUT: Split into', segments.length, 'scenes');
+        segments.forEach((segment, index) => {
+            console.log(`\n    🎬 Scene ${index + 1} (${segment.duration}s):`);
+            console.log(`       ${segment.text.substring(0, 150)}${segment.text.length > 150 ? '...' : ''}`);
+        });
+        console.log('');
+
         return {
             type: 'split_text',
             output
@@ -671,12 +739,12 @@ function buildItemConfigs(config, arrayFields) {
 
 async function runItemHandlers(runOne, itemConfigs, mode) {
     if (mode === 'parallel') {
-        return Promise.all(itemConfigs.map(config => runOne(config)));
+        return Promise.all(itemConfigs.map((config, index) => runOne(config, index)));
     }
 
     const results = [];
-    for (const itemConfig of itemConfigs) {
-        results.push(await runOne(itemConfig));
+    for (let i = 0; i < itemConfigs.length; i++) {
+        results.push(await runOne(itemConfigs[i], i));
     }
     return results;
 }
@@ -827,10 +895,19 @@ async function executeTask(task) {
     const config = normalizePromptConfig(task.inputData?.config || {});
     const execution = normalizeExecution(task.inputData?.execution);
     const aggregateItems = execution.waitForAll && execution.aggregateItems;
+    const nodeId = task.inputData?.nodeId || 'unknown';
+
+    console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+    console.log(`🚀 EXECUTING NODE: ${nodeId}`);
+    console.log(`📋 Task Type: ${taskType}`);
+    console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
 
     try {
         const arrayFields = getArrayFields(config);
-        const runOne = async (itemConfig) => {
+        const runOne = async (itemConfig, itemIndex) => {
+            if (arrayFields.length > 0) {
+                console.log(`\n  ⚙️  Processing item ${itemIndex + 1}...`);
+            }
             if (handler) {
                 return handler(itemConfig, []);
             }
@@ -842,13 +919,15 @@ async function executeTask(task) {
 
             if (aggregateItems) {
                 const aggregateConfig = { ...baseConfig, items: itemConfigs };
-                const result = await runOne(aggregateConfig);
+                const result = await runOne(aggregateConfig, 0);
                 const output = result && result.output ? result.output : {};
                 await updateTaskStatus(task, 'COMPLETED', {
                     ...output,
                     itemsCount,
                     nodeType: result?.type || taskType
                 }, null);
+
+                console.log(`✅ NODE COMPLETED: ${nodeId} (aggregated ${itemsCount} items)\n`);
                 return;
             }
 
@@ -860,13 +939,19 @@ async function executeTask(task) {
                 itemsCount,
                 nodeType: taskType
             }, null);
+
+            console.log(`✅ NODE COMPLETED: ${nodeId} (processed ${itemsCount} items)\n`);
             return;
         }
 
-        const result = await runOne(config);
+        const result = await runOne(config, 0);
         const output = result && result.output ? result.output : {};
         await updateTaskStatus(task, 'COMPLETED', { ...output, nodeType: result?.type || taskType }, null);
+
+        console.log(`✅ NODE COMPLETED: ${nodeId}\n`);
     } catch (error) {
+        console.log(`❌ NODE FAILED: ${nodeId}`);
+        console.log(`   Error: ${error.message}\n`);
         await updateTaskStatus(task, 'FAILED', {}, error.message);
     }
 }
