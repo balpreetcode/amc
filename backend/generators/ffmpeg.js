@@ -26,30 +26,61 @@ if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });
  */
 function downloadFile(url, destPath) {
     return new Promise((resolve, reject) => {
-        if (fs.existsSync(url)) {
+        // Check if it's a local file path (starts with / or contains full path)
+        const isLocalPath = url.startsWith('/') || url.startsWith('.') || !url.includes('://');
+
+        if (isLocalPath && fs.existsSync(url)) {
+            console.log(`[downloadFile] Copying local file: ${url} -> ${destPath}`);
             fs.copyFile(url, destPath, (err) => {
                 if (err) {
+                    console.error(`[downloadFile] Copy failed:`, err.message);
                     reject(err);
                     return;
                 }
+                // Verify the copied file exists and has size
+                const stats = fs.statSync(destPath);
+                if (stats.size === 0) {
+                    reject(new Error(`Copied file is empty: ${destPath}`));
+                    return;
+                }
+                console.log(`[downloadFile] Successfully copied ${stats.size} bytes`);
                 resolve(destPath);
             });
             return;
         }
+
+        // It's a URL - download it
+        if (!url.includes('://')) {
+            reject(new Error(`Invalid URL or file not found: ${url}`));
+            return;
+        }
+
+        console.log(`[downloadFile] Downloading from URL: ${url}`);
         const file = fs.createWriteStream(destPath);
         const protocol = url.startsWith('https') ? https : http;
 
         protocol.get(url, (response) => {
             if (response.statusCode === 301 || response.statusCode === 302) {
+                file.close();
+                fs.unlink(destPath, () => {});
                 downloadFile(response.headers.location, destPath).then(resolve).catch(reject);
+                return;
+            }
+            if (response.statusCode !== 200) {
+                file.close();
+                fs.unlink(destPath, () => {});
+                reject(new Error(`HTTP ${response.statusCode}: ${url}`));
                 return;
             }
             response.pipe(file);
             file.on('finish', () => {
                 file.close();
+                const stats = fs.statSync(destPath);
+                console.log(`[downloadFile] Downloaded ${stats.size} bytes`);
                 resolve(destPath);
             });
         }).on('error', (err) => {
+            file.close();
             fs.unlink(destPath, () => { });
             reject(err);
         });

@@ -17,12 +17,11 @@
 .workflow-node.node-active {
     border: 2px solid var(--color-accent);
     box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15), var(--shadow-lg);
-    background-color: var(--color-accent-light);
+    background-color: var(--color-surface);
 }
 
 .workflow-node.first-node {
     border: 1px solid var(--color-border);
-    background: var(--color-surface);
 }
 
 .node-header {
@@ -51,9 +50,10 @@
 
 .node-title {
     flex: 1;
-    font-weight: 600;
-    font-size: var(--font-size-base);
-    color: var(--color-text-primary);
+    font-weight: 700;
+    font-size: 1rem;
+    color: #000000 !important;
+    line-height: 1.4;
 }
 
 .status-badge {
@@ -128,7 +128,7 @@
     background: transparent;
     border: none;
     font-size: var(--font-size-sm);
-    color: var(--color-text-primary);
+    color: #ffffff;
     cursor: pointer;
     transition: background var(--transition-fast);
     text-align: left;
@@ -155,18 +155,18 @@
 
 .node-type-label {
     font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+    color: #e0e0e0;
     padding: var(--space-1) var(--space-2);
-    background: var(--color-bg-secondary);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-sm);
 }
 
 .node-provider {
     font-size: var(--font-size-sm);
-    color: var(--color-text-primary);
+    color: #ffffff;
     padding: var(--space-1) var(--space-2);
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border-light);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--radius-sm);
     font-weight: 500;
 }

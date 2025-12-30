@@ -15,6 +15,7 @@ const { generateImageOpenAI, editImageOpenAI } = require('./generators/openai-im
 const { composeVideo, concatAudioUrls, concatVideoUrls } = require('./generators/ffmpeg');
 
 const HISTORY_FILE = path.join(__dirname, 'workflow-history.json');
+const TEMPLATES_FILE = path.join(__dirname, 'templates.json');
 const CONDUCTOR_URL = process.env.CONDUCTOR_URL || 'https://p5200.winds-os.com/api';
 const CONTENT_SERVICE_URL = process.env.CONTENT_SERVICE_URL; // Optional external service for face_swap, lip_sync, etc.
 const WORKER_ID = process.env.WORKER_ID || `worker-${process.pid}`;
@@ -429,13 +430,34 @@ const nodeProcessors = {
         };
     },
     edit_video: async (config, previousResults) => {
-        const items = Array.isArray(config.items) ? config.items : null;
-        const videoUrl = config.videoUrl || getLastOutput(previousResults, 'videoUrl');
-        const speechUrl = config.speechUrl || getLastOutput(previousResults, 'audioUrl');
+        let items = Array.isArray(config.items) ? config.items : null;
+        let videoUrl = config.videoUrl || getLastOutput(previousResults, 'videoUrl');
+        let speechUrl = config.speechUrl || getLastOutput(previousResults, 'audioUrl');
         const musicUrl = config.musicUrl;
 
         const speechVolume = config.speechVolume || 1.0;
         const musicVolume = config.musicVolume || 0.3;
+
+        // Handle case where videoUrl and speechUrl are arrays (from parallel node execution)
+        // Convert them to items format for concatenation
+        if (!items && Array.isArray(videoUrl)) {
+            console.log('[edit_video] Converting array inputs to items format');
+            const videoUrls = videoUrl;
+            const speechUrls = Array.isArray(speechUrl) ? speechUrl : [];
+            const maxLength = Math.max(videoUrls.length, speechUrls.length);
+
+            items = [];
+            for (let i = 0; i < maxLength; i++) {
+                const item = {};
+                if (videoUrls[i]) item.videoUrl = videoUrls[i];
+                if (speechUrls[i]) item.speechUrl = speechUrls[i];
+                items.push(item);
+            }
+            console.log(`[edit_video] Created ${items.length} items from arrays`);
+            // Clear the single URL variables since we're using items
+            videoUrl = null;
+            speechUrl = null;
+        }
 
         let mergedVideoPath = null;
         let mergedSpeechPath = null;
@@ -1125,6 +1147,193 @@ app.get('/workflow/:id/results', async (req, res) => {
         });
     } catch (error) {
         res.status(404).json({ error: 'Workflow not found' });
+    }
+});
+
+// Template Helper Functions
+function loadTemplates() {
+    if (fs.existsSync(TEMPLATES_FILE)) {
+        const data = fs.readFileSync(TEMPLATES_FILE, 'utf8');
+        return JSON.parse(data);
+    }
+    return [];
+}
+
+function saveTemplates(templates) {
+    fs.writeFileSync(TEMPLATES_FILE, JSON.stringify(templates, null, 2));
+}
+
+// Template API Endpoints
+
+// GET /templates - Fetch all templates
+app.get('/templates', (req, res) => {
+    try {
+        const templates = loadTemplates();
+        res.json(templates);
+    } catch (err) {
+        console.error('[Templates] Error loading templates:', err.message);
+        res.status(500).json({ error: 'Failed to load templates' });
+    }
+});
+
+// GET /template/:id - Fetch single template
+app.get('/template/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        const templates = loadTemplates();
+        const template = templates.find(t => t.id === id);
+
+        if (!template) {
+            return res.status(404).json({ error: 'Template not found' });
+        }
+
+        res.json(template);
+    } catch (err) {
+        console.error('[Templates] Error loading template:', err.message);
+        res.status(500).json({ error: 'Failed to load template' });
+    }
+});
+
+// POST /template - Create new template
+app.post('/template', (req, res) => {
+    try {
+        const { name, description, nodes, videoPreview } = req.body;
+
+        if (!name || !nodes || !Array.isArray(nodes)) {
+            return res.status(400).json({ error: 'Name and nodes are required' });
+        }
+
+        const templates = loadTemplates();
+
+        // Check for duplicate names
+        if (templates.some(t => t.name === name)) {
+            return res.status(409).json({
+                error: 'Template with this name already exists',
+                suggestion: `${name} (Copy)`
+            });
+        }
+
+        const template = {
+            id: `template-${Date.now()}-${uuidv4().substring(0, 8)}`,
+            name,
+            description: description || '',
+            createdAt: new Date().toISOString(),
+            lastModified: new Date().toISOString(),
+            videoPreview: videoPreview || '',
+            nodes,
+            nodeCount: nodes.length,
+            templateVersion: 1
+        };
+
+        templates.unshift(template);
+        saveTemplates(templates);
+
+        console.log('[Templates] Created template:', template.name);
+        res.json({ success: true, template });
+    } catch (err) {
+        console.error('[Templates] Error creating template:', err.message);
+        res.status(500).json({ error: 'Failed to create template' });
+    }
+});
+
+// PUT /template/:id - Update template
+app.put('/template/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, description, nodes, videoPreview } = req.body;
+
+        const templates = loadTemplates();
+        const index = templates.findIndex(t => t.id === id);
+
+        if (index === -1) {
+            return res.status(404).json({ error: 'Template not found' });
+        }
+
+        // Check for duplicate names (excluding current template)
+        if (name && templates.some((t, i) => i !== index && t.name === name)) {
+            return res.status(409).json({ error: 'Template with this name already exists' });
+        }
+
+        const template = templates[index];
+
+        // Update fields
+        if (name) template.name = name;
+        if (description !== undefined) template.description = description;
+        if (nodes) {
+            template.nodes = nodes;
+            template.nodeCount = nodes.length;
+        }
+        if (videoPreview !== undefined) template.videoPreview = videoPreview;
+        template.lastModified = new Date().toISOString();
+
+        saveTemplates(templates);
+
+        console.log('[Templates] Updated template:', template.name);
+        res.json({ success: true, template });
+    } catch (err) {
+        console.error('[Templates] Error updating template:', err.message);
+        res.status(500).json({ error: 'Failed to update template' });
+    }
+});
+
+// DELETE /template/:id - Delete template
+app.delete('/template/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const templates = loadTemplates();
+        const filtered = templates.filter(t => t.id !== id);
+
+        if (filtered.length === templates.length) {
+            return res.status(404).json({ error: 'Template not found' });
+        }
+
+        saveTemplates(filtered);
+
+        console.log('[Templates] Deleted template:', id);
+        res.json({ success: true });
+    } catch (err) {
+        console.error('[Templates] Error deleting template:', err.message);
+        res.status(500).json({ error: 'Failed to delete template' });
+    }
+});
+
+// POST /template/:id/generate - Generate video from template
+app.post('/template/:id/generate', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const templates = loadTemplates();
+        const template = templates.find(t => t.id === id);
+
+        if (!template) {
+            return res.status(404).json({ error: 'Template not found' });
+        }
+
+        // Reuse existing workflow execution logic
+        const uniqueTaskTypes = [...new Set(template.nodes.map(node => node.type))];
+        for (const taskType of uniqueTaskTypes) {
+            await ensureTaskDefinition(taskType);
+        }
+
+        const workflowDefName = `template_${id.replace(/[^a-zA-Z0-9]/g, '_')}_${uuidv4().replace(/-/g, '')}`;
+        const workflowDef = buildWorkflowDefinition(workflowDefName, template.nodes);
+        await ensureWorkflowDefinition(workflowDef);
+
+        const workflowId = await startWorkflow(workflowDefName, {
+            workflowName: `${template.name} (Template)`,
+            templateId: id
+        });
+
+        console.log('[Templates] Started workflow from template:', template.name, 'workflowId:', workflowId);
+        res.json({
+            success: true,
+            workflowId,
+            message: 'Template workflow queued for execution'
+        });
+    } catch (error) {
+        console.error('[Templates] Error generating from template:', error.message);
+        res.status(500).json({ error: error.message });
     }
 });
 

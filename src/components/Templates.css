@@ -31,6 +31,49 @@
     padding-bottom: 2rem;
 }
 
+.error-message {
+    margin: 2rem auto;
+    padding: 1rem 1.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    color: #f87171;
+    max-width: 600px;
+    text-align: center;
+}
+
+.loading-state {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: #999;
+    font-size: 1.125rem;
+}
+
+.empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: #999;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    margin: 0.5rem 0;
+    font-size: 1.125rem;
+}
+
+.empty-hint {
+    color: #666;
+    font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
     .templates-container {
         padding: 1rem;

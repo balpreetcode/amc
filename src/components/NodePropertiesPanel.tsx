@@ -13,7 +13,7 @@ interface FormField {
     step?: number;
 }
 
-const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
+export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
     'upload_files': [
         { name: 'sourceType', label: 'Source Type', type: 'select', options: ['Local', 'URL', 'Cloud Storage'] },
         { name: 'assetType', label: 'Asset Type', type: 'select', options: ['Image', 'Video', 'Audio'] },

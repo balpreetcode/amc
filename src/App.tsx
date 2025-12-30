@@ -3,17 +3,41 @@ import { WorkflowCanvas } from './components/WorkflowCanvas'
 import { NodePropertiesPanel } from './components/NodePropertiesPanel'
 import { ExecutionHistory } from './components/ExecutionHistory'
 import { Templates } from './components/Templates'
+import { SaveTemplateModal } from './components/SaveTemplateModal'
+import { useTemplates } from './hooks/useTemplates'
 import  { useState } from 'react'
 import './App.css'
 
 function AppContent() {
   const { execution, runWorkflow, stopWorkflow, workflow } = useWorkflowContext();
+  const { createTemplate } = useTemplates();
   const [activeTab, setActiveTab] = useState<'builder' | 'history' | 'templates'>('builder');
+  const [showSaveModal, setShowSaveModal] = useState(false);
+
+  const handleSaveTemplate = async (name: string, description: string) => {
+    try {
+      // Get the last execution video URL from history if available
+      const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
+      const historyResponse = await fetch(`${BACKEND_URL}/workflow/history`);
+      const history = await historyResponse.json();
+      const lastVideoUrl = history.length > 0 ? history[0].videoUrl : '';
+
+      await createTemplate({
+        name,
+        description,
+        nodes: workflow.nodes,
+        videoPreview: lastVideoUrl,
+      });
+
+      alert('Template saved successfully!');
+      setActiveTab('templates');
+    } catch (err) {
+      throw err;
+    }
+  };
 
   const saveAsTemplate = () => {
-    // Navigate to templates page
-    // Backend functionality will be implemented later
-    setActiveTab('templates');
+    setShowSaveModal(true);
   };
 
   return (
@@ -82,9 +106,17 @@ function AppContent() {
         ) : activeTab === 'history' ? (
           <ExecutionHistory />
         ) : (
-          <Templates />
+          <Templates onNavigateToHistory={() => setActiveTab('history')} />
         )}
       </main>
+
+      {showSaveModal && (
+        <SaveTemplateModal
+          defaultName={workflow.name}
+          onSave={handleSaveTemplate}
+          onClose={() => setShowSaveModal(false)}
+        />
+      )}
     </div>
   )
 }

@@ -64,7 +64,17 @@ async function generateSpeechOpenAI(text, voice = 'alloy') {
 
     fs.writeFileSync(outputPath, response.data);
 
-    return outputPath;
+    // Verify file was created successfully
+    if (!fs.existsSync(outputPath)) {
+        throw new Error(`Failed to save speech file: ${outputPath}`);
+    }
+
+    const fileSize = fs.statSync(outputPath).size;
+    console.log(`[OpenAI TTS] Saved ${fileSize} bytes to: ${outputPath}`);
+
+    // Return URL for HTTP access (consistent with openai-image.js)
+    const PORT = process.env.PORT || 3002;
+    return `http://localhost:${PORT}/output/${filename}`;
 }
 
 /**

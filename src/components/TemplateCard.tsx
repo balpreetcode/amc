@@ -1,24 +1,15 @@
+import type { Template } from '../types/template';
 import './TemplateCard.css';
 
 interface TemplateCardProps {
-    id: string;
-    name: string;
-    videoPreview?: string;
+    template: Template;
+    onEdit: () => void;
+    onGenerate: () => void;
+    isGenerating?: boolean;
 }
 
-export function TemplateCard({ id, name, videoPreview }: TemplateCardProps) {
-    const handleGenerateVideo = () => {
-        console.log('Generate video for template:', id);
-        // TODO: Implement generate video functionality
-    };
-
-    const handleEdit = () => {
-        console.log('Edit template:', id);
-        // TODO: Implement edit template functionality
-    };
-
-    // Use a default video from output folder or placeholder
-    const videoSrc = videoPreview || '/templatePreview/composed_1767073702375.mp4';
+export function TemplateCard({ template, onEdit, onGenerate, isGenerating }: TemplateCardProps) {
+    const videoSrc = template.videoPreview || '/output/default-preview.mp4';
 
     return (
         <div className="template-card">
@@ -30,6 +21,10 @@ export function TemplateCard({ id, name, videoPreview }: TemplateCardProps) {
                     muted
                     autoPlay
                     playsInline
+                    onError={(e) => {
+                        const target = e.target as HTMLVideoElement;
+                        target.style.display = 'none';
+                    }}
                 />
                 <div className="template-play-icon">
                     <svg
@@ -48,15 +43,33 @@ export function TemplateCard({ id, name, videoPreview }: TemplateCardProps) {
                 </div>
             </div>
 
-            <div className="template-name">
-                <h3>{name}</h3>
+            <div className="template-info">
+                <div className="template-name">
+                    <h3>{template.name}</h3>
+                </div>
+                {template.description && (
+                    <div className="template-description">
+                        <p>{template.description}</p>
+                    </div>
+                )}
+                <div className="template-meta">
+                    <span className="meta-item">{template.nodeCount} nodes</span>
+                    <span className="meta-separator">•</span>
+                    <span className="meta-item">
+                        Updated {new Date(template.lastModified).toLocaleDateString()}
+                    </span>
+                </div>
             </div>
 
             <div className="template-actions">
-                <button className="btn-generate" onClick={handleGenerateVideo}>
-                    Generate Video
+                <button
+                    className="btn-generate"
+                    onClick={onGenerate}
+                    disabled={isGenerating}
+                >
+                    {isGenerating ? 'Generating...' : 'Generate Video'}
                 </button>
-                <button className="btn-edit" onClick={handleEdit}>
+                <button className="btn-edit" onClick={onEdit}>
                     Edit
                 </button>
             </div>
