@@ -15,6 +15,7 @@ interface TemplateEditModalProps {
 export function TemplateEditModal({ template, onSave, onDelete, onClose }: TemplateEditModalProps) {
     const [name, setName] = useState(template.name);
     const [description, setDescription] = useState(template.description || '');
+    const [videoPreview, setVideoPreview] = useState(template.videoPreview || '');
     const [nodes, setNodes] = useState<WorkflowNodeData[]>(template.nodes);
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -41,7 +42,7 @@ export function TemplateEditModal({ template, onSave, onDelete, onClose }: Templ
 
         setSaving(true);
         try {
-            await onSave({ name, description, nodes });
+            await onSave({ name, description, videoPreview, nodes });
             onClose();
         } catch (err) {
             alert(err instanceof Error ? err.message : 'Failed to save template');
@@ -94,6 +95,20 @@ export function TemplateEditModal({ template, onSave, onDelete, onClose }: Templ
                                 placeholder="Describe what this template does"
                                 rows={2}
                             />
+                        </div>
+                        <div className="form-group">
+                            <label>Video Preview URL (Optional)</label>
+                            <input
+                                type="text"
+                                value={videoPreview}
+                                onChange={(e) => setVideoPreview(e.target.value)}
+                                placeholder="http://localhost:3002/output/composed_xxx.mp4"
+                            />
+                            {videoPreview && (
+                                <small style={{ color: '#6B6B6B', marginTop: '4px', display: 'block' }}>
+                                    Preview will be shown on the template card
+                                </small>
+                            )}
                         </div>
                     </div>
 

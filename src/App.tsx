@@ -16,17 +16,31 @@ function AppContent() {
 
   const handleSaveTemplate = async (name: string, description: string) => {
     try {
-      // Get the last execution video URL from history if available
-      const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
-      const historyResponse = await fetch(`${BACKEND_URL}/workflow/history`);
-      const history = await historyResponse.json();
-      const lastVideoUrl = history.length > 0 ? history[0].videoUrl : '';
+      let videoPreview = '';
+
+      // First, try to get video from current execution results
+      const editVideoNode = execution.results.find(
+        r => r.nodeType === 'edit_video' && r.success && r.data
+      );
+
+      if (editVideoNode && typeof editVideoNode.data === 'object' && editVideoNode.data !== null) {
+        const data = editVideoNode.data as { videoUrl?: string };
+        videoPreview = data.videoUrl || '';
+      }
+
+      // If no video in current execution, get the last video from history
+      if (!videoPreview) {
+        const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
+        const historyResponse = await fetch(`${BACKEND_URL}/workflow/history`);
+        const history = await historyResponse.json();
+        videoPreview = history.length > 0 && history[0].videoUrl ? history[0].videoUrl : '';
+      }
 
       await createTemplate({
         name,
         description,
         nodes: workflow.nodes,
-        videoPreview: lastVideoUrl,
+        videoPreview,
       });
 
       alert('Template saved successfully!');
