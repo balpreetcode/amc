@@ -33,7 +33,7 @@ async function postToFalQueue(model, body) {
 
     // Poll for completion (video takes longer)
     let attempts = 0;
-    const maxAttempts = 120; // 4 minutes max (2s intervals)
+    const maxAttempts = 450; // 15 minutes max (2s intervals)
 
     while (attempts < maxAttempts) {
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -80,10 +80,18 @@ async function generateVideo(imageUrl, prompt = '', duration = 5, model = 'fal-a
     const urlStr = typeof imageUrl === 'string' ? imageUrl : String(imageUrl);
     console.log(`[Fal AI Video] Image to video from: ${urlStr.substring(0, 50)}...`);
 
+    const frameRate = 24;
+    // Cap at 60 seconds (Fal AI ltxv model maximum)
+    const cappedDuration = Math.min(duration, 60);
+    const numFrames = Math.round(cappedDuration * frameRate);
+
+    console.log(`[Fal AI Video] Requesting ${numFrames} frames (${cappedDuration}s at ${frameRate} fps)`);
+
     const result = await postToFalQueue(model, {
         image_url: imageUrl,
         prompt: prompt || 'gentle animation with subtle movement',
-        num_frames: duration * 24 // Approximate frames
+        num_frames: numFrames,
+        frame_rate: frameRate
     });
 
     if (result.video && result.video.url) {
@@ -103,9 +111,17 @@ async function generateVideo(imageUrl, prompt = '', duration = 5, model = 'fal-a
 async function generateVideoFromText(prompt, duration = 5, model = 'fal-ai/ltxv-13b-098-distilled') {
     console.log(`[Fal AI Video] Text to video: ${prompt.substring(0, 50)}...`);
 
+    const frameRate = 24;
+    // Cap at 60 seconds (Fal AI ltxv model maximum)
+    const cappedDuration = Math.min(duration, 60);
+    const numFrames = Math.round(cappedDuration * frameRate);
+
+    console.log(`[Fal AI Video] Requesting ${numFrames} frames (${cappedDuration}s at ${frameRate} fps)`);
+
     const result = await postToFalQueue(model, {
         prompt,
-        num_frames: duration * 24
+        num_frames: numFrames,
+        frame_rate: frameRate
     });
 
     if (result.video && result.video.url) {

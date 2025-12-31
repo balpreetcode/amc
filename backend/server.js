@@ -132,7 +132,15 @@ const nodeProcessors = {
     },
     text_to_video: async (config) => {
         const prompt = config.prompt || 'A cinematic scene';
-        const duration = config.duration || 5;
+        // Parse duration - handle both "X seconds" string format and numeric values
+        let duration = 5;
+        if (config.duration) {
+            const durationStr = String(config.duration);
+            const match = durationStr.match(/(\d+)/);
+            duration = match ? parseInt(match[1]) : (parseFloat(config.duration) || 5);
+        }
+        // Ensure minimum duration of 5 seconds
+        duration = Math.max(duration, 5);
 
         const videoUrl = await generateVideoFromText(prompt, duration, config.model);
         return {
