@@ -45,8 +45,9 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
     ],
     'text_to_speech': [
         { name: 'text', label: 'Text Content', type: 'textarea' },
-        { name: 'voice', label: 'Voice', type: 'select', options: ['af_bella', 'af_sky', 'en_us_1'] },
-        { name: 'model', label: 'Model', type: 'select', options: ['fal-ai/playht/tts/v3', 'openai/tts-1'] },
+        { name: 'language', label: 'Language', type: 'select', options: ['English', 'Hindi'] },
+        { name: 'voice', label: 'Voice', type: 'select', options: ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'] },
+        { name: 'model', label: 'Model', type: 'select', options: ['fal-ai/playht/tts/v3', 'openai/tts-1', 'openai/gpt-4o-mini-tts'] },
         { name: 'stability', label: 'Stability', type: 'slider', min: 0, max: 1, step: 0.1 }
     ],
     'image_to_video': [
@@ -123,7 +124,7 @@ const OUTPUT_KEYS: Record<string, string[]> = {
     'text_to_video': ['videoUrl'],
     'image_to_video': ['videoUrl'],
     'text_to_music': ['audioUrl'],
-    'text_to_speech': ['audioUrl', 'text'],
+    'text_to_speech': ['audioUrl', 'text', 'originalText'],
     'split_text': ['segments', 'items'],
     'edit_video': ['videoUrl'],
     'clip_merger': ['videoUrl'],

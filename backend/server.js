@@ -181,16 +181,26 @@ const nodeProcessors = {
     },
     text_to_speech: async (config, previousResults) => {
         const text = config.text || getLastOutput(previousResults, 'text') || 'Hello world';
-        const voice = config.voice || 'af_bella';
+        const voice = config.voice || 'alloy';
         const model = config.model || 'fal-ai/playht/tts/v3';
+        const language = config.language || 'English';
 
-        const response = await generateSpeech(text, voice, model, true);
+        const response = await generateSpeech(text, voice, model, true, language);
         const audioUrl = response.result;
         const apiCall = response.apiCall;
 
+        // Extract translated text from metadata if available
+        const translatedText = apiCall?.request?.translatedText || text;
+
         return {
             type: 'text_to_speech',
-            output: { audioUrl, text: text.substring(0, 100), voice },
+            output: {
+                audioUrl,
+                text: translatedText.substring(0, 100),
+                originalText: text.substring(0, 100),
+                voice,
+                language
+            },
             apiCalls: [apiCall]
         };
     },

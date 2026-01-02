@@ -11,6 +11,53 @@ const path = require('path');
 const FAL_API_KEY = process.env.FAL_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
+/**
+ * Translate text to target language using OpenAI
+ */
+async function translateText(text, targetLanguage) {
+    if (!OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY is missing');
+    }
+
+    const languageMap = {
+        'Hindi': 'Hindi (हिन्दी)',
+        'English': 'English'
+    };
+
+    const targetLang = languageMap[targetLanguage] || targetLanguage;
+
+    console.log(`[Translation] Translating text to ${targetLang}: ${text.substring(0, 50)}...`);
+
+    const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+            model: 'gpt-4o-mini',
+            messages: [
+                {
+                    role: 'system',
+                    content: `You are a professional translator. Translate the given text to ${targetLang}. Return ONLY the translated text, nothing else. Preserve the tone and meaning accurately.`
+                },
+                {
+                    role: 'user',
+                    content: text
+                }
+            ],
+            temperature: 0.3
+        },
+        {
+            headers: {
+                'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+
+    const translatedText = response.data.choices[0].message.content.trim();
+    console.log(`[Translation] Result: ${translatedText.substring(0, 100)}...`);
+
+    return translatedText;
+}
+
 // Base directories
 const BASE_DIR = path.resolve(__dirname, '..', '..');
 const OUTPUT_DIR = path.join(BASE_DIR, 'output');
@@ -35,17 +82,17 @@ async function postToFal(model, body) {
 /**
  * Generate speech using OpenAI TTS
  */
-async function generateSpeechOpenAI(text, voice = 'alloy') {
+async function generateSpeechOpenAI(text, voice = 'alloy', model = 'tts-1', language = 'English') {
     if (!OPENAI_API_KEY) {
         throw new Error('OPENAI_API_KEY is missing');
     }
 
-    console.log(`[OpenAI TTS] Generating speech for text: ${text.substring(0, 50)}...`);
+    console.log(`[OpenAI TTS] Generating speech for text: ${text.substring(0, 50)}... in ${language} language`);
 
     const response = await axios.post(
         'https://api.openai.com/v1/audio/speech',
         {
-            model: 'tts-1',
+            model: model,
             input: text,
             voice: voice,
         },
@@ -83,20 +130,35 @@ async function generateSpeechOpenAI(text, voice = 'alloy') {
  * @param {string} voice - Voice ID to use
  * @param {string} model - TTS model to use
  * @param {boolean} includeMetadata - Whether to return API call metadata
+ * @param {string} language - Language for speech generation (English or Hindi)
  * @returns {Promise<string|object>} Generated audio URL or object with result and metadata
  */
-async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/tts/v3', includeMetadata = false) {
+async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/tts/v3', includeMetadata = false, language = 'English') {
     const startTime = Date.now();
+    let originalText = text;
+
+    // Translate text if target language is not English
+    if (language && language !== 'English') {
+        console.log(`[TTS] Translating text from English to ${language}...`);
+        text = await translateText(text, language);
+        console.log(`[TTS] Translation complete. Generating speech in ${language}...`);
+    }
+
     const requestMetadata = {
         provider: model.startsWith('openai') ? 'openai' : 'fal',
         model,
-        text: text.substring(0, 100),
-        voice
+        originalText: originalText.substring(0, 100),
+        translatedText: text.substring(0, 100),
+        voice,
+        language
     };
+
+    // Extract model name if it has openai/ prefix
+    const openaiModel = model.startsWith('openai/') ? model.replace('openai/', '') : 'tts-1';
 
     // If model is openai or fal fails, use OpenAI
     if (model === 'openai-tts' || model.startsWith('openai')) {
-        const audioUrl = await generateSpeechOpenAI(text, voice === 'af_bella' ? 'alloy' : voice);
+        const audioUrl = await generateSpeechOpenAI(text, voice === 'af_bella' ? 'alloy' : voice, openaiModel, language);
 
         if (includeMetadata) {
             return {
@@ -171,7 +233,7 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
     } catch (error) {
         console.warn(`Fal AI TTS failed, falling back to OpenAI: ${error.message}`);
         // Fallback to OpenAI if Fal AI fails
-        const audioUrl = await generateSpeechOpenAI(text, 'alloy');
+        const audioUrl = await generateSpeechOpenAI(text, 'alloy', 'tts-1', language);
 
         if (includeMetadata) {
             requestMetadata.provider = 'openai';
