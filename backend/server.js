@@ -640,6 +640,130 @@ function saveExecutionHistory(executionData) {
     }
 }
 
+async function syncHistoryFromConductor() {
+    try {
+        console.log('[History] Checking if sync from Conductor is needed...');
+
+        // Load local history
+        let localHistory = [];
+        if (fs.existsSync(HISTORY_FILE)) {
+            const data = fs.readFileSync(HISTORY_FILE, 'utf8');
+            localHistory = JSON.parse(data);
+        }
+
+        const localCount = localHistory.length;
+        console.log(`[History] Local history has ${localCount} entries`);
+
+        // Only sync if local history has fewer than 50 entries
+        if (localCount >= 50) {
+            console.log('[History] Local history is full (50 entries), skipping sync');
+            return localHistory;
+        }
+
+        // Search for workflows in Conductor
+        // Use the search API to get workflow executions
+        const searchResponse = await conductor.get('/workflow/search', {
+            params: {
+                start: 0,
+                size: 100,  // Fetch up to 100 to check count
+                sort: 'startTime:DESC',
+                freeText: '*'  // Search all workflows
+            }
+        });
+
+        const conductorWorkflows = searchResponse.data.results || [];
+        const conductorCount = searchResponse.data.totalHits || conductorWorkflows.length;
+
+        console.log(`[History] Conductor has ${conductorCount} total executions`);
+
+        // Sync needed: local < 50 AND conductor >= 50
+        if (conductorCount >= 50) {
+            console.log('[History] Syncing workflows from Conductor...');
+
+            // Get existing workflow IDs to avoid duplicates
+            const existingIds = new Set(localHistory.map(entry => entry.workflowId));
+
+            // Process workflows from Conductor
+            const syncedWorkflows = [];
+            for (const workflow of conductorWorkflows) {
+                // Skip if already in local history
+                if (existingIds.has(workflow.workflowId)) {
+                    continue;
+                }
+
+                const status = mapWorkflowStatus(workflow.status);
+                if (status !== 'completed' && status !== 'failed') {
+                    continue;
+                }
+
+                const startTime = workflow.startTime ? new Date(workflow.startTime).toISOString() : new Date().toISOString();
+                const endTime = workflow.endTime ? new Date(workflow.endTime).toISOString() : new Date().toISOString();
+                const durationMs = workflow.endTime && workflow.startTime ? workflow.endTime - workflow.startTime : 0;
+
+                const results = (workflow.tasks || []).map(task => ({
+                    nodeId: task.inputData?.nodeId || task.taskReferenceName,
+                    nodeType: task.inputData?.nodeType || task.taskType,
+                    success: task.status === 'COMPLETED',
+                    data: task.status === 'COMPLETED' ? { type: task.taskType, output: task.outputData } : undefined,
+                    error: task.status === 'FAILED' ? task.reasonForIncompletion || task.failureReason : undefined
+                }));
+
+                // Extract video URL
+                let videoUrl = null;
+                if (status === 'completed') {
+                    for (const task of workflow.tasks || []) {
+                        if (task.status === 'COMPLETED' &&
+                            (task.inputData?.nodeType === 'edit_video' || task.taskType === 'edit_video')) {
+                            videoUrl = task.outputData?.videoUrl || null;
+                            if (videoUrl) break;
+                        }
+                    }
+                }
+
+                syncedWorkflows.push({
+                    workflowId: workflow.workflowId,
+                    workflowName: workflow.input?.workflowName || 'Untitled Workflow',
+                    status,
+                    startTime,
+                    endTime,
+                    durationMs,
+                    nodeCount: workflow.tasks?.length || 0,
+                    results,
+                    videoUrl
+                });
+            }
+
+            // Merge synced workflows with local history
+            const mergedHistory = [...syncedWorkflows, ...localHistory];
+
+            // Keep only the most recent 50
+            const finalHistory = mergedHistory.slice(0, 50);
+
+            // Save merged history
+            fs.writeFileSync(HISTORY_FILE, JSON.stringify(finalHistory, null, 2));
+
+            console.log(`[History] Synced ${syncedWorkflows.length} new workflows from Conductor`);
+            console.log(`[History] Total history now: ${finalHistory.length} entries`);
+
+            // Update saved IDs cache
+            finalHistory.forEach(entry => savedHistoryIds.add(entry.workflowId));
+
+            return finalHistory;
+        } else {
+            console.log(`[History] No sync needed (Conductor has ${conductorCount} < 50)`);
+            return localHistory;
+        }
+    } catch (error) {
+        console.error('[History] Failed to sync from Conductor:', error.message);
+        // Return local history on error
+        if (fs.existsSync(HISTORY_FILE)) {
+            const data = fs.readFileSync(HISTORY_FILE, 'utf8');
+            return JSON.parse(data);
+        }
+        return [];
+    }
+}
+
 function mapTaskStatus(status) {
     switch (status) {
         case 'IN_PROGRESS':
@@ -1214,15 +1338,13 @@ app.get('/workflow/:id/status', async (req, res) => {
     }
 });
 
-app.get('/workflow/history', (req, res) => {
+app.get('/workflow/history', async (req, res) => {
     try {
-        if (fs.existsSync(HISTORY_FILE)) {
-            const data = fs.readFileSync(HISTORY_FILE, 'utf8');
-            res.json(JSON.parse(data));
-        } else {
-            res.json([]);
-        }
+        // Sync from Conductor if needed (local < 50 and conductor >= 50)
+        const history = await syncHistoryFromConductor();
+        res.json(history);
     } catch (err) {
+        console.error('[History] Error fetching history:', err);
         res.status(500).json({ error: 'Failed to read history' });
     }
 });
