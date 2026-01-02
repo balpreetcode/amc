@@ -82,12 +82,37 @@ async function generateSpeechOpenAI(text, voice = 'alloy') {
  * @param {string} text - Text to convert to speech
  * @param {string} voice - Voice ID to use
  * @param {string} model - TTS model to use
- * @returns {Promise<string>} Generated audio URL
+ * @param {boolean} includeMetadata - Whether to return API call metadata
+ * @returns {Promise<string|object>} Generated audio URL or object with result and metadata
  */
-async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/tts/v3') {
+async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/tts/v3', includeMetadata = false) {
+    const startTime = Date.now();
+    const requestMetadata = {
+        provider: model.startsWith('openai') ? 'openai' : 'fal',
+        model,
+        text: text.substring(0, 100),
+        voice
+    };
+
     // If model is openai or fal fails, use OpenAI
     if (model === 'openai-tts' || model.startsWith('openai')) {
-        return generateSpeechOpenAI(text, voice === 'af_bella' ? 'alloy' : voice);
+        const audioUrl = await generateSpeechOpenAI(text, voice === 'af_bella' ? 'alloy' : voice);
+
+        if (includeMetadata) {
+            return {
+                result: audioUrl,
+                apiCall: {
+                    request: requestMetadata,
+                    response: {
+                        audioUrl,
+                        format: 'mp3'
+                    },
+                    timestamp: new Date().toISOString(),
+                    duration: Date.now() - startTime
+                }
+            };
+        }
+        return audioUrl;
     }
 
     try {
@@ -115,22 +140,57 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
         const result = await postToFal(model, requestBody);
 
         // Handle different response formats
+        let audioUrl;
         if (result.audio && result.audio.url) {
-            return result.audio.url;
+            audioUrl = result.audio.url;
+        } else if (result.audio_url) {
+            audioUrl = result.audio_url;
+        } else if (result.url) {
+            audioUrl = result.url;
+        } else {
+            throw new Error('No audio URL in response');
         }
-        if (result.audio_url) {
-            return result.audio_url;
+
+        if (includeMetadata) {
+            return {
+                result: audioUrl,
+                apiCall: {
+                    request: requestMetadata,
+                    response: {
+                        audioUrl,
+                        format: 'mp3',
+                        duration: result.duration
+                    },
+                    timestamp: new Date().toISOString(),
+                    duration: Date.now() - startTime
+                }
+            };
         }
-        if (result.url) {
-            return result.url;
-        }
+
+        return audioUrl;
     } catch (error) {
         console.warn(`Fal AI TTS failed, falling back to OpenAI: ${error.message}`);
         // Fallback to OpenAI if Fal AI fails
-        return generateSpeechOpenAI(text, 'alloy');
-    }
+        const audioUrl = await generateSpeechOpenAI(text, 'alloy');
 
-    throw new Error('No audio generated');
+        if (includeMetadata) {
+            requestMetadata.provider = 'openai';
+            requestMetadata.fallback = true;
+            return {
+                result: audioUrl,
+                apiCall: {
+                    request: requestMetadata,
+                    response: {
+                        audioUrl,
+                        format: 'mp3'
+                    },
+                    timestamp: new Date().toISOString(),
+                    duration: Date.now() - startTime
+                }
+            };
+        }
+        return audioUrl;
+    }
 }
 
 module.exports = {

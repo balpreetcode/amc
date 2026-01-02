@@ -74,9 +74,10 @@ async function postToFalQueue(model, body) {
  * @param {string} prompt - Motion/animation description
  * @param {number} duration - Video duration in seconds
  * @param {string} model - Fal AI model to use
- * @returns {Promise<string>} Generated video URL
+ * @param {boolean} includeMetadata - Whether to return API call metadata
+ * @returns {Promise<string|object>} Generated video URL or object with result and metadata
  */
-async function generateVideo(imageUrl, prompt = '', duration = 5, model = 'fal-ai/ltxv-13b-098-distilled/image-to-video') {
+async function generateVideo(imageUrl, prompt = '', duration = 5, model = 'fal-ai/ltxv-13b-098-distilled/image-to-video', includeMetadata = false) {
     const urlStr = typeof imageUrl === 'string' ? imageUrl : String(imageUrl);
     console.log(`[Fal AI Video] Image to video from: ${urlStr.substring(0, 50)}...`);
 
@@ -87,16 +88,52 @@ async function generateVideo(imageUrl, prompt = '', duration = 5, model = 'fal-a
 
     console.log(`[Fal AI Video] Requesting ${numFrames} frames (${cappedDuration}s at ${frameRate} fps)`);
 
-    const result = await postToFalQueue(model, {
+    const requestPayload = {
         image_url: imageUrl,
         prompt: prompt || 'gentle animation with subtle movement',
         num_frames: numFrames,
         frame_rate: frameRate
-    });
+    };
+
+    const requestMetadata = {
+        provider: 'fal',
+        model,
+        imageUrl,
+        prompt: requestPayload.prompt,
+        duration: cappedDuration,
+        numFrames,
+        frameRate
+    };
+
+    const startTime = Date.now();
+
+    const result = await postToFalQueue(model, requestPayload);
+
+    const apiDuration = Date.now() - startTime;
 
     if (result.video && result.video.url) {
-        console.log(`[Fal AI Video] Generated: ${result.video.url}`);
-        return result.video.url;
+        const videoUrl = result.video.url;
+        console.log(`[Fal AI Video] Generated: ${videoUrl}`);
+
+        if (includeMetadata) {
+            return {
+                result: videoUrl,
+                apiCall: {
+                    request: requestMetadata,
+                    response: {
+                        videoUrl,
+                        width: result.video.width,
+                        height: result.video.height,
+                        contentType: result.video.content_type,
+                        seed: result.seed,
+                        timings: result.timings
+                    },
+                    timestamp: new Date().toISOString(),
+                    duration: apiDuration
+                }
+            };
+        }
+        return videoUrl;
     }
     throw new Error('No video generated');
 }
@@ -106,9 +143,10 @@ async function generateVideo(imageUrl, prompt = '', duration = 5, model = 'fal-a
  * @param {string} prompt - Video description
  * @param {number} duration - Video duration
  * @param {string} model - Model to use
- * @returns {Promise<string>} Generated video URL
+ * @param {boolean} includeMetadata - Whether to return API call metadata
+ * @returns {Promise<string|object>} Generated video URL or object with result and metadata
  */
-async function generateVideoFromText(prompt, duration = 5, model = 'fal-ai/ltxv-13b-098-distilled') {
+async function generateVideoFromText(prompt, duration = 5, model = 'fal-ai/ltxv-13b-098-distilled', includeMetadata = false) {
     console.log(`[Fal AI Video] Text to video: ${prompt.substring(0, 50)}...`);
 
     const frameRate = 24;
@@ -118,15 +156,50 @@ async function generateVideoFromText(prompt, duration = 5, model = 'fal-ai/ltxv-
 
     console.log(`[Fal AI Video] Requesting ${numFrames} frames (${cappedDuration}s at ${frameRate} fps)`);
 
-    const result = await postToFalQueue(model, {
+    const requestPayload = {
         prompt,
         num_frames: numFrames,
         frame_rate: frameRate
-    });
+    };
+
+    const requestMetadata = {
+        provider: 'fal',
+        model,
+        prompt,
+        duration: cappedDuration,
+        numFrames,
+        frameRate
+    };
+
+    const startTime = Date.now();
+
+    const result = await postToFalQueue(model, requestPayload);
+
+    const apiDuration = Date.now() - startTime;
 
     if (result.video && result.video.url) {
-        console.log(`[Fal AI Video] Generated: ${result.video.url}`);
-        return result.video.url;
+        const videoUrl = result.video.url;
+        console.log(`[Fal AI Video] Generated: ${videoUrl}`);
+
+        if (includeMetadata) {
+            return {
+                result: videoUrl,
+                apiCall: {
+                    request: requestMetadata,
+                    response: {
+                        videoUrl,
+                        width: result.video.width,
+                        height: result.video.height,
+                        contentType: result.video.content_type,
+                        seed: result.seed,
+                        timings: result.timings
+                    },
+                    timestamp: new Date().toISOString(),
+                    duration: apiDuration
+                }
+            };
+        }
+        return videoUrl;
     }
     throw new Error('No video generated');
 }

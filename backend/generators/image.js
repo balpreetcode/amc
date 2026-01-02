@@ -94,27 +94,64 @@ async function postToFalQueue(model, body) {
  * @param {string} prompt - Image description
  * @param {string} aspectRatio - Aspect ratio (e.g., "16:9", "1:1")
  * @param {string} model - Fal AI model to use
- * @returns {Promise<string>} Generated image URL
+ * @param {boolean} includeMetadata - Whether to return API call metadata
+ * @returns {Promise<string|object>} Generated image URL or object with result and metadata
  */
-async function generateImage(prompt, aspectRatio = '16:9', model = 'fal-ai/z-image/turbo') {
+async function generateImage(prompt, aspectRatio = '16:9', model = 'fal-ai/z-image/turbo', includeMetadata = false) {
     const imageSize = aspectRatio === '16:9' ? 'landscape_16_9' :
         aspectRatio === '9:16' ? 'portrait_16_9' : 'square';
 
     console.log(`[Fal AI] Generating image with model: ${model}`);
     console.log(`[Fal AI] Prompt: ${prompt.substring(0, 50)}...`);
 
-    // Use queue endpoint for reliability
-    const result = await postToFalQueue(model, {
+    // Capture request payload
+    const requestPayload = {
         prompt,
         image_size: imageSize,
         num_inference_steps: 4,
         num_images: 1,
         enable_safety_checker: false
-    });
+    };
+
+    const requestMetadata = {
+        provider: 'fal',
+        model,
+        prompt,
+        aspectRatio,
+        imageSize
+    };
+
+    const startTime = Date.now();
+
+    // Use queue endpoint for reliability
+    const result = await postToFalQueue(model, requestPayload);
+
+    const duration = Date.now() - startTime;
 
     if (result.images && result.images.length > 0) {
-        console.log(`[Fal AI] Image generated: ${result.images[0].url}`);
-        return result.images[0].url;
+        const imageUrl = result.images[0].url;
+        console.log(`[Fal AI] Image generated: ${imageUrl}`);
+
+        if (includeMetadata) {
+            return {
+                result: imageUrl,
+                apiCall: {
+                    request: requestMetadata,
+                    response: {
+                        imageUrl,
+                        width: result.images[0].width,
+                        height: result.images[0].height,
+                        contentType: result.images[0].content_type,
+                        seed: result.seed,
+                        hasNsfwConcepts: result.has_nsfw_concepts,
+                        timings: result.timings
+                    },
+                    timestamp: new Date().toISOString(),
+                    duration
+                }
+            };
+        }
+        return imageUrl;
     }
     throw new Error('No image generated');
 }

@@ -1,5 +1,25 @@
 import { useEffect, useState } from 'react';
 
+interface ApiCall {
+    callIndex?: number;
+    request: any;
+    response: any;
+    timestamp: string;
+    duration: number;
+}
+
+interface NodeResult {
+    nodeId: string;
+    nodeType: string;
+    success: boolean;
+    data?: {
+        type: string;
+        output: any;
+        apiCalls?: ApiCall[];
+    };
+    error?: string;
+}
+
 interface ExecutionResult {
     workflowId: string;
     workflowName: string;
@@ -9,6 +29,7 @@ interface ExecutionResult {
     durationMs: number;
     nodeCount: number;
     videoUrl?: string;
+    results?: NodeResult[];
 }
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
@@ -18,6 +39,7 @@ export function ExecutionHistory() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [playingVideo, setPlayingVideo] = useState<string | null>(null);
+    const [viewingDetails, setViewingDetails] = useState<ExecutionResult | null>(null);
 
     const fetchHistory = async () => {
         setLoading(true);
@@ -113,6 +135,7 @@ export function ExecutionHistory() {
                                 <th>Duration</th>
                                 <th>Nodes</th>
                                 <th>Video</th>
+                                <th className="execution-details-header">Details</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -139,6 +162,15 @@ export function ExecutionHistory() {
                                         ) : (
                                             <span className="no-video">—</span>
                                         )}
+                                    </td>
+                                    <td className="execution-details-cell">
+                                        <button
+                                            className="details-view-button"
+                                            onClick={() => setViewingDetails(run)}
+                                            title="View execution details"
+                                        >
+                                            View
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -175,6 +207,115 @@ export function ExecutionHistory() {
                             >
                                 Your browser does not support the video tag.
                             </video>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Execution Details Modal */}
+            {viewingDetails && (
+                <div className="details-modal-overlay" onClick={() => setViewingDetails(null)}>
+                    <div className="details-modal-content" onClick={(e) => e.stopPropagation()}>
+                        {/* Fixed Header */}
+                        <div className="details-modal-header">
+                            <div className="details-header-left">
+                                <h3>Workflow Execution Details</h3>
+                            </div>
+                            <button className="details-close-button" onClick={() => setViewingDetails(null)}>
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Metadata Bar */}
+                        <div className="details-meta-bar">
+                            <span className="details-meta-item">
+                                <strong>Workflow:</strong> {viewingDetails.workflowName}
+                            </span>
+                            <span className="details-meta-item">
+                                <strong>Status:</strong>{' '}
+                                <span className={`details-status-badge ${viewingDetails.status}`}>
+                                    {viewingDetails.status === 'completed' ? '✓' : '✗'} {viewingDetails.status}
+                                </span>
+                            </span>
+                            <span className="details-meta-item">
+                                <strong>Duration:</strong> {formatDuration(viewingDetails.durationMs)}
+                            </span>
+                            <span className="details-meta-item">
+                                <strong>Nodes:</strong> {viewingDetails.nodeCount}
+                            </span>
+                        </div>
+
+                        {/* Scrollable Nodes Container */}
+                        <div className="details-nodes-container">
+                            {viewingDetails.results && viewingDetails.results.length > 0 ? (
+                                viewingDetails.results.map((node, nodeIndex) => (
+                                    <div className="details-node-card" key={node.nodeId}>
+                                        {/* Node Header */}
+                                        <div className="details-node-header">
+                                            <span className="details-node-title">
+                                                Node {nodeIndex + 1} of {viewingDetails.results!.length}: {node.nodeId}
+                                            </span>
+                                            <span className="details-node-type">{node.nodeType}</span>
+                                            <span className={`details-node-badge ${node.success ? 'success' : 'failed'}`}>
+                                                {node.success ? '✓' : '✗'}
+                                            </span>
+                                        </div>
+
+                                        {/* API Calls Section */}
+                                        {node.data?.output?.apiCalls && node.data.output.apiCalls.length > 0 ? (
+                                            <div className="details-api-calls-container">
+                                                {node.data.output.apiCalls.map((apiCall: ApiCall, callIndex: number) => (
+                                                    <div className="details-api-call-pair" key={callIndex}>
+                                                        {/* Call Header */}
+                                                        <div className="details-call-header">
+                                                            <span>
+                                                                API Call {callIndex + 1} of {node.data!.output.apiCalls.length}
+                                                            </span>
+                                                            <span className="details-call-duration">
+                                                                {apiCall.duration < 1000
+                                                                    ? `${apiCall.duration}ms`
+                                                                    : `${(apiCall.duration / 1000).toFixed(1)}s`}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* REQUEST BOX */}
+                                                        <div className="details-request-box">
+                                                            <div className="details-section-label">📤 REQUEST</div>
+                                                            <pre className="details-json-viewer">
+                                                                {JSON.stringify(apiCall.request, null, 2)}
+                                                            </pre>
+                                                        </div>
+
+                                                        {/* RESPONSE BOX */}
+                                                        <div className="details-response-box success">
+                                                            <div className="details-section-label">📥 RESPONSE</div>
+                                                            <pre className="details-json-viewer">
+                                                                {JSON.stringify(apiCall.response, null, 2)}
+                                                            </pre>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="details-no-api-calls">
+                                                No API call details recorded for this node
+                                            </div>
+                                        )}
+
+                                        {/* Error Section */}
+                                        {!node.success && node.error && (
+                                            <div className="details-response-box error">
+                                                <div className="details-section-label">❌ ERROR</div>
+                                                <pre className="details-json-viewer">{node.error}</pre>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="details-no-data">
+                                    No execution details available for this workflow
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

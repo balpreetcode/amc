@@ -13,9 +13,11 @@ const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
  * @param {string} prompt - User prompt
  * @param {string} systemPrompt - System prompt for context
  * @param {string} model - OpenAI model to use
- * @returns {Promise<string>} Generated text
+ * @param {number} temperature - Temperature for generation
+ * @param {boolean} includeMetadata - Whether to return API call metadata
+ * @returns {Promise<string|object>} Generated text or object with result and metadata
  */
-async function generateText(prompt, systemPrompt = '', model = 'gpt-4o-mini', temperature = 0.7) {
+async function generateText(prompt, systemPrompt = '', model = 'gpt-4o-mini', temperature = 0.7, includeMetadata = false) {
     const messages = [];
 
     if (systemPrompt) {
@@ -25,13 +27,25 @@ async function generateText(prompt, systemPrompt = '', model = 'gpt-4o-mini', te
 
     console.log(`[OpenAI] Request - Model: ${model}, Temperature: ${temperature}`);
 
+    const requestPayload = {
+        model,
+        messages,
+        temperature
+    };
+
+    const requestMetadata = {
+        provider: 'openai',
+        model,
+        prompt,
+        systemPrompt,
+        temperature
+    };
+
+    const startTime = Date.now();
+
     const response = await axios.post(
         OPENAI_API_URL,
-        {
-            model,
-            messages,
-            temperature
-        },
+        requestPayload,
         {
             headers: {
                 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
@@ -40,7 +54,29 @@ async function generateText(prompt, systemPrompt = '', model = 'gpt-4o-mini', te
         }
     );
 
-    return response.data.choices[0].message.content;
+    const duration = Date.now() - startTime;
+    const generatedText = response.data.choices[0].message.content;
+
+    if (includeMetadata) {
+        return {
+            result: generatedText,
+            apiCall: {
+                request: requestMetadata,
+                response: {
+                    text: generatedText,
+                    model: response.data.model,
+                    promptTokens: response.data.usage?.prompt_tokens,
+                    completionTokens: response.data.usage?.completion_tokens,
+                    totalTokens: response.data.usage?.total_tokens,
+                    finishReason: response.data.choices[0].finish_reason
+                },
+                timestamp: new Date().toISOString(),
+                duration
+            }
+        };
+    }
+
+    return generatedText;
 }
 
 /**

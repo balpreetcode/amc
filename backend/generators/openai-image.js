@@ -143,10 +143,10 @@ async function openaiRequest(endpoint, body, isFormData = false) {
 /**
  * Text to Image using OpenAI
  * Uses gpt-image-1-mini by default (cheapest option)
- * 
+ *
  * @param {string} prompt - Text description of the image to generate
  * @param {object} options - Generation options
- * @returns {Promise<string>} - URL or base64 of generated image
+ * @returns {Promise<string|object>} - URL or object with result and metadata
  */
 async function generateImageOpenAI(prompt, options = {}) {
     const {
@@ -154,7 +154,8 @@ async function generateImageOpenAI(prompt, options = {}) {
         size = '1024x1024',
         quality = 'auto',
         responseFormat = 'b64_json', // 'url' or 'b64_json'
-        n = 1
+        n = 1,
+        includeMetadata = false
     } = options;
 
     console.log(`[OpenAI Text-to-Image] Using model: ${model}`);
@@ -171,20 +172,51 @@ async function generateImageOpenAI(prompt, options = {}) {
         body.quality = quality;
     }
 
+    const requestMetadata = {
+        provider: 'openai',
+        model,
+        prompt,
+        size,
+        quality: model === 'dall-e-3' ? quality : undefined
+    };
+
+    const startTime = Date.now();
+
     const result = await openaiRequest('/generations', body);
+
+    const duration = Date.now() - startTime;
 
     if (result.data && result.data.length > 0) {
         const imageData = result.data[0];
+        let imageUrl;
 
         // If response is base64, save to file and return URL
         if (imageData.b64_json) {
             const timestamp = Date.now();
             const outputPath = path.join(OUTPUT_DIR, `openai_gen_${timestamp}.png`);
             fs.writeFileSync(outputPath, Buffer.from(imageData.b64_json, 'base64'));
-            return `http://localhost:3002/output/openai_gen_${timestamp}.png`;
+            imageUrl = `http://localhost:3002/output/openai_gen_${timestamp}.png`;
+        } else {
+            imageUrl = imageData.url;
         }
 
-        return imageData.url;
+        if (includeMetadata) {
+            return {
+                result: imageUrl,
+                apiCall: {
+                    request: requestMetadata,
+                    response: {
+                        imageUrl,
+                        revisedPrompt: imageData.revised_prompt,
+                        format: imageData.b64_json ? 'b64_json' : 'url'
+                    },
+                    timestamp: new Date().toISOString(),
+                    duration
+                }
+            };
+        }
+
+        return imageUrl;
     }
 
     throw new Error('No image generated from OpenAI');

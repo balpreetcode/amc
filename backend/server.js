@@ -71,7 +71,9 @@ const nodeProcessors = {
         }
         console.log(`    Temperature: ${temperature}`);
 
-        const text = await generateText(prompt, systemPrompt, model, temperature);
+        const response = await generateText(prompt, systemPrompt, model, temperature, true);
+        const text = response.result;
+        const apiCall = response.apiCall;
 
         // Show output
         console.log('\n  📤 OUTPUT:');
@@ -79,7 +81,8 @@ const nodeProcessors = {
 
         return {
             type: 'text_to_text',
-            output: { text, model, tokens: text.length }
+            output: { text, model, tokens: text.length },
+            apiCalls: [apiCall]
         };
     },
     text_to_image: async (config) => {
@@ -87,19 +90,25 @@ const nodeProcessors = {
         const aspectRatio = config.aspectRatio || '16:9';
         const provider = config.provider || 'fal';
 
-        let imageUrl;
+        let imageUrl, apiCall;
         if (provider === 'openai') {
-            imageUrl = await generateImageOpenAI(prompt, {
+            const response = await generateImageOpenAI(prompt, {
                 model: config.model || 'gpt-image-1-mini',
-                size: config.size || '1024x1024'
+                size: config.size || '1024x1024',
+                includeMetadata: true
             });
+            imageUrl = response.result;
+            apiCall = response.apiCall;
         } else {
-            imageUrl = await generateImage(prompt, aspectRatio, config.model);
+            const response = await generateImage(prompt, aspectRatio, config.model, true);
+            imageUrl = response.result;
+            apiCall = response.apiCall;
         }
 
         return {
             type: 'text_to_image',
-            output: { imageUrl, prompt, aspectRatio }
+            output: { imageUrl, prompt, aspectRatio },
+            apiCalls: [apiCall]
         };
     },
     image_to_image: async (config, previousResults) => {
@@ -124,10 +133,14 @@ const nodeProcessors = {
 
         if (!imageUrl) throw new Error('No input image provided');
 
-        const videoUrl = await generateVideo(imageUrl, prompt, duration, config.model);
+        const response = await generateVideo(imageUrl, prompt, duration, config.model, true);
+        const videoUrl = response.result;
+        const apiCall = response.apiCall;
+
         return {
             type: 'image_to_video',
-            output: { videoUrl, sourceImage: imageUrl, duration }
+            output: { videoUrl, sourceImage: imageUrl, duration },
+            apiCalls: [apiCall]
         };
     },
     text_to_video: async (config) => {
@@ -142,20 +155,28 @@ const nodeProcessors = {
         // Ensure minimum duration of 5 seconds
         duration = Math.max(duration, 5);
 
-        const videoUrl = await generateVideoFromText(prompt, duration, config.model);
+        const response = await generateVideoFromText(prompt, duration, config.model, true);
+        const videoUrl = response.result;
+        const apiCall = response.apiCall;
+
         return {
             type: 'text_to_video',
-            output: { videoUrl, prompt, duration }
+            output: { videoUrl, prompt, duration },
+            apiCalls: [apiCall]
         };
     },
     text_to_music: async (config) => {
         const prompt = config.prompt || 'Upbeat electronic music';
         const duration = config.duration || 30;
 
-        const audioUrl = await generateMusic(prompt, duration, config.model);
+        const response = await generateMusic(prompt, duration, config.model, true);
+        const audioUrl = response.result;
+        const apiCall = response.apiCall;
+
         return {
             type: 'text_to_music',
-            output: { audioUrl, prompt, duration }
+            output: { audioUrl, prompt, duration },
+            apiCalls: [apiCall]
         };
     },
     text_to_speech: async (config, previousResults) => {
@@ -163,10 +184,14 @@ const nodeProcessors = {
         const voice = config.voice || 'af_bella';
         const model = config.model || 'fal-ai/playht/tts/v3';
 
-        const audioUrl = await generateSpeech(text, voice, model);
+        const response = await generateSpeech(text, voice, model, true);
+        const audioUrl = response.result;
+        const apiCall = response.apiCall;
+
         return {
             type: 'text_to_speech',
-            output: { audioUrl, text: text.substring(0, 100), voice }
+            output: { audioUrl, text: text.substring(0, 100), voice },
+            apiCalls: [apiCall]
         };
     },
     split_text: async (config, previousResults) => {
@@ -790,8 +815,25 @@ function combineOutputs(results, aggregateItems) {
         return { value: result };
     });
 
+    // Collect all API calls from results
+    const allApiCalls = [];
+    results.forEach((result, index) => {
+        if (result && result.apiCalls && Array.isArray(result.apiCalls)) {
+            result.apiCalls.forEach(apiCall => {
+                allApiCalls.push({
+                    ...apiCall,
+                    callIndex: index + 1
+                });
+            });
+        }
+    });
+
     if (aggregateItems) {
-        return { items: outputs };
+        const aggregated = { items: outputs };
+        if (allApiCalls.length > 0) {
+            aggregated.apiCalls = allApiCalls;
+        }
+        return aggregated;
     }
 
     const combined = { items: outputs };
@@ -803,6 +845,11 @@ function combineOutputs(results, aggregateItems) {
             combined[key].push(value);
         });
     });
+
+    // Add aggregated API calls
+    if (allApiCalls.length > 0) {
+        combined.apiCalls = allApiCalls;
+    }
 
     return combined;
 }
@@ -951,11 +998,18 @@ async function executeTask(task) {
                 const aggregateConfig = { ...baseConfig, items: itemConfigs };
                 const result = await runOne(aggregateConfig, 0);
                 const output = result && result.output ? result.output : {};
-                await updateTaskStatus(task, 'COMPLETED', {
+                const taskOutput = {
                     ...output,
                     itemsCount,
                     nodeType: result?.type || taskType
-                }, null);
+                };
+
+                // Include apiCalls if present (fix for missing API call logs)
+                if (result && result.apiCalls && Array.isArray(result.apiCalls)) {
+                    taskOutput.apiCalls = result.apiCalls;
+                }
+
+                await updateTaskStatus(task, 'COMPLETED', taskOutput, null);
 
                 console.log(`✅ NODE COMPLETED: ${nodeId} (aggregated ${itemsCount} items)\n`);
                 return;
@@ -976,7 +1030,14 @@ async function executeTask(task) {
 
         const result = await runOne(config, 0);
         const output = result && result.output ? result.output : {};
-        await updateTaskStatus(task, 'COMPLETED', { ...output, nodeType: result?.type || taskType }, null);
+        const taskOutput = { ...output, nodeType: result?.type || taskType };
+
+        // Include apiCalls if present (fix for missing API call logs)
+        if (result && result.apiCalls && Array.isArray(result.apiCalls)) {
+            taskOutput.apiCalls = result.apiCalls;
+        }
+
+        await updateTaskStatus(task, 'COMPLETED', taskOutput, null);
 
         console.log(`✅ NODE COMPLETED: ${nodeId}\n`);
     } catch (error) {

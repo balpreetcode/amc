@@ -32,26 +32,57 @@ async function postToFal(model, body) {
  * @param {string} prompt - Music description (genre, mood, instruments)
  * @param {number} duration - Duration in seconds
  * @param {string} model - Music generation model to use
- * @returns {Promise<string>} Generated audio URL
+ * @param {boolean} includeMetadata - Whether to return API call metadata
+ * @returns {Promise<string|object>} Generated audio URL or object with result and metadata
  */
-async function generateMusic(prompt, duration = 30, model = 'fal-ai/stable-audio') {
-    const result = await postToFal(model, {
+async function generateMusic(prompt, duration = 30, model = 'fal-ai/stable-audio', includeMetadata = false) {
+    const requestPayload = {
         prompt,
         duration: duration
-    });
+    };
+
+    const requestMetadata = {
+        provider: 'fal',
+        model,
+        prompt,
+        duration
+    };
+
+    const startTime = Date.now();
+
+    const result = await postToFal(model, requestPayload);
+
+    const apiDuration = Date.now() - startTime;
 
     // Handle different response formats
+    let audioUrl;
     if (result.audio_file && result.audio_file.url) {
-        return result.audio_file.url;
-    }
-    if (result.audio && result.audio.url) {
-        return result.audio.url;
-    }
-    if (result.audio_url) {
-        return result.audio_url;
+        audioUrl = result.audio_file.url;
+    } else if (result.audio && result.audio.url) {
+        audioUrl = result.audio.url;
+    } else if (result.audio_url) {
+        audioUrl = result.audio_url;
+    } else {
+        throw new Error('No music generated');
     }
 
-    throw new Error('No music generated');
+    if (includeMetadata) {
+        return {
+            result: audioUrl,
+            apiCall: {
+                request: requestMetadata,
+                response: {
+                    audioUrl,
+                    duration: result.duration,
+                    seed: result.seed
+                },
+                timestamp: new Date().toISOString(),
+                duration: apiDuration
+            }
+        };
+    }
+
+    return audioUrl;
 }
 
 module.exports = {
