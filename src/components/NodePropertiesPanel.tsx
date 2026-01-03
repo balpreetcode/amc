@@ -132,7 +132,7 @@ const OUTPUT_KEYS: Record<string, string[]> = {
 };
 
 export const NodePropertiesPanel: React.FC = () => {
-    const { workflow, selectedNodeId, updateNode, execution } = useWorkflowContext();
+    const { workflow, selectedNodeId, updateNode, execution, runFromNode } = useWorkflowContext();
 
     const selectedNode = workflow.nodes.find(n => n.id === selectedNodeId);
 
@@ -373,6 +373,15 @@ export const NodePropertiesPanel: React.FC = () => {
                         <div className="execution-hint">
                             Single object for one run, or array for parallel runs
                         </div>
+                        {mockDataConfig.enabled && mockDataConfig.data != null && !mockDataError && (
+                            <button
+                                className="btn-continue-from-node"
+                                onClick={() => runFromNode(selectedNode.id)}
+                                disabled={execution.isRunning}
+                            >
+                                {execution.isRunning ? '⏳ Running...' : '▶️ Continue from here'}
+                            </button>
+                        )}
                     </div>
                 )}
 

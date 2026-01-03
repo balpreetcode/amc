@@ -23,11 +23,11 @@ export const AddNodeMenu: React.FC<AddNodeMenuProps> = ({
                 onClose();
             }
         };
-        document.addEventListener('mousedown', handleInteractionOutside);
-        document.addEventListener('focusin', handleInteractionOutside);
+        document.addEventListener('mousedown', handleInteractionOutside, true);
+        document.addEventListener('focusin', handleInteractionOutside, true);
         return () => {
-            document.removeEventListener('mousedown', handleInteractionOutside);
-            document.removeEventListener('focusin', handleInteractionOutside);
+            document.removeEventListener('mousedown', handleInteractionOutside, true);
+            document.removeEventListener('focusin', handleInteractionOutside, true);
         };
     }, [onClose]);
 

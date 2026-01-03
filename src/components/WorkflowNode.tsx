@@ -24,22 +24,24 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
     const { selectedNodeId, setSelectedNodeId, runFromNode, execution } = useWorkflowContext();
     const [menuOpen, setMenuOpen] = React.useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         if (!menuOpen) return;
 
         const handleInteractionOutside = (e: MouseEvent | FocusEvent) => {
-            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+            const isClickOnToggle = buttonRef.current && buttonRef.current.contains(e.target as Node);
+            if (menuRef.current && !menuRef.current.contains(e.target as Node) && !isClickOnToggle) {
                 setMenuOpen(false);
             }
         };
 
-        document.addEventListener('mousedown', handleInteractionOutside);
-        document.addEventListener('focusin', handleInteractionOutside);
+        window.addEventListener('mousedown', handleInteractionOutside, true);
+        window.addEventListener('focusin', handleInteractionOutside, true);
 
         return () => {
-            document.removeEventListener('mousedown', handleInteractionOutside);
-            document.removeEventListener('focusin', handleInteractionOutside);
+            window.removeEventListener('mousedown', handleInteractionOutside, true);
+            window.removeEventListener('focusin', handleInteractionOutside, true);
         };
     }, [menuOpen]);
     const config = getNodeTypeConfig(node.type);
@@ -82,8 +84,12 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
                     <span className="meta-badge meta-parallel">Parallel</span>
                 )}
                 <button
+                    ref={buttonRef}
                     className="node-menu-btn"
-                    onClick={() => setMenuOpen(!menuOpen)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuOpen(!menuOpen);
+                    }}
                 >
                     ⋮
                 </button>
