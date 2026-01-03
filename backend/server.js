@@ -14,6 +14,7 @@ const { generateSpeech } = require('./generators/speech');
 const { generateImageOpenAI, editImageOpenAI } = require('./generators/openai-image');
 const { composeVideo, concatAudioUrls, concatVideoUrls } = require('./generators/ffmpeg');
 const db = require('./db');
+const { generateToken, verifyToken, getAllTokens, deleteToken } = require('./tokens');
 
 const HISTORY_FILE = path.join(__dirname, 'workflow-history.json');
 const CONDUCTOR_URL = process.env.CONDUCTOR_URL || 'https://p5200.winds-os.com/api';
@@ -1565,6 +1566,75 @@ app.get('/download/:filename', (req, res) => {
         } else {
             console.log('[Download] File sent successfully:', filename);
         }
+    });
+});
+
+// API Token Management Routes
+
+// Middleware to check for valid token (optional authentication)
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+    if (!token) {
+        return next(); // Allow unauthenticated access for now
+    }
+
+    const result = verifyToken(token);
+    if (!result.valid) {
+        return res.status(401).json({ error: result.reason });
+    }
+
+    req.tokenData = result.token;
+    next();
+}
+
+// Generate new API token
+app.post('/api/tokens', (req, res) => {
+    const { name, expiresInDays } = req.body;
+    const token = generateToken(name, expiresInDays);
+    res.json(token);
+});
+
+// List all tokens
+app.get('/api/tokens', (req, res) => {
+    const tokens = getAllTokens();
+    res.json(tokens);
+});
+
+// Delete a token
+app.delete('/api/tokens/:id', (req, res) => {
+    const { id } = req.params;
+    const deleted = deleteToken(id);
+    if (deleted) {
+        res.json({ success: true, message: 'Token deleted' });
+    } else {
+        res.status(404).json({ error: 'Token not found' });
+    }
+});
+
+// Get iframe embed URL
+app.get('/api/embed-url', (req, res) => {
+    const { token } = req.query;
+
+    if (!token) {
+        return res.status(400).json({ error: 'Token required' });
+    }
+
+    const result = verifyToken(token);
+    if (!result.valid) {
+        return res.status(401).json({ error: result.reason });
+    }
+
+    // Generate iframe embed code
+    const baseUrl = process.env.FRONTEND_URL || 'http://workflow.localhost';
+    const embedUrl = `${baseUrl}?token=${token}`;
+    const iframeCode = `<iframe src="${embedUrl}" width="100%" height="800" frameborder="0" allow="fullscreen"></iframe>`;
+
+    res.json({
+        embedUrl,
+        iframeCode,
+        tokenValid: true
     });
 });
 

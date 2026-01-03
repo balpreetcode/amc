@@ -4,15 +4,28 @@ import { NodePropertiesPanel } from './components/NodePropertiesPanel'
 import { ExecutionHistory } from './components/ExecutionHistory'
 import { Templates } from './components/Templates'
 import { SaveTemplateModal } from './components/SaveTemplateModal'
+import { ApiTokens } from './components/ApiTokens'
 import { useTemplates } from './hooks/useTemplates'
 import  { useState } from 'react'
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import './App.css'
 
 function AppContent() {
   const { execution, runWorkflow, stopWorkflow, workflow } = useWorkflowContext();
   const { createTemplate } = useTemplates();
-  const [activeTab, setActiveTab] = useState<'builder' | 'history' | 'templates'>('builder');
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Determine active tab from current route
+  const getActiveTab = () => {
+    if (location.pathname === '/history') return 'history';
+    if (location.pathname === '/templates') return 'templates';
+    if (location.pathname === '/api-tokens') return 'api-tokens';
+    return 'builder';
+  };
+
+  const activeTab = getActiveTab();
 
   const handleSaveTemplate = async (name: string, description: string) => {
     try {
@@ -44,7 +57,7 @@ function AppContent() {
       });
 
       alert('Template saved successfully!');
-      setActiveTab('templates');
+      navigate('/templates');
     } catch (err) {
       throw err;
     }
@@ -63,7 +76,13 @@ function AppContent() {
         </div>
         <div className="header-actions">
           {execution.error && (
-            <span className="error-badge">{execution.error}</span>
+            <button
+              className="error-badge clickable"
+              onClick={() => navigate('/history')}
+              title="Click to view execution history"
+            >
+              {execution.error}
+            </button>
           )}
           <button
             className="btn-template"
@@ -91,37 +110,44 @@ function AppContent() {
       <div className="sub-header">
         <button
           className={`tab-btn ${activeTab === 'builder' ? 'active' : ''}`}
-          onClick={() => setActiveTab('builder')}
+          onClick={() => navigate('/')}
         >
           Flow Builder
         </button>
         <button
           className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`}
-          onClick={() => setActiveTab('history')}
+          onClick={() => navigate('/history')}
         >
           Execution History
         </button>
         <button
           className={`tab-btn ${activeTab === 'templates' ? 'active' : ''}`}
-          onClick={() => setActiveTab('templates')}
+          onClick={() => navigate('/templates')}
         >
           Templates
+        </button>
+        <button
+          className={`tab-btn ${activeTab === 'api-tokens' ? 'active' : ''}`}
+          onClick={() => navigate('/api-tokens')}
+        >
+          API & Embed
         </button>
       </div>
 
       <main className="app-main">
-        {activeTab === 'builder' ? (
-          <>
-            <div className="canvas-holder">
-              <WorkflowCanvas />
-            </div>
-            <NodePropertiesPanel />
-          </>
-        ) : activeTab === 'history' ? (
-          <ExecutionHistory />
-        ) : (
-          <Templates onNavigateToHistory={() => setActiveTab('history')} />
-        )}
+        <Routes>
+          <Route path="/" element={
+            <>
+              <div className="canvas-holder">
+                <WorkflowCanvas />
+              </div>
+              <NodePropertiesPanel />
+            </>
+          } />
+          <Route path="/history" element={<ExecutionHistory />} />
+          <Route path="/templates" element={<Templates onNavigateToHistory={() => navigate('/history')} />} />
+          <Route path="/api-tokens" element={<ApiTokens />} />
+        </Routes>
       </main>
 
       {showSaveModal && (
@@ -137,9 +163,11 @@ function AppContent() {
 
 function App() {
   return (
-    <WorkflowProvider>
-      <AppContent />
-    </WorkflowProvider>
+    <BrowserRouter>
+      <WorkflowProvider>
+        <AppContent />
+      </WorkflowProvider>
+    </BrowserRouter>
   )
 }
 

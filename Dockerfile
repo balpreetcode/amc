@@ -55,6 +55,12 @@ RUN echo 'server { \
     location /output { \
         proxy_pass http://workflow-backend:8080; \
     } \
+    location /api { \
+        proxy_pass http://workflow-backend:8080; \
+        proxy_http_version 1.1; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Real-IP $remote_addr; \
+    } \
 }' > /etc/nginx/conf.d/default.conf
 
 # Run as non-root user
