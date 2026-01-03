@@ -1,6 +1,6 @@
 import React from 'react';
 import { useWorkflowContext } from '../context/WorkflowContext';
-import { getNodeTypeConfig, type NodeExecutionConfig, type NodeType } from '../types/nodes';
+import { getNodeTypeConfig, type NodeExecutionConfig, type NodeType, type MockDataConfig } from '../types/nodes';
 import './NodePropertiesPanel.css';
 
 interface FormField {
@@ -158,6 +158,44 @@ export const NodePropertiesPanel: React.FC = () => {
         aggregateItems: false
     };
 
+    const mockDataConfig: MockDataConfig = selectedNode.mockData || {
+        enabled: false,
+        data: null
+    };
+
+    const [mockDataText, setMockDataText] = React.useState<string>(() => {
+        if (mockDataConfig.data != null) {
+            return JSON.stringify(mockDataConfig.data, null, 2);
+        }
+        return '';
+    });
+    const [mockDataError, setMockDataError] = React.useState<string | null>(null);
+
+    const updateMockData = (updates: Partial<MockDataConfig>) => {
+        updateNode(selectedNode.id, {
+            mockData: {
+                ...mockDataConfig,
+                ...updates
+            }
+        });
+    };
+
+    const handleMockDataTextChange = (text: string) => {
+        setMockDataText(text);
+        if (!text.trim()) {
+            setMockDataError(null);
+            updateMockData({ data: null });
+            return;
+        }
+        try {
+            const parsed = JSON.parse(text);
+            setMockDataError(null);
+            updateMockData({ data: parsed });
+        } catch (e) {
+            setMockDataError('Invalid JSON');
+        }
+    };
+
     const arrayInputCount = (() => {
         const outputs = new Map<string, any>();
         execution.results.forEach(result => {
@@ -304,6 +342,37 @@ export const NodePropertiesPanel: React.FC = () => {
                 {typeof arrayInputCount === 'number' && (
                     <div className="execution-hint">
                         Array input detected ({arrayInputCount} items)
+                    </div>
+                )}
+
+                <div className="section-title">Mock Data (Debug)</div>
+                <div className="form-group toggle-group">
+                    <span className="toggle-label">Use mock input data</span>
+                    <label className="toggle-switch">
+                        <input
+                            type="checkbox"
+                            checked={mockDataConfig.enabled}
+                            onChange={(e) => updateMockData({ enabled: e.target.checked })}
+                        />
+                        <span className="slider round"></span>
+                    </label>
+                </div>
+                {mockDataConfig.enabled && (
+                    <div className="form-group">
+                        <label>
+                            Mock JSON Input
+                            {mockDataError && <span className="error-hint"> ⚠️ {mockDataError}</span>}
+                        </label>
+                        <textarea
+                            value={mockDataText}
+                            onChange={(e) => handleMockDataTextChange(e.target.value)}
+                            placeholder={'{"text": "Your mock data here..."}\nor\n[{"text": "item1"}, {"text": "item2"}]'}
+                            className={mockDataError ? 'has-error' : ''}
+                            style={{ minHeight: '120px', fontFamily: 'monospace', fontSize: '12px' }}
+                        />
+                        <div className="execution-hint">
+                            Single object for one run, or array for parallel runs
+                        </div>
                     </div>
                 )}
 

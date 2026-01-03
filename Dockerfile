@@ -14,6 +14,10 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Build arguments
+ARG VITE_BACKEND_URL
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+
 # Build the app
 RUN npm run build
 
@@ -25,43 +29,21 @@ FROM nginx:alpine
 # Copy built assets from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Create nginx config for SPA routing + API proxy
+# Create nginx config for SPA routing (standalone frontend for Railway)
 RUN echo 'server { \
     listen 8080; \
     server_name _; \
     root /usr/share/nginx/html; \
     index index.html; \
     location / { \
-        try_files $uri $uri/ /index.html; \
+    try_files $uri $uri/ /index.html; \
     } \
-    location /workflow { \
-        proxy_pass http://workflow-backend:8080; \
-        proxy_http_version 1.1; \
-        proxy_set_header Host $host; \
-        proxy_set_header X-Real-IP $remote_addr; \
-    } \
+    # Health check endpoint \
     location /health { \
-        proxy_pass http://workflow-backend:8080; \
+    return 200 "OK"; \
+    add_header Content-Type text/plain; \
     } \
-    location /templates { \
-        proxy_pass http://workflow-backend:8080; \
-    } \
-    location /template { \
-        proxy_pass http://workflow-backend:8080; \
-    } \
-    location /download { \
-        proxy_pass http://workflow-backend:8080; \
-    } \
-    location /output { \
-        proxy_pass http://workflow-backend:8080; \
-    } \
-    location /api { \
-        proxy_pass http://workflow-backend:8080; \
-        proxy_http_version 1.1; \
-        proxy_set_header Host $host; \
-        proxy_set_header X-Real-IP $remote_addr; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+    }' > /etc/nginx/conf.d/default.conf
 
 # Run as non-root user
 RUN chown -R nginx:nginx /usr/share/nginx/html && \

@@ -5,8 +5,9 @@ import { ExecutionHistory } from './components/ExecutionHistory'
 import { Templates } from './components/Templates'
 import { SaveTemplateModal } from './components/SaveTemplateModal'
 import { ApiTokens } from './components/ApiTokens'
+import { ApiDocs } from './components/ApiDocs'
 import { useTemplates } from './hooks/useTemplates'
-import  { useState } from 'react'
+import { useState } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import './App.css'
 
@@ -22,6 +23,7 @@ function AppContent() {
     if (location.pathname === '/history') return 'history';
     if (location.pathname === '/templates') return 'templates';
     if (location.pathname === '/api-tokens') return 'api-tokens';
+    if (location.pathname === '/api-docs') return 'api-docs';
     return 'builder';
   };
 
@@ -44,6 +46,7 @@ function AppContent() {
       // If no video in current execution, get the last video from history
       if (!videoPreview) {
         const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
+        console.log('🚀 Backend URL:', BACKEND_URL);
         const historyResponse = await fetch(`${BACKEND_URL}/workflow/history`);
         const history = await historyResponse.json();
         videoPreview = history.length > 0 && history[0].videoUrl ? history[0].videoUrl : '';
@@ -132,6 +135,12 @@ function AppContent() {
         >
           API & Embed
         </button>
+        <button
+          className={`tab-btn ${activeTab === 'api-docs' ? 'active' : ''}`}
+          onClick={() => navigate('/api-docs')}
+        >
+          API Docs
+        </button>
       </div>
 
       <main className="app-main">
@@ -147,6 +156,7 @@ function AppContent() {
           <Route path="/history" element={<ExecutionHistory />} />
           <Route path="/templates" element={<Templates onNavigateToHistory={() => navigate('/history')} />} />
           <Route path="/api-tokens" element={<ApiTokens />} />
+          <Route path="/api-docs" element={<ApiDocs />} />
         </Routes>
       </main>
 

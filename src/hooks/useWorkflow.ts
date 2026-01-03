@@ -503,6 +503,88 @@ export const useWorkflow = () => {
         }));
     }, []);
 
+    // Run workflow starting from a specific node with mock data
+    const runFromNode = useCallback(async (nodeId: string) => {
+        const nodeIndex = workflow.nodes.findIndex(n => n.id === nodeId);
+        if (nodeIndex === -1) {
+            setExecution(prev => ({
+                ...prev,
+                error: 'Node not found',
+            }));
+            return;
+        }
+
+        const startNode = workflow.nodes[nodeIndex];
+        if (!startNode.mockData?.enabled || startNode.mockData?.data == null) {
+            setExecution(prev => ({
+                ...prev,
+                error: 'Mock data not configured for this node',
+            }));
+            return;
+        }
+
+        // Get nodes from the starting node onwards
+        const nodesToRun = workflow.nodes.slice(nodeIndex);
+
+        // Reset statuses for nodes that will run
+        setWorkflow(prev => ({
+            ...prev,
+            nodes: prev.nodes.map((node, idx) => ({
+                ...node,
+                status: idx >= nodeIndex ? 'not_run' as const : node.status,
+            })),
+        }));
+
+        setExecution({
+            isRunning: true,
+            workflowId: null,
+            currentNodeId: null,
+            error: null,
+            results: [],
+        });
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/workflow/run`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nodes: nodesToRun,
+                    workflowName: workflow.name,
+                    startFromNodeId: nodeId,
+                    mockData: startNode.mockData.data,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                setExecution(prev => ({
+                    ...prev,
+                    isRunning: false,
+                    error: data.error || 'Failed to start workflow',
+                }));
+                return;
+            }
+
+            setExecution(prev => ({
+                ...prev,
+                workflowId: data.workflowId,
+            }));
+
+            // Start polling for status
+            pollingRef.current = setInterval(() => {
+                pollStatus(data.workflowId);
+            }, 500);
+
+        } catch (error) {
+            setExecution(prev => ({
+                ...prev,
+                isRunning: false,
+                error: error instanceof Error ? error.message : 'Failed to connect to backend',
+            }));
+        }
+    }, [workflow.nodes, workflow.name, pollStatus]);
+
     return {
         workflow,
         execution,
@@ -513,6 +595,7 @@ export const useWorkflow = () => {
         clearWorkflow,
         renameWorkflow,
         runWorkflow,
+        runFromNode,
         stopWorkflow,
         selectedNodeId,
         setSelectedNodeId,

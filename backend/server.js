@@ -36,6 +36,17 @@ app.use(express.json());
 const OUTPUT_DIR = path.join(__dirname, '..', 'output');
 app.use('/output', express.static(OUTPUT_DIR));
 
+// API Routes
+const authRoutes = require('./routes/auth');
+const workflowRoutes = require('./routes/workflows');
+const executionRoutes = require('./routes/executions');
+const nodeRoutes = require('./routes/nodes');
+
+app.use('/auth', authRoutes);
+app.use('/workflows', workflowRoutes);
+app.use('/executions', executionRoutes);
+app.use('/nodes', nodeRoutes);
+
 const savedHistoryIds = new Set();
 
 loadHistoryIndex();
@@ -1272,29 +1283,79 @@ function maybeSaveHistory(workflow) {
 
 app.post('/workflow/run', async (req, res) => {
     try {
-        const { nodes, workflowName } = req.body;
+        const { nodes, workflowName, startFromNodeId, mockData } = req.body;
 
         if (!nodes || !Array.isArray(nodes) || nodes.length === 0) {
             return res.status(400).json({ error: 'Nodes array is required' });
         }
 
-        const uniqueTaskTypes = [...new Set(nodes.map(node => node.type))];
+        // If we're starting from a specific node with mock data, inject it
+        let processedNodes = nodes;
+        if (startFromNodeId && mockData !== undefined) {
+            console.log(`[API] Starting workflow from node ${startFromNodeId} with mock data`);
+
+            // Find the starting node index
+            const startNodeIndex = nodes.findIndex(n => n.id === startFromNodeId);
+            if (startNodeIndex === -1) {
+                return res.status(400).json({ error: 'Start node not found' });
+            }
+
+            // Process nodes: inject mock data into the first node's config
+            processedNodes = nodes.map((node, idx) => {
+                if (idx === 0) {
+                    // For the first node (the starting node), we need to replace
+                    // any references in its config with actual mock data values
+                    const newConfig = { ...node.config };
+
+                    // If mock data is a simple object with known keys, inject them
+                    if (mockData && typeof mockData === 'object' && !Array.isArray(mockData)) {
+                        // Inject mock data fields into config, replacing references
+                        for (const [key, value] of Object.entries(newConfig)) {
+                            if (value && typeof value === 'object' && value._type === 'reference') {
+                                // Replace reference with mock data value for that output key
+                                const outputKey = value.outputKey;
+                                if (mockData[outputKey] !== undefined) {
+                                    newConfig[key] = mockData[outputKey];
+                                } else if (Object.keys(mockData).length === 1) {
+                                    // If mock data has only one key, use it
+                                    newConfig[key] = Object.values(mockData)[0];
+                                }
+                            }
+                        }
+                    }
+
+                    return {
+                        ...node,
+                        config: newConfig,
+                        // Also store the full mock data for the task to use
+                        _mockData: mockData
+                    };
+                }
+                return node;
+            });
+        }
+
+        const uniqueTaskTypes = [...new Set(processedNodes.map(node => node.type))];
         for (const taskType of uniqueTaskTypes) {
             await ensureTaskDefinition(taskType);
         }
 
         const workflowDefName = `flow_builder_${uuidv4().replace(/-/g, '')}`;
-        const workflowDef = buildWorkflowDefinition(workflowDefName, nodes);
+        const workflowDef = buildWorkflowDefinition(workflowDefName, processedNodes);
         await ensureWorkflowDefinition(workflowDef);
 
         const workflowId = await startWorkflow(workflowDefName, {
-            workflowName: workflowName || 'Untitled Workflow'
+            workflowName: workflowName || 'Untitled Workflow',
+            startFromNodeId: startFromNodeId || null,
+            mockData: startFromNodeId ? mockData : null
         });
 
         res.json({
             success: true,
             workflowId,
-            message: 'Workflow queued for execution'
+            message: startFromNodeId
+                ? `Workflow started from node ${startFromNodeId} with mock data`
+                : 'Workflow queued for execution'
         });
     } catch (error) {
         console.error('[API] Error queueing workflow:', error.message);

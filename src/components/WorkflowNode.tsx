@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import type { WorkflowNodeData } from '../types/nodes';
 import { getNodeTypeConfig } from '../types/nodes';
 import { useWorkflowContext } from '../context/WorkflowContext';
@@ -21,9 +21,29 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
     isCurrentlyRunning = false,
     arrayInputCount
 }) => {
-    const { selectedNodeId, setSelectedNodeId } = useWorkflowContext();
+    const { selectedNodeId, setSelectedNodeId, runFromNode, execution } = useWorkflowContext();
     const [menuOpen, setMenuOpen] = React.useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!menuOpen) return;
+
+        const handleInteractionOutside = (e: MouseEvent | FocusEvent) => {
+            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                setMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleInteractionOutside);
+        document.addEventListener('focusin', handleInteractionOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleInteractionOutside);
+            document.removeEventListener('focusin', handleInteractionOutside);
+        };
+    }, [menuOpen]);
     const config = getNodeTypeConfig(node.type);
+    const hasMockData = node.mockData?.enabled && node.mockData?.data != null;
 
     const getStatusBadge = () => {
         switch (node.status) {
@@ -69,7 +89,7 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
                 </button>
 
                 {menuOpen && (
-                    <div className="node-menu">
+                    <div className="node-menu" ref={menuRef}>
                         <button onClick={() => {
                             onUpdate(node.id, { title: prompt('Enter new title:', node.title.replace(/^\d+\.\s*/, '')) || node.title });
                             setMenuOpen(false);
@@ -91,6 +111,18 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
                         >
                             🗑️ Delete
                         </button>
+                        {hasMockData && (
+                            <button
+                                className="run-from-btn"
+                                onClick={() => {
+                                    runFromNode(node.id);
+                                    setMenuOpen(false);
+                                }}
+                                disabled={execution.isRunning}
+                            >
+                                ▶️ Run from here
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
