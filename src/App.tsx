@@ -6,6 +6,7 @@ import { Templates } from './components/Templates'
 import { SaveTemplateModal } from './components/SaveTemplateModal'
 import { ApiTokens } from './components/ApiTokens'
 import { ApiDocs } from './components/ApiDocs'
+import { SessionGate } from './components/SessionGate'
 import { useTemplates } from './hooks/useTemplates'
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
@@ -174,9 +175,11 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <WorkflowProvider>
-        <AppContent />
-      </WorkflowProvider>
+      <SessionGate>
+        <WorkflowProvider>
+          <AppContent />
+        </WorkflowProvider>
+      </SessionGate>
     </BrowserRouter>
   )
 }
