@@ -40,7 +40,7 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
     ],
     'text_to_music': [
         { name: 'prompt', label: 'Prompt', type: 'textarea' },
-        { name: 'duration', label: 'Duration (sec)', type: 'number' },
+        { name: 'duration', label: 'Duration', type: 'select', options: ['auto', '10', '15', '20', '30', '45', '60', '90', '120'] },
         { name: 'tempo', label: 'Tempo (BPM)', type: 'number' }
     ],
     'text_to_speech': [

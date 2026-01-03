@@ -17,6 +17,7 @@ async function postToFalQueue(model, body) {
     console.log(`[Fal AI Video] Submitting to queue: ${model}`);
 
     // Submit to queue
+    console.log('[Fal AI Video] Request payload:', JSON.stringify(body, null, 2));
     const queueResponse = await axios.post(
         `https://queue.fal.run/${model}`,
         body,
@@ -26,7 +27,14 @@ async function postToFalQueue(model, body) {
                 'Content-Type': 'application/json'
             }
         }
-    );
+    ).catch(error => {
+        console.error('[Fal AI Video] Queue submission error:', {
+            status: error.response?.status,
+            data: JSON.stringify(error.response?.data, null, 2),
+            requestBody: body
+        });
+        throw error;
+    });
 
     const { request_id, response_url, status_url } = queueResponse.data;
     console.log(`[Fal AI Video] Queued with request_id: ${request_id}`);
@@ -58,6 +66,12 @@ async function postToFalQueue(model, body) {
             }
         } catch (error) {
             if (error.response?.status !== 202) {
+                // Log detailed error for debugging
+                console.error('[Fal AI Video] Error details:', {
+                    status: error.response?.status,
+                    data: JSON.stringify(error.response?.data, null, 2),
+                    message: error.message
+                });
                 throw error;
             }
         }
@@ -78,6 +92,17 @@ async function postToFalQueue(model, body) {
  * @returns {Promise<string|object>} Generated video URL or object with result and metadata
  */
 async function generateVideo(imageUrl, prompt = '', duration = 5, model = 'fal-ai/ltxv-13b-098-distilled/image-to-video', includeMetadata = false) {
+    // Ensure we're not receiving arrays (should be split by server.js)
+    if (Array.isArray(imageUrl)) {
+        throw new Error(`generateVideo received array imageUrl (length: ${imageUrl.length}). Arrays should be split before calling this function.`);
+    }
+    if (Array.isArray(prompt)) {
+        throw new Error(`generateVideo received array prompt (length: ${prompt.length}). Arrays should be split before calling this function.`);
+    }
+    if (Array.isArray(duration)) {
+        throw new Error(`generateVideo received array duration (length: ${duration.length}). Arrays should be split before calling this function.`);
+    }
+
     const urlStr = typeof imageUrl === 'string' ? imageUrl : String(imageUrl);
     console.log(`[Fal AI Video] Image to video from: ${urlStr.substring(0, 50)}...`);
 

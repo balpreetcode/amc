@@ -165,9 +165,49 @@ const nodeProcessors = {
             apiCalls: [apiCall]
         };
     },
-    text_to_music: async (config) => {
+    text_to_music: async (config, previousResults) => {
         const prompt = config.prompt || 'Upbeat electronic music';
-        const duration = config.duration || 30;
+        let duration = config.duration;
+
+        // Convert string numbers to actual numbers
+        if (typeof duration === 'string' && duration !== 'auto') {
+            duration = parseInt(duration, 10);
+        }
+
+        // Auto-calculate duration from previous video nodes if not specified
+        if (!duration || duration === 'auto') {
+            console.log('[text_to_music] Auto-calculating duration from previous video nodes...');
+
+            // Calculate total video duration from previous nodes
+            let totalVideoDuration = 0;
+
+            // Check for image_to_video nodes with duration config
+            previousResults.forEach(result => {
+                if (result.success && result.nodeType === 'image_to_video') {
+                    const videoDuration = result.data?.output?.duration || result.data?.config?.duration || 5;
+                    totalVideoDuration += videoDuration;
+                    console.log(`[text_to_music] Found video node with duration: ${videoDuration}s`);
+                }
+            });
+
+            // If no video nodes found, check for split_text segments (each segment becomes a video)
+            if (totalVideoDuration === 0) {
+                previousResults.forEach(result => {
+                    if (result.success && result.nodeType === 'split_text') {
+                        const segments = result.data?.output?.segments || [];
+                        segments.forEach(segment => {
+                            const segmentDuration = segment.duration || 5; // Default 5s per segment
+                            totalVideoDuration += segmentDuration;
+                        });
+                        console.log(`[text_to_music] Found ${segments.length} segments, total duration: ${totalVideoDuration}s`);
+                    }
+                });
+            }
+
+            // Use calculated duration or fallback to 30 seconds
+            duration = totalVideoDuration > 0 ? totalVideoDuration : 30;
+            console.log(`[text_to_music] Final music duration: ${duration}s`);
+        }
 
         const response = await generateMusic(prompt, duration, config.model, true);
         const audioUrl = response.result;
@@ -991,6 +1031,7 @@ async function executeTask(task) {
 
     try {
         const arrayFields = getArrayFields(config);
+        console.log(`[DEBUG] Node: ${nodeId}, Array fields detected:`, arrayFields.map(([key, val]) => `${key}(${val.length})`));
         const runOne = async (itemConfig, itemIndex) => {
             if (arrayFields.length > 0) {
                 console.log(`\n  ⚙️  Processing item ${itemIndex + 1}...`);
