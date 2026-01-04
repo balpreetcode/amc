@@ -13,7 +13,10 @@ export function SessionGate({ children }: SessionGateProps) {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const sessionToken = searchParams.get('sessiontoken');
+        // Check for token in URL or sessionStorage
+        const urlToken = searchParams.get('sessiontoken');
+        const storedToken = sessionStorage.getItem('sessionToken');
+        const sessionToken = urlToken || storedToken;
 
         if (!sessionToken) {
             setStatus('invalid');
@@ -28,12 +31,17 @@ export function SessionGate({ children }: SessionGateProps) {
                 const data = await response.json();
 
                 if (data.valid) {
+                    // Store the valid token for future use
+                    sessionStorage.setItem('sessionToken', sessionToken);
                     setStatus('valid');
                 } else {
+                    // Clear any stored token if validation fails
+                    sessionStorage.removeItem('sessionToken');
                     setStatus('invalid');
                     setError(data.error || 'Invalid session token');
                 }
             } catch (err) {
+                sessionStorage.removeItem('sessionToken');
                 setStatus('invalid');
                 setError('Failed to validate session');
                 console.error('Session validation error:', err);

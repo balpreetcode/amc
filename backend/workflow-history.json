@@ -1,5 +1,860 @@
 [
   {
+    "workflowId": "1f4828c3-e97a-11f0-8b3d-3e25e3b76fba",
+    "workflowName": "Story to Scenes (Parallel Template)",
+    "status": "failed",
+    "startTime": "2026-01-04T14:31:56.859Z",
+    "endTime": "2026-01-04T14:32:36.420Z",
+    "durationMs": 39561,
+    "nodeCount": 6,
+    "results": [
+      {
+        "nodeId": "node-story-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "text": "In a tense moment, a distant trumpet sounded across the valley. Villagers hurriedly fled as marauders stormed their homes. Fear writhed through the air like a tightrope ready to snap. The news reached the royal court, where voices rose in panic. Ordinary officials quarreled, unsure of their power. The king stood, his gaze steady, absorbing the urgency. This was no time for idle debate. \n\nVikramaditya donned his armor, a symbol of his resolve. He rallied his soldiers, their eyes filled with loyalty and fear. “We ride at dawn,” he declared, the weight of his words settling deeply. Through the night, he planned a strategy, each detail carefully weighted. \n\nAt dawn, the king's army marched, determination radiating from their ranks. The marauders, sensing impending doom, fortified their position. Vikramaditya advanced, knowing the stakes were high. He called for a parley, his voice echoing in the valley. As tension hung in the air, he witnessed the trembling fear of his men. \n\nIn their eyes, he saw the cost of failure, etched in every line of their faces. The enemy's chieftain stepped forward, a sneer twisting his lips. Vikramaditya stood firm, embodying the strength of an entire kingdom. “Leave this land in peace, or face the consequences.” The challenge echoed, a drumbeat of destiny. \n\nAfter a tense silence, the chieftain sneered again. With a swift motion, he drew a weapon, igniting chaos. The clash of steel filled the air, but the king fought valiantly, embodying the heart of his people. His courage inspired his soldiers, and together, they triumphed. \n\nThe marauders fled, terror cementing their defeat. As silence fell, relief washed over the kingdom. Citizens emerged, eyes wide with gratitude. Vikramaditya, breathing heavily, surveyed the scene. \n\nRespect gleamed in their eyes, but he sought none. He understood true strength lay not in power, but in protecting his people. “In our unity, let us find peace,” he declared quietly, knowing his duty would lead them forward.",
+            "model": "gpt-4o-mini",
+            "tokens": 2002,
+            "nodeType": "text_to_text",
+            "apiCalls": [
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "🎬 MASTER PROMPT — 60-Second AI Short (King Vikramaditya)\n\nROLE\n\nYou are a cinematic storyteller creating a 60-second AI short video based on the legendary Indian king Vikramaditya.\n\n🎭 STORY THEME (AUTO-SELECT ONE)\n\nRandomly choose ONE theme per generation:\n\nBravery\nJustice\nWisdom\n\nDo NOT mention the theme explicitly.\nShow it only through actions, decisions, and consequences.\n\n🎞️ STORY RULES (VERY IMPORTANT)\n\nThe story must be complete, logical, and emotionally satisfying.\nIt must feel like a real, undocumented incident from Vikramaditya’s reign.\nNo fantasy, gods, miracles, or supernatural powers.\nTone must be royal, serious, tense, and inspiring.\nLanguage must be simple, cinematic, and spoken narration.\nAvoid repeating famous or well-known Vikramaditya stories.\nAll events must be politically, socially, and historically believable.\n\n⏱️ STRUCTURE (STRICT – 60 SECONDS)\n\n🔹 Scene 1 (0–10 sec) — INCITING CRISIS (CRITICAL RULES)\n\nYou MUST generate a strong, realistic, high-stakes problem that threatens:\n\n• human lives\n• royal honor\n• political stability\n• justice of the empire\n• safety of women, children, or common people\n• dignity of the throne\n• peace between kingdoms\n\nThe problem must:\n\n• already be unfolding (not hypothetical)\n• feel urgent and dangerous\n• be too serious for ordinary officials to solve\n• morally or physically demand the king’s involvement\n\nThe nature of the problem must match the chosen theme naturally:\n\n• For Bravery → a situation involving physical danger, armed threat, rebellion, invasion, rescue, or personal risk to the king\n• For Justice → a powerful wrongdoer, false accusation, corruption, or oppression where truth is hidden\n• For Wisdom → a complex dilemma, political trap, impossible choice, or crisis where force would fail\n\nThe scene must immediately create tension, fear, silence, or unrest among people or courtiers.\n\n🔹 Scene 2 (10–45 sec) — KING IN ACTION\n\nShow Vikramaditya responding directly to the crisis.\n\nHe must act through:\n• courage, judgment, or intellect (based on theme)\n• personal involvement, not delegation\n• calm authority under pressure\n\nShow:\n• resistance or obstacles\n• emotional weight of the decision\n• reactions of soldiers, citizens, courtiers, or enemies\n• real consequences if the king fails\n\nThe danger or dilemma must feel real until near the end.\n\n🔹 Scene 3 (45–60 sec) — RESOLUTION & REALIZATION\n\nResolve the crisis in a believable way.\n\nShow:\n• the immediate outcome of the king’s actions\n• relief, respect, or silence among people\n• realization of Vikramaditya’s greatness through results, not praise\n\nEnd with a timeless final line that reflects leadership, duty, or moral strength—subtle, not preachy.\n\n🔢 SENTENCE COUNT CONSTRAINT (CRITICAL — DO NOT IGNORE)\n\nOutput EXACTLY 24 sentences.\nEach sentence must be short to medium length.\nDo NOT combine sentences using semicolons.\nDo NOT use bullet points, headings, or scene labels.\nThe output must be one continuous narrated story.\n\n(Platform maps 2 sentences = 1 scene → 12 scenes × 5 seconds = 60 seconds)\n\n🎙️ NARRATION STYLE\n\nSingle continuous voice-over.\nCalm, deep, authoritative.\nFeels like an ancient storyteller speaking to the present.\n\n🖼️ VISUAL DIRECTION (FOR AI VIDEO)\n\nAncient Indian kingdom setting.\nRoyal court, palace corridors, villages, forts, or battlefield as required.\nConsistent characters and lighting.\nCinematic realism, not animated or cartoonish.",
+                  "systemPrompt": "Do not mention modern terms or technology\n\nDo not break into explanations\ndo not use split screen.",
+                  "temperature": 1
+                },
+                "response": {
+                  "text": "In a tense moment, a distant trumpet sounded across the valley. Villagers hurriedly fled as marauders stormed their homes. Fear writhed through the air like a tightrope ready to snap. The news reached the royal court, where voices rose in panic. Ordinary officials quarreled, unsure of their power. The king stood, his gaze steady, absorbing the urgency. This was no time for idle debate. \n\nVikramaditya donned his armor, a symbol of his resolve. He rallied his soldiers, their eyes filled with loyalty and fear. “We ride at dawn,” he declared, the weight of his words settling deeply. Through the night, he planned a strategy, each detail carefully weighted. \n\nAt dawn, the king's army marched, determination radiating from their ranks. The marauders, sensing impending doom, fortified their position. Vikramaditya advanced, knowing the stakes were high. He called for a parley, his voice echoing in the valley. As tension hung in the air, he witnessed the trembling fear of his men. \n\nIn their eyes, he saw the cost of failure, etched in every line of their faces. The enemy's chieftain stepped forward, a sneer twisting his lips. Vikramaditya stood firm, embodying the strength of an entire kingdom. “Leave this land in peace, or face the consequences.” The challenge echoed, a drumbeat of destiny. \n\nAfter a tense silence, the chieftain sneered again. With a swift motion, he drew a weapon, igniting chaos. The clash of steel filled the air, but the king fought valiantly, embodying the heart of his people. His courage inspired his soldiers, and together, they triumphed. \n\nThe marauders fled, terror cementing their defeat. As silence fell, relief washed over the kingdom. Citizens emerged, eyes wide with gratitude. Vikramaditya, breathing heavily, surveyed the scene. \n\nRespect gleamed in their eyes, but he sought none. He understood true strength lay not in power, but in protecting his people. “In our unity, let us find peace,” he declared quietly, knowing his duty would lead them forward.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 803,
+                  "completionTokens": 448,
+                  "totalTokens": 1251,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:09.180Z",
+                "duration": 11695
+              }
+            ]
+          }
+        }
+      },
+      {
+        "nodeId": "node-scenes-1",
+        "nodeType": "split_text",
+        "success": true,
+        "data": {
+          "type": "split_text",
+          "output": {
+            "segments": [
+              {
+                "index": 0,
+                "text": "In a tense moment, a distant trumpet sounded across the valley. Villagers hurriedly fled as marauders stormed their homes. Fear writhed through the air like a tightrope ready to snap. The news reached the royal court, where voices rose in panic.",
+                "duration": 10
+              },
+              {
+                "index": 1,
+                "text": "Ordinary officials quarreled, unsure of their power. The king stood, his gaze steady, absorbing the urgency. This was no time for idle debate. Vikramaditya donned his armor, a symbol of his resolve.",
+                "duration": 10
+              },
+              {
+                "index": 2,
+                "text": "He rallied his soldiers, their eyes filled with loyalty and fear. “We ride at dawn,” he declared, the weight of his words settling deeply. Through the night, he planned a strategy, each detail carefully weighted. At dawn, the king's army marched, determination radiating from their ranks.",
+                "duration": 10
+              },
+              {
+                "index": 3,
+                "text": "The marauders, sensing impending doom, fortified their position. Vikramaditya advanced, knowing the stakes were high. He called for a parley, his voice echoing in the valley. As tension hung in the air, he witnessed the trembling fear of his men.",
+                "duration": 10
+              },
+              {
+                "index": 4,
+                "text": "In their eyes, he saw the cost of failure, etched in every line of their faces. The enemy's chieftain stepped forward, a sneer twisting his lips. Vikramaditya stood firm, embodying the strength of an entire kingdom. “Leave this land in peace, or face the consequences.” The challenge echoed, a drumbeat of destiny.",
+                "duration": 10
+              },
+              {
+                "index": 5,
+                "text": "After a tense silence, the chieftain sneered again. With a swift motion, he drew a weapon, igniting chaos. The clash of steel filled the air, but the king fought valiantly, embodying the heart of his people. His courage inspired his soldiers, and together, they triumphed.",
+                "duration": 10
+              },
+              {
+                "index": 6,
+                "text": "The marauders fled, terror cementing their defeat. As silence fell, relief washed over the kingdom. Citizens emerged, eyes wide with gratitude. Vikramaditya, breathing heavily, surveyed the scene.",
+                "duration": 10
+              },
+              {
+                "index": 7,
+                "text": "Respect gleamed in their eyes, but he sought none. He understood true strength lay not in power, but in protecting his people. “In our unity, let us find peace,” he declared quietly, knowing his duty would lead them forward.",
+                "duration": 10
+              }
+            ],
+            "items": [
+              "In a tense moment, a distant trumpet sounded across the valley. Villagers hurriedly fled as marauders stormed their homes. Fear writhed through the air like a tightrope ready to snap. The news reached the royal court, where voices rose in panic.",
+              "Ordinary officials quarreled, unsure of their power. The king stood, his gaze steady, absorbing the urgency. This was no time for idle debate. Vikramaditya donned his armor, a symbol of his resolve.",
+              "He rallied his soldiers, their eyes filled with loyalty and fear. “We ride at dawn,” he declared, the weight of his words settling deeply. Through the night, he planned a strategy, each detail carefully weighted. At dawn, the king's army marched, determination radiating from their ranks.",
+              "The marauders, sensing impending doom, fortified their position. Vikramaditya advanced, knowing the stakes were high. He called for a parley, his voice echoing in the valley. As tension hung in the air, he witnessed the trembling fear of his men.",
+              "In their eyes, he saw the cost of failure, etched in every line of their faces. The enemy's chieftain stepped forward, a sneer twisting his lips. Vikramaditya stood firm, embodying the strength of an entire kingdom. “Leave this land in peace, or face the consequences.” The challenge echoed, a drumbeat of destiny.",
+              "After a tense silence, the chieftain sneered again. With a swift motion, he drew a weapon, igniting chaos. The clash of steel filled the air, but the king fought valiantly, embodying the heart of his people. His courage inspired his soldiers, and together, they triumphed.",
+              "The marauders fled, terror cementing their defeat. As silence fell, relief washed over the kingdom. Citizens emerged, eyes wide with gratitude. Vikramaditya, breathing heavily, surveyed the scene.",
+              "Respect gleamed in their eyes, but he sought none. He understood true strength lay not in power, but in protecting his people. “In our unity, let us find peace,” he declared quietly, knowing his duty would lead them forward."
+            ],
+            "totalSegments": 8,
+            "nodeType": "split_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-narration-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [
+              {
+                "text": "As the mournful call of the trumpet echoed through the valley, shadowy figures of marauders surged toward the unsuspecting village, their intentions cloaked in menace. Panic gripped the hearts of the villagers as they abandoned their homes, the cries of the desperate piercing the stillness of the evening. Meanwhile, in the royal court, the atmosphere crackled with urgency, each frantic voice adding to the swirling chaos of a kingdom on the brink of turmoil.",
+                "model": "gpt-4o-mini",
+                "tokens": 461
+              },
+              {
+                "text": "As the air thickened with tension, the murmurs of uncertainty faded under the weight of the king's unwavering presence. Vikramaditya, embodying valor and purpose, prepared to confront the chaos, his armor glinting in the dim light, a testament to his commitment to restore order and lead his people with fierce determination.",
+                "model": "gpt-4o-mini",
+                "tokens": 325
+              },
+              {
+                "text": "As the first light of dawn broke across the horizon, the air crackled with a mixture of anticipation and dread. The king, resolute in his command, led his soldiers into the unknown, the unity of their purpose weaving a thread of courage amidst the looming shadows of battle. Each step forward echoed the silent promise of loyalty, binding them together in a shared fate.",
+                "model": "gpt-4o-mini",
+                "tokens": 370
+              },
+              {
+                "text": "With the weight of fate resting on his shoulders, Vikramaditya took a deep breath, steeling himself against the anxiety coursing through the ranks. The valley, once alive with the sounds of battle, fell silent, all eyes turned to their leader, searching for a glimmer of hope amidst the encroaching despair. Faces were etched with worry, yet the resolve to stand firm ignited a flicker of defiance in their hearts.",
+                "model": "gpt-4o-mini",
+                "tokens": 414
+              },
+              {
+                "text": "As the air thickened with tension, Vikramaditya's unwavering gaze met the chieftain's, a silent battle of wills igniting the space between them. The flicker of resolve in his warriors' eyes mirrored his own, their collective heartbeat pulsating in rhythmic defiance. In that moment, the fate of his kingdom hung precariously, teetering on the edge of honor and aggression.",
+                "model": "gpt-4o-mini",
+                "tokens": 372
+              },
+              {
+                "text": "In the midst of the cacophony, the king's resolve shone like a beacon amidst the turmoil. As blades clashed and the shouts of battle echoed around him, he stood firm, rallying his men with unwavering bravery. Together, they forged a path to victory, proving that unity and courage could conquer even the darkest of threats.",
+                "model": "gpt-4o-mini",
+                "tokens": 323
+              },
+              {
+                "text": "As the dust settled, the weight of victory hung in the air, mingling with the lingering scent of fear. Vikramaditya, still catching his breath, felt the grateful gazes of his people; their hope rekindled and their spirit unbroken. In that moment, the kingdom united in a silent vow to stand steadfast against any darkness that dared to invade their peace again.",
+                "model": "gpt-4o-mini",
+                "tokens": 361
+              },
+              {
+                "text": "As the weight of his responsibilities settled upon his shoulders, a quiet resolve filled the air. He met the gaze of those before him, not with the expectation of adoration, but with a humble recognition of their shared journey. With each word, he wove the fabric of their future, hoping to inspire a bond that could withstand any storm.",
+                "model": "gpt-4o-mini",
+                "tokens": 337
+              }
+            ],
+            "text": [
+              "As the mournful call of the trumpet echoed through the valley, shadowy figures of marauders surged toward the unsuspecting village, their intentions cloaked in menace. Panic gripped the hearts of the villagers as they abandoned their homes, the cries of the desperate piercing the stillness of the evening. Meanwhile, in the royal court, the atmosphere crackled with urgency, each frantic voice adding to the swirling chaos of a kingdom on the brink of turmoil.",
+              "As the air thickened with tension, the murmurs of uncertainty faded under the weight of the king's unwavering presence. Vikramaditya, embodying valor and purpose, prepared to confront the chaos, his armor glinting in the dim light, a testament to his commitment to restore order and lead his people with fierce determination.",
+              "As the first light of dawn broke across the horizon, the air crackled with a mixture of anticipation and dread. The king, resolute in his command, led his soldiers into the unknown, the unity of their purpose weaving a thread of courage amidst the looming shadows of battle. Each step forward echoed the silent promise of loyalty, binding them together in a shared fate.",
+              "With the weight of fate resting on his shoulders, Vikramaditya took a deep breath, steeling himself against the anxiety coursing through the ranks. The valley, once alive with the sounds of battle, fell silent, all eyes turned to their leader, searching for a glimmer of hope amidst the encroaching despair. Faces were etched with worry, yet the resolve to stand firm ignited a flicker of defiance in their hearts.",
+              "As the air thickened with tension, Vikramaditya's unwavering gaze met the chieftain's, a silent battle of wills igniting the space between them. The flicker of resolve in his warriors' eyes mirrored his own, their collective heartbeat pulsating in rhythmic defiance. In that moment, the fate of his kingdom hung precariously, teetering on the edge of honor and aggression.",
+              "In the midst of the cacophony, the king's resolve shone like a beacon amidst the turmoil. As blades clashed and the shouts of battle echoed around him, he stood firm, rallying his men with unwavering bravery. Together, they forged a path to victory, proving that unity and courage could conquer even the darkest of threats.",
+              "As the dust settled, the weight of victory hung in the air, mingling with the lingering scent of fear. Vikramaditya, still catching his breath, felt the grateful gazes of his people; their hope rekindled and their spirit unbroken. In that moment, the kingdom united in a silent vow to stand steadfast against any darkness that dared to invade their peace again.",
+              "As the weight of his responsibilities settled upon his shoulders, a quiet resolve filled the air. He met the gaze of those before him, not with the expectation of adoration, but with a humble recognition of their shared journey. With each word, he wove the fabric of their future, hoping to inspire a bond that could withstand any storm."
+            ],
+            "model": [
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini"
+            ],
+            "tokens": [
+              461,
+              325,
+              370,
+              414,
+              372,
+              323,
+              361,
+              337
+            ],
+            "apiCalls": [
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "In a tense moment, a distant trumpet sounded across the valley. Villagers hurriedly fled as marauders stormed their homes. Fear writhed through the air like a tightrope ready to snap. The news reached the royal court, where voices rose in panic.",
+                  "systemPrompt": "Write a short narration (2-3 sentences) for the given scene. Return only the narration text.",
+                  "temperature": 1
+                },
+                "response": {
+                  "text": "As the mournful call of the trumpet echoed through the valley, shadowy figures of marauders surged toward the unsuspecting village, their intentions cloaked in menace. Panic gripped the hearts of the villagers as they abandoned their homes, the cries of the desperate piercing the stillness of the evening. Meanwhile, in the royal court, the atmosphere crackled with urgency, each frantic voice adding to the swirling chaos of a kingdom on the brink of turmoil.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 85,
+                  "completionTokens": 91,
+                  "totalTokens": 176,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:12.555Z",
+                "duration": 1812,
+                "callIndex": 1
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "Ordinary officials quarreled, unsure of their power. The king stood, his gaze steady, absorbing the urgency. This was no time for idle debate. Vikramaditya donned his armor, a symbol of his resolve.",
+                  "systemPrompt": "Write a short narration (2-3 sentences) for the given scene. Return only the narration text.",
+                  "temperature": 1
+                },
+                "response": {
+                  "text": "As the air thickened with tension, the murmurs of uncertainty faded under the weight of the king's unwavering presence. Vikramaditya, embodying valor and purpose, prepared to confront the chaos, his armor glinting in the dim light, a testament to his commitment to restore order and lead his people with fierce determination.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 79,
+                  "completionTokens": 67,
+                  "totalTokens": 146,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:12.946Z",
+                "duration": 2202,
+                "callIndex": 2
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "He rallied his soldiers, their eyes filled with loyalty and fear. “We ride at dawn,” he declared, the weight of his words settling deeply. Through the night, he planned a strategy, each detail carefully weighted. At dawn, the king's army marched, determination radiating from their ranks.",
+                  "systemPrompt": "Write a short narration (2-3 sentences) for the given scene. Return only the narration text.",
+                  "temperature": 1
+                },
+                "response": {
+                  "text": "As the first light of dawn broke across the horizon, the air crackled with a mixture of anticipation and dread. The king, resolute in his command, led his soldiers into the unknown, the unity of their purpose weaving a thread of courage amidst the looming shadows of battle. Each step forward echoed the silent promise of loyalty, binding them together in a shared fate.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 92,
+                  "completionTokens": 74,
+                  "totalTokens": 166,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:13.175Z",
+                "duration": 2429,
+                "callIndex": 3
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "The marauders, sensing impending doom, fortified their position. Vikramaditya advanced, knowing the stakes were high. He called for a parley, his voice echoing in the valley. As tension hung in the air, he witnessed the trembling fear of his men.",
+                  "systemPrompt": "Write a short narration (2-3 sentences) for the given scene. Return only the narration text.",
+                  "temperature": 1
+                },
+                "response": {
+                  "text": "With the weight of fate resting on his shoulders, Vikramaditya took a deep breath, steeling himself against the anxiety coursing through the ranks. The valley, once alive with the sounds of battle, fell silent, all eyes turned to their leader, searching for a glimmer of hope amidst the encroaching despair. Faces were etched with worry, yet the resolve to stand firm ignited a flicker of defiance in their hearts.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 87,
+                  "completionTokens": 90,
+                  "totalTokens": 177,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:12.444Z",
+                "duration": 1697,
+                "callIndex": 4
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "In their eyes, he saw the cost of failure, etched in every line of their faces. The enemy's chieftain stepped forward, a sneer twisting his lips. Vikramaditya stood firm, embodying the strength of an entire kingdom. “Leave this land in peace, or face the consequences.” The challenge echoed, a drumbeat of destiny.",
+                  "systemPrompt": "Write a short narration (2-3 sentences) for the given scene. Return only the narration text.",
+                  "temperature": 1
+                },
+                "response": {
+                  "text": "As the air thickened with tension, Vikramaditya's unwavering gaze met the chieftain's, a silent battle of wills igniting the space between them. The flicker of resolve in his warriors' eyes mirrored his own, their collective heartbeat pulsating in rhythmic defiance. In that moment, the fate of his kingdom hung precariously, teetering on the edge of honor and aggression.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 105,
+                  "completionTokens": 82,
+                  "totalTokens": 187,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:12.444Z",
+                "duration": 1694,
+                "callIndex": 5
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "After a tense silence, the chieftain sneered again. With a swift motion, he drew a weapon, igniting chaos. The clash of steel filled the air, but the king fought valiantly, embodying the heart of his people. His courage inspired his soldiers, and together, they triumphed.",
+                  "systemPrompt": "Write a short narration (2-3 sentences) for the given scene. Return only the narration text.",
+                  "temperature": 1
+                },
+                "response": {
+                  "text": "In the midst of the cacophony, the king's resolve shone like a beacon amidst the turmoil. As blades clashed and the shouts of battle echoed around him, he stood firm, rallying his men with unwavering bravery. Together, they forged a path to victory, proving that unity and courage could conquer even the darkest of threats.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 96,
+                  "completionTokens": 70,
+                  "totalTokens": 166,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:12.084Z",
+                "duration": 1333,
+                "callIndex": 6
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "The marauders fled, terror cementing their defeat. As silence fell, relief washed over the kingdom. Citizens emerged, eyes wide with gratitude. Vikramaditya, breathing heavily, surveyed the scene.",
+                  "systemPrompt": "Write a short narration (2-3 sentences) for the given scene. Return only the narration text.",
+                  "temperature": 1
+                },
+                "response": {
+                  "text": "As the dust settled, the weight of victory hung in the air, mingling with the lingering scent of fear. Vikramaditya, still catching his breath, felt the grateful gazes of his people; their hope rekindled and their spirit unbroken. In that moment, the kingdom united in a silent vow to stand steadfast against any darkness that dared to invade their peace again.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 73,
+                  "completionTokens": 78,
+                  "totalTokens": 151,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:12.569Z",
+                "duration": 1816,
+                "callIndex": 7
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "Respect gleamed in their eyes, but he sought none. He understood true strength lay not in power, but in protecting his people. “In our unity, let us find peace,” he declared quietly, knowing his duty would lead them forward.",
+                  "systemPrompt": "Write a short narration (2-3 sentences) for the given scene. Return only the narration text.",
+                  "temperature": 1
+                },
+                "response": {
+                  "text": "As the weight of his responsibilities settled upon his shoulders, a quiet resolve filled the air. He met the gaze of those before him, not with the expectation of adoration, but with a humble recognition of their shared journey. With each word, he wove the fabric of their future, hoping to inspire a bond that could withstand any storm.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 81,
+                  "completionTokens": 69,
+                  "totalTokens": 150,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:12.399Z",
+                "duration": 1645,
+                "callIndex": 8
+              }
+            ],
+            "itemsCount": 8,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-img-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [
+              {
+                "text": "In the heart of the royal court, the atmosphere was charged with urgency. The ornate tapestries lining the walls, depicting the valiant deeds of past kings, seemed to loom ominously over the gathering. Courtiers, draped in richly embroidered garments, exchanged frantic glances, their voices a cacophony of dread and disbelief. \n\n“His Majesty must act at once!” shouted a nobleman, his hand gripping the hilt of his ceremonial sword. The tension in the room was palpable, mirroring the chaos outside. \n\nMeanwhile, in a secluded corner, the king, a towering figure adorned in traditional armor, observed the turmoil with a fierce determination. His upper body, marked by intricate tattoos of ancient symbols, told tales of valor and triumph. The orange turban atop his head glimmered under the flickering torchlight, adding an air of majesty to his imposing presence.\n\n“Silence!” he commanded, his deep voice resonating through the chamber like a clarion call. The room fell still, the courtiers' panic momentarily quelled by his commanding authority. “We will not let our people suffer. I will lead the charge.”\n\nWith a swift motion, he unsheathed a gleaming sword, its blade reflecting the warm hues of the setting sun filtering through the ornate windows. The light danced upon the edges of his weapon, casting a golden glow that symbolized hope amidst despair. \n\nHis warriors, loyal and fierce, rallied behind him. Clad in traditional warrior attire—flowing dhotis paired with elaborate jewelry and adorned with maces and spears—they mirrored their king’s resolute spirit. They were not just soldiers; they were guardians of their land, bonded by duty and courage. \n\nAs the king stepped forward, the air crackled with the promise of impending action. “We will protect our homes, our families. Gather the villagers; we march at dawn!” \n\nWith the sound of the distant trumpet still echoing in their hearts, the villagers' hopes began to rekindle. The epic journey to reclaim their peace had begun, and with their king leading the charge, fear would soon be replaced with strength and valor. Outside, the golden hour sunlight poured through the trees of the ancient forest surrounding the court, illuminating the path that lay ahead—a path fraught with peril, but also with the promise of redemption.",
+                "model": "gpt-4o-mini",
+                "tokens": 2300
+              },
+              {
+                "text": "With a swift motion, Vikramaditya adjusted the ornate insignia on his chest plate, the metal glinting in the soft glow of the setting sun that filtered through the canopy of the ancient forest. The air was thick with tension as the officials, adorned in their elaborate robes, raised their voices in frustration. \n\nHe stepped forward, his muscular frame radiating authority, each intricate tattoo on his arms telling tales of valor and strength. The vibrant orange turban atop his head fluttered slightly as he moved, a stark contrast against the deep greens of the forest surrounding them. \n\n“Enough!” his voice boomed, echoing through the trees, silencing the clamor. “We stand here as protectors of our land, not as petty squabblers. The time for debate has ended; our enemies will not wait for us to find our resolve.” \n\nWith a flourish, he unsheathed his sword, its blade shimmering with a mystical glow, reflecting the warm golden hour light. The officials, taken aback by his commanding presence, fell silent, their eyes wide with respect. \n\nVikramaditya continued, “We must unite our strengths and lead our people. The forest may be our sanctuary, but it has also seen battles etched into its very roots. We will draw upon that history as we prepare our strategy.” \n\nHis gaze shifted to the horizon, where shadows danced playfully in the golden light. “Gather the warriors. We shall not only defend our kingdom but demonstrate what it means to have courage and honor. For the strength of our spirits will be our true weapon.” \n\nAs he spoke, the energy in the air shifted, filling the forest with a sense of purpose. The officials looked at each other, their uncertainty fading, replaced by a burgeoning resolve. Vikramaditya’s legend would not end today; it was just the beginning of a new chapter in the epic tale of their kingdom.",
+                "model": "gpt-4o-mini",
+                "tokens": 1840
+              },
+              {
+                "text": "The sun began to rise, casting a warm glow over the ancient forest surrounding the village. The air was thick with anticipation as the king, resplendent in his warrior attire, surveyed his troops. His elaborate tattoos shimmered with each movement, telling tales of valor and battles fought long ago. The orange turban perched atop his head flared like a flame, embodying the spirit of a leader prepared to face whatever challenges lay ahead.\n\nAs he mounted his majestic steed, his eyes scanned the sea of loyal faces before him. The soldiers, clad in traditional armor, stood tall, a mixture of fear and unwavering loyalty etched on their expressions. In their hands, they gripped swords and maces, the metal gleaming in the golden hour light, echoing the strength of their king.\n\nWith a booming voice that resonated through the trees, he rallied them once more. “Today, we fight not just for victory, but for our honor, for our families, for each other!” The fervor in his words ignited a fire within them, a powerful energy that surged as they prepared to move. \n\nAs they set off at dawn, the forest around them transformed into a living entity, the tall trees swaying as if nodding in approval. The gentle rays of sunlight filtering through the leaves painted the scene in hues of gold and green, a perfect backdrop for the epic journey that lay ahead. Each step they took echoed with purpose, a testament to their shared resolve and the legendary battle that awaited. \n\nThe king, riding at the forefront, embodied strength and leadership. With every stride of his horse, he exuded confidence, his deep voice cutting through the morning mist. “Onward! To glory!” The soldiers rallied behind him, hearts pounding in sync, ready to face the trials ahead, united by their king and the cause they shared. They were more than just an army; they were a brotherhood bound by loyalty, courage, and the promise of victory. ",
+                "model": "gpt-4o-mini",
+                "tokens": 1918
+              },
+              {
+                "text": "With the sun beginning its descent, casting long shadows across the rugged terrain, Vikramaditya stood tall, the embodiment of courage and determination. His muscular frame was adorned with elaborate tattoos that told tales of past victories and the rich heritage of his lineage. The traditional orange turban atop his head fluttered slightly in the breeze, symbolizing his royal status and unwavering resolve. Clad in warrior attire, every piece of jewelry and armor he wore glistened in the golden hour light, a testament to the craftsmanship of his people.\n\nAs he looked upon his men, their expressions a mix of fear and admiration, Vikramaditya felt a surge of responsibility. He was not just a king; he was their protector, their beacon of hope. The marauders fortified their makeshift defenses, glancing nervously at the imposing figure advancing toward them. Vikramaditya's heart raced, but he maintained a calm demeanor, knowing that the outcome of this confrontation could alter the fate of his kingdom.\n\n“Let us speak as warriors,” he called out, his voice resonating with a powerful timbre that echoed in the vast valley. The tension was palpable, every soldier holding their breath, waiting for the next move. Vikramaditya's piercing gaze never wavered; he could see the trembling fear in the eyes of his men, but he would not allow that fear to take hold. With each step closer to the marauders, he pushed aside doubt, reminding himself that valor was not the absence of fear, but the triumph over it.\n\nThe ancient forest around them stood silent, its towering trees and lush foliage casting a protective shadow over the scene. Golden rays of sunlight filtered through the leaves, illuminating the warrior's path and creating an ethereal glow that seemed to empower him. Behind him, the ensemble of his loyal soldiers rallied, their swords and maces ready, every heartbeat synchronized with his own.\n\n“Speak your terms!” Vikramaditya shouted again, this time with a commanding authority that broke the tension in the air.\n\nAs the marauder leader emerged, the atmosphere was electric with anticipation. Here, in this sacred encounter, two destinies hung in the balance—the brave king willing to protect his realm at all costs and the desperate marauders seeking survival against the might of an unwavering force. Vikramaditya knew this moment would be legendary, not just for him but for all who stood with him. The echoes of their confrontation would resonate through ages, a testament to strength, valor, and the indomitable spirit of a ruler who would not yield.",
+                "model": "gpt-4o-mini",
+                "tokens": 2577
+              },
+              {
+                "text": "The air was thick with tension as the sun dipped toward the horizon, casting long shadows across the ancient forest. Vikramaditya’s heart raced, but he remained steadfast, his elaborate tattoos glimmering in the warm golden light. Every mark on his skin told the story of his lineage, of battles fought and won, of sacrifice and honor.\n\nThe enemy chieftain, a hulking figure adorned with savage war paint, laughed mockingly, his voice slicing through the silence. “You think a mere king can stand against me? Your people tremble at the thought of our might!” He brandished his sword, the metal catching the last rays of daylight, a menacing glint.\n\nVikramaditya’s grip tightened around the hilt of his own weapon, a beautifully crafted sword embossed with intricate designs representing the valor of his ancestors. “Trembling is for the weak. It is the bonds of loyalty that fortify us. You underestimate the depth of our strength,” he replied, his voice resonating with the authority of a ruler ready to protect his realm.\n\nAs he spoke, the rich earthy tones of the forest around them seemed to pulse with life, the trees whispering secrets of ages past. Vikramaditya took a step forward, his warrior attire—a vibrant blend of deep oranges and golds—reflecting the fiery spirit within him. The soft glows and highlights of the golden hour danced upon his muscular form, illuminating the resolve etched in his features.\n\nThe chieftain’s sneer faltered momentarily, a flicker of uncertainty in his eyes. Vikramaditya seized the moment, raising his sword high. “You have one chance. Leave this land in peace, or you shall face the wrath of a kingdom united!”\n\nThe forest held its breath, the atmosphere electric with the promise of battle. Vikramaditya could hear the thundering of his heartbeat, a drumbeat of destiny echoing in the twilight. Around him, the shadows of his ancestors seemed to rise, lending him their strength.\n\n“Your fate lies in your choices,” the chieftain spat, but Vikramaditya could see the fear creeping into his bravado. “I choose glory and conquest!” he roared, lunging forward with his weapon drawn.\n\nIn that moment, Vikramaditya sprang into action, a blur of motion as he met the chieftain’s charge, embodying the valor of his people and the weight of their hopes. The clash of steel rang through the air like a battle hymn as the forest bore witness to their confrontation—a defining moment in the epic saga of his reign.",
+                "model": "gpt-4o-mini",
+                "tokens": 2449
+              },
+              {
+                "text": "As the chieftain's sneer echoed through the air, the tension in the atmosphere thickened, palpable like the impending storm. The chieftain, with his wild eyes glinting with malice, drew a jagged sword from his side, the blade catching the golden light of the low sun as it sliced through the air. In that moment, chaos erupted—steel clashed against steel, a cacophony that reverberated through the ancient trees of the magical forest.\n\nThe king, a towering figure of muscular strength, stood resolute, his elaborate tattoos shimmering under the golden rays, each symbol telling a story of valor and sacrifice. His traditional orange turban fluttered as he moved with the grace of a warrior, adorned in rich warrior attire that spoke of his lineage and honor. \n\nWith a fierce roar, he charged forward, embodying the very essence of his people’s spirit. His sword, a gleaming extension of his will, danced in his hands as he parried and struck, his movements a symphony of power and precision. Each swing of his blade was met with the solid impact of his adversary’s weapon, yet he remained undeterred, a beacon of hope and courage amid the chaos surrounding them.\n\nHis soldiers rallied around him, their hearts ignited by his indomitable spirit. They fought with renewed fervor, inspired by their king’s unwavering bravery. Each clash resonated with the tales of their ancestors, reminding them that they were the guardians of their land. The magical forest, a witness to this legendary battle, seemed to hold its breath, the tall trees standing sentinel, draped in hues of deep green and soft glows of golden light filtering through the canopy.\n\nAs the clash intensified, the tides of battle began to shift. The king, embodying the strength and valor of his people, struck down the chieftain’s henchmen one by one, his soldiers following suit, their loyalty forged in the heat of battle. With a decisive blow, the king faced the chieftain once more, their eyes locking in a fierce contest of wills.\n\nIn that decisive moment, as the final clash rang out, the sound echoed through the forest, marking not just the end of this battle, but the triumph of courage and unity. The chieftain fell, and cheers erupted from the king's soldiers. Prowess and valor had won the day, and as twilight descended, casting a warm glow over the land, the king raised his sword high, a symbol of hope and strength for his people. Together, they had triumphed, weaving their legacy into the very fabric of the ancient forest, a tale destined to be told for generations to come.",
+                "model": "gpt-4o-mini",
+                "tokens": 2556
+              },
+              {
+                "text": "His muscular frame, adorned with intricate tattoos that told tales of valor and past victories, glistened in the warm, golden light of the setting sun. The traditional orange turban atop his head fluttered slightly in the gentle breeze, a symbol of his regal status and warrior spirit. He stood tall, embodying strength and determination, his warrior attire gleaming with ancient jewelry that seemed to catch the fading sunlight.\n\nThe ancient, magical forest surrounding them provided a vibrant backdrop, with deep greens of towering trees intermingling with the rich earthy tones of the forest floor. The golden rays illuminated the scene, casting long shadows and creating a cinematic atmosphere that felt epic and legendary. His broad shoulders heaved as he took a deep breath, the adrenaline of battle still coursing through his veins.\n\nVikramaditya turned towards the citizens, their expressions a mixture of awe and relief. He raised his sword, the hilt adorned with intricate designs, and spoke with a voice that resonated with authority and compassion. \"You are safe now. The darkness has been vanquished, and our kingdom stands united.\" \n\nHis words echoed through the forest, instilling a sense of hope and strength in the hearts of those who had witnessed the fierce confrontation. As the villagers approached, their faces illuminated by the soft glow of the golden hour, Vikramaditya knelt before them, honoring their bravery and resilience.\n\nAround him, the remnants of battle lay scattered—a fallen mace, the broken arrows of the marauders—but in that moment, the focus was not on the debris of war but on the unwavering spirit of a king who fought for his people. He gestured for a young boy to come forward, offering him a piece of his ornate jewelry as a token of courage.\n\nThe forest seemed to breathe with them, the tall trees standing as silent guardians of their victory, and as the villagers began to chant his name, the atmosphere swelled with pride and valor. Vikramaditya’s heart swelled alongside the gathering, knowing that today, they had forged a bond stronger than any sword—a bond of hope, led by a king who would always stand for his people.",
+                "model": "gpt-4o-mini",
+                "tokens": 2172
+              },
+              {
+                "text": "With the sun dipping low in the horizon, casting a warm golden glow through the towering trees of the ancient forest, the king stood tall amidst the whispers of nature. His muscular frame radiated strength and resilience, adorned with elaborate tattoos that told stories of valor and heritage. The intricate designs on his arms glimmered under the soft light, emphasizing his warrior spirit.\n\nDressed in a vibrant orange turban that symbolized courage and a warrior’s attire rich with history, he was the embodiment of a protector. His waistband, embellished with ancient jewelry, jingled softly with his movements, echoing the legacy of his ancestors. In this sacred moment, he was not just a ruler but a guardian of his people’s hopes and dreams.\n\nAs he gazed into the eyes of those gathered around him, he felt the respect they held for his unwavering dedication. Yet, he sought not their admiration. Instead, he drew strength from their unity, understanding that true power lay in the bonds they shared. “In our unity, let us find peace,” he declared with a calm intensity, each word resonating through the earthy tones of the landscape that surrounded them.\n\nThe villagers, standing amidst the lush greens and golden hues of the forest, felt their hearts swell with pride and hope. They understood that their king’s path was not one of conquest but of compassion. He raised his sword, the blade shimmering in the golden hour sunlight, a symbol of their shared commitment to protect their way of life.\n\nIn that moment, the air was thick with a sense of purpose, illuminating the ancient trees with a warm, cinematic light. The atmosphere felt epic, as if the legends of old were whispering through the leaves, urging them onwards. Together, they would face whatever challenges lay ahead, fortified by the strength of their unity and the valor of their king. And as he prepared to lead them forward, the deep greens of the forest and the vibrant colors of his attire merged into a tapestry of hope, echoing the promise of a brighter future.",
+                "model": "gpt-4o-mini",
+                "tokens": 2043
+              }
+            ],
+            "text": [
+              "In the heart of the royal court, the atmosphere was charged with urgency. The ornate tapestries lining the walls, depicting the valiant deeds of past kings, seemed to loom ominously over the gathering. Courtiers, draped in richly embroidered garments, exchanged frantic glances, their voices a cacophony of dread and disbelief. \n\n“His Majesty must act at once!” shouted a nobleman, his hand gripping the hilt of his ceremonial sword. The tension in the room was palpable, mirroring the chaos outside. \n\nMeanwhile, in a secluded corner, the king, a towering figure adorned in traditional armor, observed the turmoil with a fierce determination. His upper body, marked by intricate tattoos of ancient symbols, told tales of valor and triumph. The orange turban atop his head glimmered under the flickering torchlight, adding an air of majesty to his imposing presence.\n\n“Silence!” he commanded, his deep voice resonating through the chamber like a clarion call. The room fell still, the courtiers' panic momentarily quelled by his commanding authority. “We will not let our people suffer. I will lead the charge.”\n\nWith a swift motion, he unsheathed a gleaming sword, its blade reflecting the warm hues of the setting sun filtering through the ornate windows. The light danced upon the edges of his weapon, casting a golden glow that symbolized hope amidst despair. \n\nHis warriors, loyal and fierce, rallied behind him. Clad in traditional warrior attire—flowing dhotis paired with elaborate jewelry and adorned with maces and spears—they mirrored their king’s resolute spirit. They were not just soldiers; they were guardians of their land, bonded by duty and courage. \n\nAs the king stepped forward, the air crackled with the promise of impending action. “We will protect our homes, our families. Gather the villagers; we march at dawn!” \n\nWith the sound of the distant trumpet still echoing in their hearts, the villagers' hopes began to rekindle. The epic journey to reclaim their peace had begun, and with their king leading the charge, fear would soon be replaced with strength and valor. Outside, the golden hour sunlight poured through the trees of the ancient forest surrounding the court, illuminating the path that lay ahead—a path fraught with peril, but also with the promise of redemption.",
+              "With a swift motion, Vikramaditya adjusted the ornate insignia on his chest plate, the metal glinting in the soft glow of the setting sun that filtered through the canopy of the ancient forest. The air was thick with tension as the officials, adorned in their elaborate robes, raised their voices in frustration. \n\nHe stepped forward, his muscular frame radiating authority, each intricate tattoo on his arms telling tales of valor and strength. The vibrant orange turban atop his head fluttered slightly as he moved, a stark contrast against the deep greens of the forest surrounding them. \n\n“Enough!” his voice boomed, echoing through the trees, silencing the clamor. “We stand here as protectors of our land, not as petty squabblers. The time for debate has ended; our enemies will not wait for us to find our resolve.” \n\nWith a flourish, he unsheathed his sword, its blade shimmering with a mystical glow, reflecting the warm golden hour light. The officials, taken aback by his commanding presence, fell silent, their eyes wide with respect. \n\nVikramaditya continued, “We must unite our strengths and lead our people. The forest may be our sanctuary, but it has also seen battles etched into its very roots. We will draw upon that history as we prepare our strategy.” \n\nHis gaze shifted to the horizon, where shadows danced playfully in the golden light. “Gather the warriors. We shall not only defend our kingdom but demonstrate what it means to have courage and honor. For the strength of our spirits will be our true weapon.” \n\nAs he spoke, the energy in the air shifted, filling the forest with a sense of purpose. The officials looked at each other, their uncertainty fading, replaced by a burgeoning resolve. Vikramaditya’s legend would not end today; it was just the beginning of a new chapter in the epic tale of their kingdom.",
+              "The sun began to rise, casting a warm glow over the ancient forest surrounding the village. The air was thick with anticipation as the king, resplendent in his warrior attire, surveyed his troops. His elaborate tattoos shimmered with each movement, telling tales of valor and battles fought long ago. The orange turban perched atop his head flared like a flame, embodying the spirit of a leader prepared to face whatever challenges lay ahead.\n\nAs he mounted his majestic steed, his eyes scanned the sea of loyal faces before him. The soldiers, clad in traditional armor, stood tall, a mixture of fear and unwavering loyalty etched on their expressions. In their hands, they gripped swords and maces, the metal gleaming in the golden hour light, echoing the strength of their king.\n\nWith a booming voice that resonated through the trees, he rallied them once more. “Today, we fight not just for victory, but for our honor, for our families, for each other!” The fervor in his words ignited a fire within them, a powerful energy that surged as they prepared to move. \n\nAs they set off at dawn, the forest around them transformed into a living entity, the tall trees swaying as if nodding in approval. The gentle rays of sunlight filtering through the leaves painted the scene in hues of gold and green, a perfect backdrop for the epic journey that lay ahead. Each step they took echoed with purpose, a testament to their shared resolve and the legendary battle that awaited. \n\nThe king, riding at the forefront, embodied strength and leadership. With every stride of his horse, he exuded confidence, his deep voice cutting through the morning mist. “Onward! To glory!” The soldiers rallied behind him, hearts pounding in sync, ready to face the trials ahead, united by their king and the cause they shared. They were more than just an army; they were a brotherhood bound by loyalty, courage, and the promise of victory. ",
+              "With the sun beginning its descent, casting long shadows across the rugged terrain, Vikramaditya stood tall, the embodiment of courage and determination. His muscular frame was adorned with elaborate tattoos that told tales of past victories and the rich heritage of his lineage. The traditional orange turban atop his head fluttered slightly in the breeze, symbolizing his royal status and unwavering resolve. Clad in warrior attire, every piece of jewelry and armor he wore glistened in the golden hour light, a testament to the craftsmanship of his people.\n\nAs he looked upon his men, their expressions a mix of fear and admiration, Vikramaditya felt a surge of responsibility. He was not just a king; he was their protector, their beacon of hope. The marauders fortified their makeshift defenses, glancing nervously at the imposing figure advancing toward them. Vikramaditya's heart raced, but he maintained a calm demeanor, knowing that the outcome of this confrontation could alter the fate of his kingdom.\n\n“Let us speak as warriors,” he called out, his voice resonating with a powerful timbre that echoed in the vast valley. The tension was palpable, every soldier holding their breath, waiting for the next move. Vikramaditya's piercing gaze never wavered; he could see the trembling fear in the eyes of his men, but he would not allow that fear to take hold. With each step closer to the marauders, he pushed aside doubt, reminding himself that valor was not the absence of fear, but the triumph over it.\n\nThe ancient forest around them stood silent, its towering trees and lush foliage casting a protective shadow over the scene. Golden rays of sunlight filtered through the leaves, illuminating the warrior's path and creating an ethereal glow that seemed to empower him. Behind him, the ensemble of his loyal soldiers rallied, their swords and maces ready, every heartbeat synchronized with his own.\n\n“Speak your terms!” Vikramaditya shouted again, this time with a commanding authority that broke the tension in the air.\n\nAs the marauder leader emerged, the atmosphere was electric with anticipation. Here, in this sacred encounter, two destinies hung in the balance—the brave king willing to protect his realm at all costs and the desperate marauders seeking survival against the might of an unwavering force. Vikramaditya knew this moment would be legendary, not just for him but for all who stood with him. The echoes of their confrontation would resonate through ages, a testament to strength, valor, and the indomitable spirit of a ruler who would not yield.",
+              "The air was thick with tension as the sun dipped toward the horizon, casting long shadows across the ancient forest. Vikramaditya’s heart raced, but he remained steadfast, his elaborate tattoos glimmering in the warm golden light. Every mark on his skin told the story of his lineage, of battles fought and won, of sacrifice and honor.\n\nThe enemy chieftain, a hulking figure adorned with savage war paint, laughed mockingly, his voice slicing through the silence. “You think a mere king can stand against me? Your people tremble at the thought of our might!” He brandished his sword, the metal catching the last rays of daylight, a menacing glint.\n\nVikramaditya’s grip tightened around the hilt of his own weapon, a beautifully crafted sword embossed with intricate designs representing the valor of his ancestors. “Trembling is for the weak. It is the bonds of loyalty that fortify us. You underestimate the depth of our strength,” he replied, his voice resonating with the authority of a ruler ready to protect his realm.\n\nAs he spoke, the rich earthy tones of the forest around them seemed to pulse with life, the trees whispering secrets of ages past. Vikramaditya took a step forward, his warrior attire—a vibrant blend of deep oranges and golds—reflecting the fiery spirit within him. The soft glows and highlights of the golden hour danced upon his muscular form, illuminating the resolve etched in his features.\n\nThe chieftain’s sneer faltered momentarily, a flicker of uncertainty in his eyes. Vikramaditya seized the moment, raising his sword high. “You have one chance. Leave this land in peace, or you shall face the wrath of a kingdom united!”\n\nThe forest held its breath, the atmosphere electric with the promise of battle. Vikramaditya could hear the thundering of his heartbeat, a drumbeat of destiny echoing in the twilight. Around him, the shadows of his ancestors seemed to rise, lending him their strength.\n\n“Your fate lies in your choices,” the chieftain spat, but Vikramaditya could see the fear creeping into his bravado. “I choose glory and conquest!” he roared, lunging forward with his weapon drawn.\n\nIn that moment, Vikramaditya sprang into action, a blur of motion as he met the chieftain’s charge, embodying the valor of his people and the weight of their hopes. The clash of steel rang through the air like a battle hymn as the forest bore witness to their confrontation—a defining moment in the epic saga of his reign.",
+              "As the chieftain's sneer echoed through the air, the tension in the atmosphere thickened, palpable like the impending storm. The chieftain, with his wild eyes glinting with malice, drew a jagged sword from his side, the blade catching the golden light of the low sun as it sliced through the air. In that moment, chaos erupted—steel clashed against steel, a cacophony that reverberated through the ancient trees of the magical forest.\n\nThe king, a towering figure of muscular strength, stood resolute, his elaborate tattoos shimmering under the golden rays, each symbol telling a story of valor and sacrifice. His traditional orange turban fluttered as he moved with the grace of a warrior, adorned in rich warrior attire that spoke of his lineage and honor. \n\nWith a fierce roar, he charged forward, embodying the very essence of his people’s spirit. His sword, a gleaming extension of his will, danced in his hands as he parried and struck, his movements a symphony of power and precision. Each swing of his blade was met with the solid impact of his adversary’s weapon, yet he remained undeterred, a beacon of hope and courage amid the chaos surrounding them.\n\nHis soldiers rallied around him, their hearts ignited by his indomitable spirit. They fought with renewed fervor, inspired by their king’s unwavering bravery. Each clash resonated with the tales of their ancestors, reminding them that they were the guardians of their land. The magical forest, a witness to this legendary battle, seemed to hold its breath, the tall trees standing sentinel, draped in hues of deep green and soft glows of golden light filtering through the canopy.\n\nAs the clash intensified, the tides of battle began to shift. The king, embodying the strength and valor of his people, struck down the chieftain’s henchmen one by one, his soldiers following suit, their loyalty forged in the heat of battle. With a decisive blow, the king faced the chieftain once more, their eyes locking in a fierce contest of wills.\n\nIn that decisive moment, as the final clash rang out, the sound echoed through the forest, marking not just the end of this battle, but the triumph of courage and unity. The chieftain fell, and cheers erupted from the king's soldiers. Prowess and valor had won the day, and as twilight descended, casting a warm glow over the land, the king raised his sword high, a symbol of hope and strength for his people. Together, they had triumphed, weaving their legacy into the very fabric of the ancient forest, a tale destined to be told for generations to come.",
+              "His muscular frame, adorned with intricate tattoos that told tales of valor and past victories, glistened in the warm, golden light of the setting sun. The traditional orange turban atop his head fluttered slightly in the gentle breeze, a symbol of his regal status and warrior spirit. He stood tall, embodying strength and determination, his warrior attire gleaming with ancient jewelry that seemed to catch the fading sunlight.\n\nThe ancient, magical forest surrounding them provided a vibrant backdrop, with deep greens of towering trees intermingling with the rich earthy tones of the forest floor. The golden rays illuminated the scene, casting long shadows and creating a cinematic atmosphere that felt epic and legendary. His broad shoulders heaved as he took a deep breath, the adrenaline of battle still coursing through his veins.\n\nVikramaditya turned towards the citizens, their expressions a mixture of awe and relief. He raised his sword, the hilt adorned with intricate designs, and spoke with a voice that resonated with authority and compassion. \"You are safe now. The darkness has been vanquished, and our kingdom stands united.\" \n\nHis words echoed through the forest, instilling a sense of hope and strength in the hearts of those who had witnessed the fierce confrontation. As the villagers approached, their faces illuminated by the soft glow of the golden hour, Vikramaditya knelt before them, honoring their bravery and resilience.\n\nAround him, the remnants of battle lay scattered—a fallen mace, the broken arrows of the marauders—but in that moment, the focus was not on the debris of war but on the unwavering spirit of a king who fought for his people. He gestured for a young boy to come forward, offering him a piece of his ornate jewelry as a token of courage.\n\nThe forest seemed to breathe with them, the tall trees standing as silent guardians of their victory, and as the villagers began to chant his name, the atmosphere swelled with pride and valor. Vikramaditya’s heart swelled alongside the gathering, knowing that today, they had forged a bond stronger than any sword—a bond of hope, led by a king who would always stand for his people.",
+              "With the sun dipping low in the horizon, casting a warm golden glow through the towering trees of the ancient forest, the king stood tall amidst the whispers of nature. His muscular frame radiated strength and resilience, adorned with elaborate tattoos that told stories of valor and heritage. The intricate designs on his arms glimmered under the soft light, emphasizing his warrior spirit.\n\nDressed in a vibrant orange turban that symbolized courage and a warrior’s attire rich with history, he was the embodiment of a protector. His waistband, embellished with ancient jewelry, jingled softly with his movements, echoing the legacy of his ancestors. In this sacred moment, he was not just a ruler but a guardian of his people’s hopes and dreams.\n\nAs he gazed into the eyes of those gathered around him, he felt the respect they held for his unwavering dedication. Yet, he sought not their admiration. Instead, he drew strength from their unity, understanding that true power lay in the bonds they shared. “In our unity, let us find peace,” he declared with a calm intensity, each word resonating through the earthy tones of the landscape that surrounded them.\n\nThe villagers, standing amidst the lush greens and golden hues of the forest, felt their hearts swell with pride and hope. They understood that their king’s path was not one of conquest but of compassion. He raised his sword, the blade shimmering in the golden hour sunlight, a symbol of their shared commitment to protect their way of life.\n\nIn that moment, the air was thick with a sense of purpose, illuminating the ancient trees with a warm, cinematic light. The atmosphere felt epic, as if the legends of old were whispering through the leaves, urging them onwards. Together, they would face whatever challenges lay ahead, fortified by the strength of their unity and the valor of their king. And as he prepared to lead them forward, the deep greens of the forest and the vibrant colors of his attire merged into a tapestry of hope, echoing the promise of a brighter future."
+            ],
+            "model": [
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini"
+            ],
+            "tokens": [
+              2300,
+              1840,
+              1918,
+              2577,
+              2449,
+              2556,
+              2172,
+              2043
+            ],
+            "apiCalls": [
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "In a tense moment, a distant trumpet sounded across the valley. Villagers hurriedly fled as marauders stormed their homes. Fear writhed through the air like a tightrope ready to snap. The news reached the royal court, where voices rose in panic.",
+                  "systemPrompt": "highly muscular, heroic Indian king with elaborate tattoos on his upper body and arms, wearing a traditional orange turban and warrior attire with ancient jewelry and a waistband, dynamic, action-oriented poses (running, fighting, standing powerfully, interacting) in an ancient, magical forest background or a historical rural Indian  village ,  warm cinematic lighting, golden hour sunlight, soft glows and highlights, rich earthy tones, deep forest greens and golden hues, strong contrast, vibrant yet natural color palette, and smooth depth of field background, atmosphere should feel epic and legendary, with emphasis on strength and valor, traditional elements like swords, maces, and ancient Indian clothing, ensuring consistency in background style—a cinematic forest with tall trees or golden light",
+                  "temperature": 0.9
+                },
+                "response": {
+                  "text": "In the heart of the royal court, the atmosphere was charged with urgency. The ornate tapestries lining the walls, depicting the valiant deeds of past kings, seemed to loom ominously over the gathering. Courtiers, draped in richly embroidered garments, exchanged frantic glances, their voices a cacophony of dread and disbelief. \n\n“His Majesty must act at once!” shouted a nobleman, his hand gripping the hilt of his ceremonial sword. The tension in the room was palpable, mirroring the chaos outside. \n\nMeanwhile, in a secluded corner, the king, a towering figure adorned in traditional armor, observed the turmoil with a fierce determination. His upper body, marked by intricate tattoos of ancient symbols, told tales of valor and triumph. The orange turban atop his head glimmered under the flickering torchlight, adding an air of majesty to his imposing presence.\n\n“Silence!” he commanded, his deep voice resonating through the chamber like a clarion call. The room fell still, the courtiers' panic momentarily quelled by his commanding authority. “We will not let our people suffer. I will lead the charge.”\n\nWith a swift motion, he unsheathed a gleaming sword, its blade reflecting the warm hues of the setting sun filtering through the ornate windows. The light danced upon the edges of his weapon, casting a golden glow that symbolized hope amidst despair. \n\nHis warriors, loyal and fierce, rallied behind him. Clad in traditional warrior attire—flowing dhotis paired with elaborate jewelry and adorned with maces and spears—they mirrored their king’s resolute spirit. They were not just soldiers; they were guardians of their land, bonded by duty and courage. \n\nAs the king stepped forward, the air crackled with the promise of impending action. “We will protect our homes, our families. Gather the villagers; we march at dawn!” \n\nWith the sound of the distant trumpet still echoing in their hearts, the villagers' hopes began to rekindle. The epic journey to reclaim their peace had begun, and with their king leading the charge, fear would soon be replaced with strength and valor. Outside, the golden hour sunlight poured through the trees of the ancient forest surrounding the court, illuminating the path that lay ahead—a path fraught with peril, but also with the promise of redemption.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 211,
+                  "completionTokens": 477,
+                  "totalTokens": 688,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:25.703Z",
+                "duration": 12065,
+                "callIndex": 1
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "Ordinary officials quarreled, unsure of their power. The king stood, his gaze steady, absorbing the urgency. This was no time for idle debate. Vikramaditya donned his armor, a symbol of his resolve.",
+                  "systemPrompt": "highly muscular, heroic Indian king with elaborate tattoos on his upper body and arms, wearing a traditional orange turban and warrior attire with ancient jewelry and a waistband, dynamic, action-oriented poses (running, fighting, standing powerfully, interacting) in an ancient, magical forest background or a historical rural Indian  village ,  warm cinematic lighting, golden hour sunlight, soft glows and highlights, rich earthy tones, deep forest greens and golden hues, strong contrast, vibrant yet natural color palette, and smooth depth of field background, atmosphere should feel epic and legendary, with emphasis on strength and valor, traditional elements like swords, maces, and ancient Indian clothing, ensuring consistency in background style—a cinematic forest with tall trees or golden light",
+                  "temperature": 0.9
+                },
+                "response": {
+                  "text": "With a swift motion, Vikramaditya adjusted the ornate insignia on his chest plate, the metal glinting in the soft glow of the setting sun that filtered through the canopy of the ancient forest. The air was thick with tension as the officials, adorned in their elaborate robes, raised their voices in frustration. \n\nHe stepped forward, his muscular frame radiating authority, each intricate tattoo on his arms telling tales of valor and strength. The vibrant orange turban atop his head fluttered slightly as he moved, a stark contrast against the deep greens of the forest surrounding them. \n\n“Enough!” his voice boomed, echoing through the trees, silencing the clamor. “We stand here as protectors of our land, not as petty squabblers. The time for debate has ended; our enemies will not wait for us to find our resolve.” \n\nWith a flourish, he unsheathed his sword, its blade shimmering with a mystical glow, reflecting the warm golden hour light. The officials, taken aback by his commanding presence, fell silent, their eyes wide with respect. \n\nVikramaditya continued, “We must unite our strengths and lead our people. The forest may be our sanctuary, but it has also seen battles etched into its very roots. We will draw upon that history as we prepare our strategy.” \n\nHis gaze shifted to the horizon, where shadows danced playfully in the golden light. “Gather the warriors. We shall not only defend our kingdom but demonstrate what it means to have courage and honor. For the strength of our spirits will be our true weapon.” \n\nAs he spoke, the energy in the air shifted, filling the forest with a sense of purpose. The officials looked at each other, their uncertainty fading, replaced by a burgeoning resolve. Vikramaditya’s legend would not end today; it was just the beginning of a new chapter in the epic tale of their kingdom.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 205,
+                  "completionTokens": 391,
+                  "totalTokens": 596,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:25.421Z",
+                "duration": 11782,
+                "callIndex": 2
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "He rallied his soldiers, their eyes filled with loyalty and fear. “We ride at dawn,” he declared, the weight of his words settling deeply. Through the night, he planned a strategy, each detail carefully weighted. At dawn, the king's army marched, determination radiating from their ranks.",
+                  "systemPrompt": "highly muscular, heroic Indian king with elaborate tattoos on his upper body and arms, wearing a traditional orange turban and warrior attire with ancient jewelry and a waistband, dynamic, action-oriented poses (running, fighting, standing powerfully, interacting) in an ancient, magical forest background or a historical rural Indian  village ,  warm cinematic lighting, golden hour sunlight, soft glows and highlights, rich earthy tones, deep forest greens and golden hues, strong contrast, vibrant yet natural color palette, and smooth depth of field background, atmosphere should feel epic and legendary, with emphasis on strength and valor, traditional elements like swords, maces, and ancient Indian clothing, ensuring consistency in background style—a cinematic forest with tall trees or golden light",
+                  "temperature": 0.9
+                },
+                "response": {
+                  "text": "The sun began to rise, casting a warm glow over the ancient forest surrounding the village. The air was thick with anticipation as the king, resplendent in his warrior attire, surveyed his troops. His elaborate tattoos shimmered with each movement, telling tales of valor and battles fought long ago. The orange turban perched atop his head flared like a flame, embodying the spirit of a leader prepared to face whatever challenges lay ahead.\n\nAs he mounted his majestic steed, his eyes scanned the sea of loyal faces before him. The soldiers, clad in traditional armor, stood tall, a mixture of fear and unwavering loyalty etched on their expressions. In their hands, they gripped swords and maces, the metal gleaming in the golden hour light, echoing the strength of their king.\n\nWith a booming voice that resonated through the trees, he rallied them once more. “Today, we fight not just for victory, but for our honor, for our families, for each other!” The fervor in his words ignited a fire within them, a powerful energy that surged as they prepared to move. \n\nAs they set off at dawn, the forest around them transformed into a living entity, the tall trees swaying as if nodding in approval. The gentle rays of sunlight filtering through the leaves painted the scene in hues of gold and green, a perfect backdrop for the epic journey that lay ahead. Each step they took echoed with purpose, a testament to their shared resolve and the legendary battle that awaited. \n\nThe king, riding at the forefront, embodied strength and leadership. With every stride of his horse, he exuded confidence, his deep voice cutting through the morning mist. “Onward! To glory!” The soldiers rallied behind him, hearts pounding in sync, ready to face the trials ahead, united by their king and the cause they shared. They were more than just an army; they were a brotherhood bound by loyalty, courage, and the promise of victory. ",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 218,
+                  "completionTokens": 401,
+                  "totalTokens": 619,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:24.205Z",
+                "duration": 10566,
+                "callIndex": 3
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "The marauders, sensing impending doom, fortified their position. Vikramaditya advanced, knowing the stakes were high. He called for a parley, his voice echoing in the valley. As tension hung in the air, he witnessed the trembling fear of his men.",
+                  "systemPrompt": "highly muscular, heroic Indian king with elaborate tattoos on his upper body and arms, wearing a traditional orange turban and warrior attire with ancient jewelry and a waistband, dynamic, action-oriented poses (running, fighting, standing powerfully, interacting) in an ancient, magical forest background or a historical rural Indian  village ,  warm cinematic lighting, golden hour sunlight, soft glows and highlights, rich earthy tones, deep forest greens and golden hues, strong contrast, vibrant yet natural color palette, and smooth depth of field background, atmosphere should feel epic and legendary, with emphasis on strength and valor, traditional elements like swords, maces, and ancient Indian clothing, ensuring consistency in background style—a cinematic forest with tall trees or golden light",
+                  "temperature": 0.9
+                },
+                "response": {
+                  "text": "With the sun beginning its descent, casting long shadows across the rugged terrain, Vikramaditya stood tall, the embodiment of courage and determination. His muscular frame was adorned with elaborate tattoos that told tales of past victories and the rich heritage of his lineage. The traditional orange turban atop his head fluttered slightly in the breeze, symbolizing his royal status and unwavering resolve. Clad in warrior attire, every piece of jewelry and armor he wore glistened in the golden hour light, a testament to the craftsmanship of his people.\n\nAs he looked upon his men, their expressions a mix of fear and admiration, Vikramaditya felt a surge of responsibility. He was not just a king; he was their protector, their beacon of hope. The marauders fortified their makeshift defenses, glancing nervously at the imposing figure advancing toward them. Vikramaditya's heart raced, but he maintained a calm demeanor, knowing that the outcome of this confrontation could alter the fate of his kingdom.\n\n“Let us speak as warriors,” he called out, his voice resonating with a powerful timbre that echoed in the vast valley. The tension was palpable, every soldier holding their breath, waiting for the next move. Vikramaditya's piercing gaze never wavered; he could see the trembling fear in the eyes of his men, but he would not allow that fear to take hold. With each step closer to the marauders, he pushed aside doubt, reminding himself that valor was not the absence of fear, but the triumph over it.\n\nThe ancient forest around them stood silent, its towering trees and lush foliage casting a protective shadow over the scene. Golden rays of sunlight filtered through the leaves, illuminating the warrior's path and creating an ethereal glow that seemed to empower him. Behind him, the ensemble of his loyal soldiers rallied, their swords and maces ready, every heartbeat synchronized with his own.\n\n“Speak your terms!” Vikramaditya shouted again, this time with a commanding authority that broke the tension in the air.\n\nAs the marauder leader emerged, the atmosphere was electric with anticipation. Here, in this sacred encounter, two destinies hung in the balance—the brave king willing to protect his realm at all costs and the desperate marauders seeking survival against the might of an unwavering force. Vikramaditya knew this moment would be legendary, not just for him but for all who stood with him. The echoes of their confrontation would resonate through ages, a testament to strength, valor, and the indomitable spirit of a ruler who would not yield.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 213,
+                  "completionTokens": 519,
+                  "totalTokens": 732,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:28.111Z",
+                "duration": 14472,
+                "callIndex": 4
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "In their eyes, he saw the cost of failure, etched in every line of their faces. The enemy's chieftain stepped forward, a sneer twisting his lips. Vikramaditya stood firm, embodying the strength of an entire kingdom. “Leave this land in peace, or face the consequences.” The challenge echoed, a drumbeat of destiny.",
+                  "systemPrompt": "highly muscular, heroic Indian king with elaborate tattoos on his upper body and arms, wearing a traditional orange turban and warrior attire with ancient jewelry and a waistband, dynamic, action-oriented poses (running, fighting, standing powerfully, interacting) in an ancient, magical forest background or a historical rural Indian  village ,  warm cinematic lighting, golden hour sunlight, soft glows and highlights, rich earthy tones, deep forest greens and golden hues, strong contrast, vibrant yet natural color palette, and smooth depth of field background, atmosphere should feel epic and legendary, with emphasis on strength and valor, traditional elements like swords, maces, and ancient Indian clothing, ensuring consistency in background style—a cinematic forest with tall trees or golden light",
+                  "temperature": 0.9
+                },
+                "response": {
+                  "text": "The air was thick with tension as the sun dipped toward the horizon, casting long shadows across the ancient forest. Vikramaditya’s heart raced, but he remained steadfast, his elaborate tattoos glimmering in the warm golden light. Every mark on his skin told the story of his lineage, of battles fought and won, of sacrifice and honor.\n\nThe enemy chieftain, a hulking figure adorned with savage war paint, laughed mockingly, his voice slicing through the silence. “You think a mere king can stand against me? Your people tremble at the thought of our might!” He brandished his sword, the metal catching the last rays of daylight, a menacing glint.\n\nVikramaditya’s grip tightened around the hilt of his own weapon, a beautifully crafted sword embossed with intricate designs representing the valor of his ancestors. “Trembling is for the weak. It is the bonds of loyalty that fortify us. You underestimate the depth of our strength,” he replied, his voice resonating with the authority of a ruler ready to protect his realm.\n\nAs he spoke, the rich earthy tones of the forest around them seemed to pulse with life, the trees whispering secrets of ages past. Vikramaditya took a step forward, his warrior attire—a vibrant blend of deep oranges and golds—reflecting the fiery spirit within him. The soft glows and highlights of the golden hour danced upon his muscular form, illuminating the resolve etched in his features.\n\nThe chieftain’s sneer faltered momentarily, a flicker of uncertainty in his eyes. Vikramaditya seized the moment, raising his sword high. “You have one chance. Leave this land in peace, or you shall face the wrath of a kingdom united!”\n\nThe forest held its breath, the atmosphere electric with the promise of battle. Vikramaditya could hear the thundering of his heartbeat, a drumbeat of destiny echoing in the twilight. Around him, the shadows of his ancestors seemed to rise, lending him their strength.\n\n“Your fate lies in your choices,” the chieftain spat, but Vikramaditya could see the fear creeping into his bravado. “I choose glory and conquest!” he roared, lunging forward with his weapon drawn.\n\nIn that moment, Vikramaditya sprang into action, a blur of motion as he met the chieftain’s charge, embodying the valor of his people and the weight of their hopes. The clash of steel rang through the air like a battle hymn as the forest bore witness to their confrontation—a defining moment in the epic saga of his reign.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 231,
+                  "completionTokens": 534,
+                  "totalTokens": 765,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:27.967Z",
+                "duration": 14328,
+                "callIndex": 5
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "After a tense silence, the chieftain sneered again. With a swift motion, he drew a weapon, igniting chaos. The clash of steel filled the air, but the king fought valiantly, embodying the heart of his people. His courage inspired his soldiers, and together, they triumphed.",
+                  "systemPrompt": "highly muscular, heroic Indian king with elaborate tattoos on his upper body and arms, wearing a traditional orange turban and warrior attire with ancient jewelry and a waistband, dynamic, action-oriented poses (running, fighting, standing powerfully, interacting) in an ancient, magical forest background or a historical rural Indian  village ,  warm cinematic lighting, golden hour sunlight, soft glows and highlights, rich earthy tones, deep forest greens and golden hues, strong contrast, vibrant yet natural color palette, and smooth depth of field background, atmosphere should feel epic and legendary, with emphasis on strength and valor, traditional elements like swords, maces, and ancient Indian clothing, ensuring consistency in background style—a cinematic forest with tall trees or golden light",
+                  "temperature": 0.9
+                },
+                "response": {
+                  "text": "As the chieftain's sneer echoed through the air, the tension in the atmosphere thickened, palpable like the impending storm. The chieftain, with his wild eyes glinting with malice, drew a jagged sword from his side, the blade catching the golden light of the low sun as it sliced through the air. In that moment, chaos erupted—steel clashed against steel, a cacophony that reverberated through the ancient trees of the magical forest.\n\nThe king, a towering figure of muscular strength, stood resolute, his elaborate tattoos shimmering under the golden rays, each symbol telling a story of valor and sacrifice. His traditional orange turban fluttered as he moved with the grace of a warrior, adorned in rich warrior attire that spoke of his lineage and honor. \n\nWith a fierce roar, he charged forward, embodying the very essence of his people’s spirit. His sword, a gleaming extension of his will, danced in his hands as he parried and struck, his movements a symphony of power and precision. Each swing of his blade was met with the solid impact of his adversary’s weapon, yet he remained undeterred, a beacon of hope and courage amid the chaos surrounding them.\n\nHis soldiers rallied around him, their hearts ignited by his indomitable spirit. They fought with renewed fervor, inspired by their king’s unwavering bravery. Each clash resonated with the tales of their ancestors, reminding them that they were the guardians of their land. The magical forest, a witness to this legendary battle, seemed to hold its breath, the tall trees standing sentinel, draped in hues of deep green and soft glows of golden light filtering through the canopy.\n\nAs the clash intensified, the tides of battle began to shift. The king, embodying the strength and valor of his people, struck down the chieftain’s henchmen one by one, his soldiers following suit, their loyalty forged in the heat of battle. With a decisive blow, the king faced the chieftain once more, their eyes locking in a fierce contest of wills.\n\nIn that decisive moment, as the final clash rang out, the sound echoed through the forest, marking not just the end of this battle, but the triumph of courage and unity. The chieftain fell, and cheers erupted from the king's soldiers. Prowess and valor had won the day, and as twilight descended, casting a warm glow over the land, the king raised his sword high, a symbol of hope and strength for his people. Together, they had triumphed, weaving their legacy into the very fabric of the ancient forest, a tale destined to be told for generations to come.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 222,
+                  "completionTokens": 549,
+                  "totalTokens": 771,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:27.386Z",
+                "duration": 13746,
+                "callIndex": 6
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "The marauders fled, terror cementing their defeat. As silence fell, relief washed over the kingdom. Citizens emerged, eyes wide with gratitude. Vikramaditya, breathing heavily, surveyed the scene.",
+                  "systemPrompt": "highly muscular, heroic Indian king with elaborate tattoos on his upper body and arms, wearing a traditional orange turban and warrior attire with ancient jewelry and a waistband, dynamic, action-oriented poses (running, fighting, standing powerfully, interacting) in an ancient, magical forest background or a historical rural Indian  village ,  warm cinematic lighting, golden hour sunlight, soft glows and highlights, rich earthy tones, deep forest greens and golden hues, strong contrast, vibrant yet natural color palette, and smooth depth of field background, atmosphere should feel epic and legendary, with emphasis on strength and valor, traditional elements like swords, maces, and ancient Indian clothing, ensuring consistency in background style—a cinematic forest with tall trees or golden light",
+                  "temperature": 0.9
+                },
+                "response": {
+                  "text": "His muscular frame, adorned with intricate tattoos that told tales of valor and past victories, glistened in the warm, golden light of the setting sun. The traditional orange turban atop his head fluttered slightly in the gentle breeze, a symbol of his regal status and warrior spirit. He stood tall, embodying strength and determination, his warrior attire gleaming with ancient jewelry that seemed to catch the fading sunlight.\n\nThe ancient, magical forest surrounding them provided a vibrant backdrop, with deep greens of towering trees intermingling with the rich earthy tones of the forest floor. The golden rays illuminated the scene, casting long shadows and creating a cinematic atmosphere that felt epic and legendary. His broad shoulders heaved as he took a deep breath, the adrenaline of battle still coursing through his veins.\n\nVikramaditya turned towards the citizens, their expressions a mixture of awe and relief. He raised his sword, the hilt adorned with intricate designs, and spoke with a voice that resonated with authority and compassion. \"You are safe now. The darkness has been vanquished, and our kingdom stands united.\" \n\nHis words echoed through the forest, instilling a sense of hope and strength in the hearts of those who had witnessed the fierce confrontation. As the villagers approached, their faces illuminated by the soft glow of the golden hour, Vikramaditya knelt before them, honoring their bravery and resilience.\n\nAround him, the remnants of battle lay scattered—a fallen mace, the broken arrows of the marauders—but in that moment, the focus was not on the debris of war but on the unwavering spirit of a king who fought for his people. He gestured for a young boy to come forward, offering him a piece of his ornate jewelry as a token of courage.\n\nThe forest seemed to breathe with them, the tall trees standing as silent guardians of their victory, and as the villagers began to chant his name, the atmosphere swelled with pride and valor. Vikramaditya’s heart swelled alongside the gathering, knowing that today, they had forged a bond stronger than any sword—a bond of hope, led by a king who would always stand for his people.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 199,
+                  "completionTokens": 436,
+                  "totalTokens": 635,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:25.224Z",
+                "duration": 11584,
+                "callIndex": 7
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "Respect gleamed in their eyes, but he sought none. He understood true strength lay not in power, but in protecting his people. “In our unity, let us find peace,” he declared quietly, knowing his duty would lead them forward.",
+                  "systemPrompt": "highly muscular, heroic Indian king with elaborate tattoos on his upper body and arms, wearing a traditional orange turban and warrior attire with ancient jewelry and a waistband, dynamic, action-oriented poses (running, fighting, standing powerfully, interacting) in an ancient, magical forest background or a historical rural Indian  village ,  warm cinematic lighting, golden hour sunlight, soft glows and highlights, rich earthy tones, deep forest greens and golden hues, strong contrast, vibrant yet natural color palette, and smooth depth of field background, atmosphere should feel epic and legendary, with emphasis on strength and valor, traditional elements like swords, maces, and ancient Indian clothing, ensuring consistency in background style—a cinematic forest with tall trees or golden light",
+                  "temperature": 0.9
+                },
+                "response": {
+                  "text": "With the sun dipping low in the horizon, casting a warm golden glow through the towering trees of the ancient forest, the king stood tall amidst the whispers of nature. His muscular frame radiated strength and resilience, adorned with elaborate tattoos that told stories of valor and heritage. The intricate designs on his arms glimmered under the soft light, emphasizing his warrior spirit.\n\nDressed in a vibrant orange turban that symbolized courage and a warrior’s attire rich with history, he was the embodiment of a protector. His waistband, embellished with ancient jewelry, jingled softly with his movements, echoing the legacy of his ancestors. In this sacred moment, he was not just a ruler but a guardian of his people’s hopes and dreams.\n\nAs he gazed into the eyes of those gathered around him, he felt the respect they held for his unwavering dedication. Yet, he sought not their admiration. Instead, he drew strength from their unity, understanding that true power lay in the bonds they shared. “In our unity, let us find peace,” he declared with a calm intensity, each word resonating through the earthy tones of the landscape that surrounded them.\n\nThe villagers, standing amidst the lush greens and golden hues of the forest, felt their hearts swell with pride and hope. They understood that their king’s path was not one of conquest but of compassion. He raised his sword, the blade shimmering in the golden hour sunlight, a symbol of their shared commitment to protect their way of life.\n\nIn that moment, the air was thick with a sense of purpose, illuminating the ancient trees with a warm, cinematic light. The atmosphere felt epic, as if the legends of old were whispering through the leaves, urging them onwards. Together, they would face whatever challenges lay ahead, fortified by the strength of their unity and the valor of their king. And as he prepared to lead them forward, the deep greens of the forest and the vibrant colors of his attire merged into a tapestry of hope, echoing the promise of a brighter future.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 207,
+                  "completionTokens": 407,
+                  "totalTokens": 614,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:23.802Z",
+                "duration": 10162,
+                "callIndex": 8
+              }
+            ],
+            "itemsCount": 8,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-video-prompt-1",
+        "nodeType": "text_to_text",
+        "success": true,
+        "data": {
+          "type": "text_to_text",
+          "output": {
+            "items": [
+              {
+                "text": "**Cinematic Video Motion Prompt:** \n\n**Opening shot:** A sweeping aerial view of a tranquil valley, suddenly pierced by the distant sound of a trumpet. \n\n**Cut to:** Close-up of villagers' faces, eyes wide with fear as they drop their daily tasks and look toward the horizon.\n\n**Transition:** A quick montage of frantic movement—children being pulled inside, doors slamming shut, and a woman frantically gathering her belongings.\n\n**Action shot:** A group of marauders on horseback bursting into the village, cloaked figures silhouetted against the setting sun, their weapons glinting menacingly.\n\n**Cut to:** A tight shot of a villager's hand trembling as they clutch a necklace, the fear palpable.\n\n**Dissolve to:** Inside the royal court, a grand room filled with tension. Courtiers rise from their seats, their faces etched with panic, voices overlapping as the news is relayed.\n\n**Close-up:** A monarch’s hand gripping the armrest of their throne, knuckles white, as they attempt to maintain composure amid the chaos.\n\n**Final shot:** A wide-angle view of the valley, now echoing with the sounds of distress and confusion, as the camera pulls back to reveal the encroaching marauders in the distance—an impending storm of chaos ready to engulf the peaceful village.",
+                "model": "gpt-4o-mini",
+                "tokens": 1270
+              },
+              {
+                "text": "**Cinematic Video Motion Prompt:** \n\n*Open with a wide shot of a dimly lit throne room filled with bickering officials, their voices echoing off the stone walls. The camera slowly zooms in on King Vikramaditya standing tall at the head of the room, his expression calm yet commanding. As the camera pans to his face, focus on the intensity in his eyes, reflecting the weight of the moment. Cut to a close-up of his hands gripping the armrest of the throne, then transition to a dramatic shot of him rising with purpose. The camera follows him as he strides purposefully towards a nearby display of armor, the sunlight glinting off the metal. With each step, the tension in the room escalates, voices fading as the king's presence commands silence. Capture a slow-motion moment as Vikramaditya dons his armor, the sound of metal clinking reverberating through the air. End with a powerful close-up of the king's face, resolute and ready for the challenges ahead, as the officials look on in awe and apprehension. Overlay with a rising orchestral score to heighten the emotional stakes. Fade to black.*",
+                "model": "gpt-4o-mini",
+                "tokens": 1100
+              },
+              {
+                "text": "**Cinematic Video Motion Prompt:**\n\nOpen with a wide shot of a dimly lit war room, flickering candlelight casting shadows on a rugged stone wall. The camera slowly zooms in on the king, a resolute figure standing before a large wooden table scattered with battle maps and glowing embers. As he speaks, his voice resonates with authority, the camera capturing the fierce loyalty and barely concealed fear in the eyes of his soldiers surrounding him. \n\nTransition to a close-up of the king’s hand as it clenches a sword hilt, symbolizing determination. The scene shifts to a montage of preparations in the dark, soldiers sharpening weapons and donning armor, intercut with the king deep in thought, tracing strategies on the maps. \n\nAs the first light of dawn breaks, a sweeping aerial shot reveals the vast army assembled, banners fluttering in the morning breeze. The camera glides through the ranks, capturing the fierce expressions of each soldier. The king, now mounted on his steed, raises his sword high, his silhouette striking against the rising sun. \n\nWith a commanding shout, the camera cuts to a close-up of the king's fierce gaze, then pulls back to show the army erupting forward in unison. The sound of hooves pounding the earth crescendos as they charge, determination radiating from the ranks, the dawn light illuminating their path forward. Fade out as the first rays of sunlight cast an ethereal glow over the battlefield ahead.",
+                "model": "gpt-4o-mini",
+                "tokens": 1445
+              },
+              {
+                "text": "**Cinematic Video Motion Prompt:** \n\nOpen with a sweeping aerial shot of a rugged valley, dark clouds gathering ominously overhead. The camera pans down to reveal the scattered but fortified positions of the marauders, their faces hardened and resolute. Cut to a close-up of Vikramaditya, his determined expression reflecting the gravity of the moment. As he strides forward, the camera follows him in a steady tracking shot, emphasizing the weight of his purpose. \n\nTransition to a wide shot of the valley as he raises his hand to signal for a parley, his voice resonating powerfully against the backdrop of nature's tension. The sound of his call echoes, reverberating through the air, as the camera zooms in on the faces of his men—fear etched in their features, eyes darting nervously. \n\nShift to a slow-motion sequence, capturing the palpable anxiety amongst the troops, the trembling hands gripping weapons, the subtle shifts in posture reflecting their dread. Overlay the sound of a heartbeat, building the tension, as Vikramaditya stands firm, his gaze unwavering. \n\nFinally, pull back for a dramatic shot of the valley, capturing the looming clouds and the silence that hangs like a sword over both armies, suggesting the impending clash of fate. Fade to black, leaving a lingering sense of foreboding.",
+                "model": "gpt-4o-mini",
+                "tokens": 1311
+              },
+              {
+                "text": "**Cinematic Video Motion Prompt:** \n\nBegin with a dramatic aerial shot of a desolate battlefield at dusk, the sky painted in deep hues of orange and purple. Slowly zoom in on Vikramaditya, a rugged warrior standing resolute, his silhouette outlined by the flickering flames of nearby torches. As the camera pans, focus on the tense expressions of his followers, their eyes reflecting a mixture of fear and determination, each line on their faces telling stories of past struggles. \n\nCut to a close-up of the enemy chieftain stepping forward, his sneer sharp and menacing, framed against the chaos behind him. The sound of distant drums begins to build, creating a rhythmic heartbeat that syncs with Vikramaditya's steadfast gaze. \n\nShift back to Vikramaditya as he raises his sword slightly, his voice resonating with authority: \"Leave this land in peace, or face the consequences.\" The camera captures the intensity in his eyes, a fierce determination that speaks of a kingdom's resilience. \n\nAs his words echo, switch to a wide shot that showcases the standoff, the tension palpable in the air. The drums crescendo, signaling the impending clash, while dust swirls around the warriors, encapsulating the moment as one of destiny. Fade to black, leaving the audience anticipating the storm that is about to unfold.",
+                "model": "gpt-4o-mini",
+                "tokens": 1315
+              },
+              {
+                "text": "**Cinematic Video Motion Prompt:** \n\nOpen with an overhead shot of a desolate battlefield, shrouded in mist. Slowly zoom in on the tense faces of soldiers, their eyes filled with anxiety. Cut to a close-up of the chieftain's sneer, highlighting his cruel demeanor. Suddenly, with a rapid camera movement, focus on his hand as it swiftly draws a weapon, igniting chaos. \n\nTransition to a wide shot capturing the eruption of battle; the clash of steel ringing out, swords clashing, and men shouting in the heat of conflict. \n\nShift to the king, framed heroically amidst the chaos, his expression fierce and determined. Slow-motion captures his first strike as he deflects an attack, embodying the spirit and heart of his people. \n\nIn a dynamic montage, intersperse shots of the king's bravery inspiring his soldiers, rallying them as they fight with renewed vigor. \n\nCut to a triumphant wide shot of the battlefield, the chaos subsiding as the king and his soldiers emerge victorious, their cheers echoing amidst the remnants of battle, capturing the essence of unity and courage. Close with a lingering shot of the king, standing tall, the sun breaking through the clouds, symbolizing hope and resilience.",
+                "model": "gpt-4o-mini",
+                "tokens": 1204
+              },
+              {
+                "text": "**Cinematic Video Motion Prompt:**  \nOpen with a sweeping aerial shot of a once-chaotic battlefield, now eerily quiet under a fading sunset. Slowly zoom in on the distant silhouettes of fleeing marauders, their figures diminishing as they retreat into the horizon. Cut to a close-up of the kingdom’s citizens cautiously emerging from their hiding spots, their faces slowly transforming from fear to relief. Capture their wide eyes filled with gratitude and hope, as they survey the aftermath. Transition to a medium shot of Vikramaditya standing tall amidst the remnants of battle, his armor glistening in the dim light, breathing heavily as he surveys the scene with a mix of exhaustion and triumph. The camera slowly circles him, emphasizing his resolve and the sense of safety returning to the kingdom. End with a fade-out, focusing on the peaceful faces of the citizens, hinting at the dawn of a new era.",
+                "model": "gpt-4o-mini",
+                "tokens": 908
+              },
+              {
+                "text": "**Cinematic Video Motion Prompt:**\n\nOpen with a sweeping aerial shot of a rugged landscape, the sun rising over distant mountains, casting a warm glow. Transition to a close-up of a rugged leader standing on a rocky outcrop, wind gently tousling his hair. His eyes reflect determination and wisdom, glistening with respect from a diverse gathering of his people below. \n\nAs he speaks softly, the camera slowly pans across the faces of the crowd, capturing their reverence and hope. The shot shifts to a low-angle view of the leader as he raises his hand, symbolizing unity and strength. \n\nCut to scenes of the people coming together, forming a circle under the vast sky, hands clasped in solidarity. The music swells, underscoring the power of community. \n\nThe final shot zooms out, revealing the leader at the center, surrounded by his people, as they look toward the horizon—a symbol of their shared journey toward peace and strength in unity. Fade to black with the words “In our unity, let us find peace” appearing on screen.",
+                "model": "gpt-4o-mini",
+                "tokens": 1029
+              }
+            ],
+            "text": [
+              "**Cinematic Video Motion Prompt:** \n\n**Opening shot:** A sweeping aerial view of a tranquil valley, suddenly pierced by the distant sound of a trumpet. \n\n**Cut to:** Close-up of villagers' faces, eyes wide with fear as they drop their daily tasks and look toward the horizon.\n\n**Transition:** A quick montage of frantic movement—children being pulled inside, doors slamming shut, and a woman frantically gathering her belongings.\n\n**Action shot:** A group of marauders on horseback bursting into the village, cloaked figures silhouetted against the setting sun, their weapons glinting menacingly.\n\n**Cut to:** A tight shot of a villager's hand trembling as they clutch a necklace, the fear palpable.\n\n**Dissolve to:** Inside the royal court, a grand room filled with tension. Courtiers rise from their seats, their faces etched with panic, voices overlapping as the news is relayed.\n\n**Close-up:** A monarch’s hand gripping the armrest of their throne, knuckles white, as they attempt to maintain composure amid the chaos.\n\n**Final shot:** A wide-angle view of the valley, now echoing with the sounds of distress and confusion, as the camera pulls back to reveal the encroaching marauders in the distance—an impending storm of chaos ready to engulf the peaceful village.",
+              "**Cinematic Video Motion Prompt:** \n\n*Open with a wide shot of a dimly lit throne room filled with bickering officials, their voices echoing off the stone walls. The camera slowly zooms in on King Vikramaditya standing tall at the head of the room, his expression calm yet commanding. As the camera pans to his face, focus on the intensity in his eyes, reflecting the weight of the moment. Cut to a close-up of his hands gripping the armrest of the throne, then transition to a dramatic shot of him rising with purpose. The camera follows him as he strides purposefully towards a nearby display of armor, the sunlight glinting off the metal. With each step, the tension in the room escalates, voices fading as the king's presence commands silence. Capture a slow-motion moment as Vikramaditya dons his armor, the sound of metal clinking reverberating through the air. End with a powerful close-up of the king's face, resolute and ready for the challenges ahead, as the officials look on in awe and apprehension. Overlay with a rising orchestral score to heighten the emotional stakes. Fade to black.*",
+              "**Cinematic Video Motion Prompt:**\n\nOpen with a wide shot of a dimly lit war room, flickering candlelight casting shadows on a rugged stone wall. The camera slowly zooms in on the king, a resolute figure standing before a large wooden table scattered with battle maps and glowing embers. As he speaks, his voice resonates with authority, the camera capturing the fierce loyalty and barely concealed fear in the eyes of his soldiers surrounding him. \n\nTransition to a close-up of the king’s hand as it clenches a sword hilt, symbolizing determination. The scene shifts to a montage of preparations in the dark, soldiers sharpening weapons and donning armor, intercut with the king deep in thought, tracing strategies on the maps. \n\nAs the first light of dawn breaks, a sweeping aerial shot reveals the vast army assembled, banners fluttering in the morning breeze. The camera glides through the ranks, capturing the fierce expressions of each soldier. The king, now mounted on his steed, raises his sword high, his silhouette striking against the rising sun. \n\nWith a commanding shout, the camera cuts to a close-up of the king's fierce gaze, then pulls back to show the army erupting forward in unison. The sound of hooves pounding the earth crescendos as they charge, determination radiating from the ranks, the dawn light illuminating their path forward. Fade out as the first rays of sunlight cast an ethereal glow over the battlefield ahead.",
+              "**Cinematic Video Motion Prompt:** \n\nOpen with a sweeping aerial shot of a rugged valley, dark clouds gathering ominously overhead. The camera pans down to reveal the scattered but fortified positions of the marauders, their faces hardened and resolute. Cut to a close-up of Vikramaditya, his determined expression reflecting the gravity of the moment. As he strides forward, the camera follows him in a steady tracking shot, emphasizing the weight of his purpose. \n\nTransition to a wide shot of the valley as he raises his hand to signal for a parley, his voice resonating powerfully against the backdrop of nature's tension. The sound of his call echoes, reverberating through the air, as the camera zooms in on the faces of his men—fear etched in their features, eyes darting nervously. \n\nShift to a slow-motion sequence, capturing the palpable anxiety amongst the troops, the trembling hands gripping weapons, the subtle shifts in posture reflecting their dread. Overlay the sound of a heartbeat, building the tension, as Vikramaditya stands firm, his gaze unwavering. \n\nFinally, pull back for a dramatic shot of the valley, capturing the looming clouds and the silence that hangs like a sword over both armies, suggesting the impending clash of fate. Fade to black, leaving a lingering sense of foreboding.",
+              "**Cinematic Video Motion Prompt:** \n\nBegin with a dramatic aerial shot of a desolate battlefield at dusk, the sky painted in deep hues of orange and purple. Slowly zoom in on Vikramaditya, a rugged warrior standing resolute, his silhouette outlined by the flickering flames of nearby torches. As the camera pans, focus on the tense expressions of his followers, their eyes reflecting a mixture of fear and determination, each line on their faces telling stories of past struggles. \n\nCut to a close-up of the enemy chieftain stepping forward, his sneer sharp and menacing, framed against the chaos behind him. The sound of distant drums begins to build, creating a rhythmic heartbeat that syncs with Vikramaditya's steadfast gaze. \n\nShift back to Vikramaditya as he raises his sword slightly, his voice resonating with authority: \"Leave this land in peace, or face the consequences.\" The camera captures the intensity in his eyes, a fierce determination that speaks of a kingdom's resilience. \n\nAs his words echo, switch to a wide shot that showcases the standoff, the tension palpable in the air. The drums crescendo, signaling the impending clash, while dust swirls around the warriors, encapsulating the moment as one of destiny. Fade to black, leaving the audience anticipating the storm that is about to unfold.",
+              "**Cinematic Video Motion Prompt:** \n\nOpen with an overhead shot of a desolate battlefield, shrouded in mist. Slowly zoom in on the tense faces of soldiers, their eyes filled with anxiety. Cut to a close-up of the chieftain's sneer, highlighting his cruel demeanor. Suddenly, with a rapid camera movement, focus on his hand as it swiftly draws a weapon, igniting chaos. \n\nTransition to a wide shot capturing the eruption of battle; the clash of steel ringing out, swords clashing, and men shouting in the heat of conflict. \n\nShift to the king, framed heroically amidst the chaos, his expression fierce and determined. Slow-motion captures his first strike as he deflects an attack, embodying the spirit and heart of his people. \n\nIn a dynamic montage, intersperse shots of the king's bravery inspiring his soldiers, rallying them as they fight with renewed vigor. \n\nCut to a triumphant wide shot of the battlefield, the chaos subsiding as the king and his soldiers emerge victorious, their cheers echoing amidst the remnants of battle, capturing the essence of unity and courage. Close with a lingering shot of the king, standing tall, the sun breaking through the clouds, symbolizing hope and resilience.",
+              "**Cinematic Video Motion Prompt:**  \nOpen with a sweeping aerial shot of a once-chaotic battlefield, now eerily quiet under a fading sunset. Slowly zoom in on the distant silhouettes of fleeing marauders, their figures diminishing as they retreat into the horizon. Cut to a close-up of the kingdom’s citizens cautiously emerging from their hiding spots, their faces slowly transforming from fear to relief. Capture their wide eyes filled with gratitude and hope, as they survey the aftermath. Transition to a medium shot of Vikramaditya standing tall amidst the remnants of battle, his armor glistening in the dim light, breathing heavily as he surveys the scene with a mix of exhaustion and triumph. The camera slowly circles him, emphasizing his resolve and the sense of safety returning to the kingdom. End with a fade-out, focusing on the peaceful faces of the citizens, hinting at the dawn of a new era.",
+              "**Cinematic Video Motion Prompt:**\n\nOpen with a sweeping aerial shot of a rugged landscape, the sun rising over distant mountains, casting a warm glow. Transition to a close-up of a rugged leader standing on a rocky outcrop, wind gently tousling his hair. His eyes reflect determination and wisdom, glistening with respect from a diverse gathering of his people below. \n\nAs he speaks softly, the camera slowly pans across the faces of the crowd, capturing their reverence and hope. The shot shifts to a low-angle view of the leader as he raises his hand, symbolizing unity and strength. \n\nCut to scenes of the people coming together, forming a circle under the vast sky, hands clasped in solidarity. The music swells, underscoring the power of community. \n\nThe final shot zooms out, revealing the leader at the center, surrounded by his people, as they look toward the horizon—a symbol of their shared journey toward peace and strength in unity. Fade to black with the words “In our unity, let us find peace” appearing on screen."
+            ],
+            "model": [
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini",
+              "gpt-4o-mini"
+            ],
+            "tokens": [
+              1270,
+              1100,
+              1445,
+              1311,
+              1315,
+              1204,
+              908,
+              1029
+            ],
+            "apiCalls": [
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "In a tense moment, a distant trumpet sounded across the valley. Villagers hurriedly fled as marauders stormed their homes. Fear writhed through the air like a tightrope ready to snap. The news reached the royal court, where voices rose in panic.",
+                  "systemPrompt": "Generate a cinematic video motion prompt for this scene. Return only the prompt.",
+                  "temperature": 0.8
+                },
+                "response": {
+                  "text": "**Cinematic Video Motion Prompt:** \n\n**Opening shot:** A sweeping aerial view of a tranquil valley, suddenly pierced by the distant sound of a trumpet. \n\n**Cut to:** Close-up of villagers' faces, eyes wide with fear as they drop their daily tasks and look toward the horizon.\n\n**Transition:** A quick montage of frantic movement—children being pulled inside, doors slamming shut, and a woman frantically gathering her belongings.\n\n**Action shot:** A group of marauders on horseback bursting into the village, cloaked figures silhouetted against the setting sun, their weapons glinting menacingly.\n\n**Cut to:** A tight shot of a villager's hand trembling as they clutch a necklace, the fear palpable.\n\n**Dissolve to:** Inside the royal court, a grand room filled with tension. Courtiers rise from their seats, their faces etched with panic, voices overlapping as the news is relayed.\n\n**Close-up:** A monarch’s hand gripping the armrest of their throne, knuckles white, as they attempt to maintain composure amid the chaos.\n\n**Final shot:** A wide-angle view of the valley, now echoing with the sounds of distress and confusion, as the camera pulls back to reveal the encroaching marauders in the distance—an impending storm of chaos ready to engulf the peaceful village.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 79,
+                  "completionTokens": 270,
+                  "totalTokens": 349,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:33.440Z",
+                "duration": 5004,
+                "callIndex": 1
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "Ordinary officials quarreled, unsure of their power. The king stood, his gaze steady, absorbing the urgency. This was no time for idle debate. Vikramaditya donned his armor, a symbol of his resolve.",
+                  "systemPrompt": "Generate a cinematic video motion prompt for this scene. Return only the prompt.",
+                  "temperature": 0.8
+                },
+                "response": {
+                  "text": "**Cinematic Video Motion Prompt:** \n\n*Open with a wide shot of a dimly lit throne room filled with bickering officials, their voices echoing off the stone walls. The camera slowly zooms in on King Vikramaditya standing tall at the head of the room, his expression calm yet commanding. As the camera pans to his face, focus on the intensity in his eyes, reflecting the weight of the moment. Cut to a close-up of his hands gripping the armrest of the throne, then transition to a dramatic shot of him rising with purpose. The camera follows him as he strides purposefully towards a nearby display of armor, the sunlight glinting off the metal. With each step, the tension in the room escalates, voices fading as the king's presence commands silence. Capture a slow-motion moment as Vikramaditya dons his armor, the sound of metal clinking reverberating through the air. End with a powerful close-up of the king's face, resolute and ready for the challenges ahead, as the officials look on in awe and apprehension. Overlay with a rising orchestral score to heighten the emotional stakes. Fade to black.*",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 73,
+                  "completionTokens": 239,
+                  "totalTokens": 312,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:33.071Z",
+                "duration": 4634,
+                "callIndex": 2
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "He rallied his soldiers, their eyes filled with loyalty and fear. “We ride at dawn,” he declared, the weight of his words settling deeply. Through the night, he planned a strategy, each detail carefully weighted. At dawn, the king's army marched, determination radiating from their ranks.",
+                  "systemPrompt": "Generate a cinematic video motion prompt for this scene. Return only the prompt.",
+                  "temperature": 0.8
+                },
+                "response": {
+                  "text": "**Cinematic Video Motion Prompt:**\n\nOpen with a wide shot of a dimly lit war room, flickering candlelight casting shadows on a rugged stone wall. The camera slowly zooms in on the king, a resolute figure standing before a large wooden table scattered with battle maps and glowing embers. As he speaks, his voice resonates with authority, the camera capturing the fierce loyalty and barely concealed fear in the eyes of his soldiers surrounding him. \n\nTransition to a close-up of the king’s hand as it clenches a sword hilt, symbolizing determination. The scene shifts to a montage of preparations in the dark, soldiers sharpening weapons and donning armor, intercut with the king deep in thought, tracing strategies on the maps. \n\nAs the first light of dawn breaks, a sweeping aerial shot reveals the vast army assembled, banners fluttering in the morning breeze. The camera glides through the ranks, capturing the fierce expressions of each soldier. The king, now mounted on his steed, raises his sword high, his silhouette striking against the rising sun. \n\nWith a commanding shout, the camera cuts to a close-up of the king's fierce gaze, then pulls back to show the army erupting forward in unison. The sound of hooves pounding the earth crescendos as they charge, determination radiating from the ranks, the dawn light illuminating their path forward. Fade out as the first rays of sunlight cast an ethereal glow over the battlefield ahead.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 86,
+                  "completionTokens": 298,
+                  "totalTokens": 384,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:34.838Z",
+                "duration": 6400,
+                "callIndex": 3
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "The marauders, sensing impending doom, fortified their position. Vikramaditya advanced, knowing the stakes were high. He called for a parley, his voice echoing in the valley. As tension hung in the air, he witnessed the trembling fear of his men.",
+                  "systemPrompt": "Generate a cinematic video motion prompt for this scene. Return only the prompt.",
+                  "temperature": 0.8
+                },
+                "response": {
+                  "text": "**Cinematic Video Motion Prompt:** \n\nOpen with a sweeping aerial shot of a rugged valley, dark clouds gathering ominously overhead. The camera pans down to reveal the scattered but fortified positions of the marauders, their faces hardened and resolute. Cut to a close-up of Vikramaditya, his determined expression reflecting the gravity of the moment. As he strides forward, the camera follows him in a steady tracking shot, emphasizing the weight of his purpose. \n\nTransition to a wide shot of the valley as he raises his hand to signal for a parley, his voice resonating powerfully against the backdrop of nature's tension. The sound of his call echoes, reverberating through the air, as the camera zooms in on the faces of his men—fear etched in their features, eyes darting nervously. \n\nShift to a slow-motion sequence, capturing the palpable anxiety amongst the troops, the trembling hands gripping weapons, the subtle shifts in posture reflecting their dread. Overlay the sound of a heartbeat, building the tension, as Vikramaditya stands firm, his gaze unwavering. \n\nFinally, pull back for a dramatic shot of the valley, capturing the looming clouds and the silence that hangs like a sword over both armies, suggesting the impending clash of fate. Fade to black, leaving a lingering sense of foreboding.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 81,
+                  "completionTokens": 269,
+                  "totalTokens": 350,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:34.284Z",
+                "duration": 5845,
+                "callIndex": 4
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "In their eyes, he saw the cost of failure, etched in every line of their faces. The enemy's chieftain stepped forward, a sneer twisting his lips. Vikramaditya stood firm, embodying the strength of an entire kingdom. “Leave this land in peace, or face the consequences.” The challenge echoed, a drumbeat of destiny.",
+                  "systemPrompt": "Generate a cinematic video motion prompt for this scene. Return only the prompt.",
+                  "temperature": 0.8
+                },
+                "response": {
+                  "text": "**Cinematic Video Motion Prompt:** \n\nBegin with a dramatic aerial shot of a desolate battlefield at dusk, the sky painted in deep hues of orange and purple. Slowly zoom in on Vikramaditya, a rugged warrior standing resolute, his silhouette outlined by the flickering flames of nearby torches. As the camera pans, focus on the tense expressions of his followers, their eyes reflecting a mixture of fear and determination, each line on their faces telling stories of past struggles. \n\nCut to a close-up of the enemy chieftain stepping forward, his sneer sharp and menacing, framed against the chaos behind him. The sound of distant drums begins to build, creating a rhythmic heartbeat that syncs with Vikramaditya's steadfast gaze. \n\nShift back to Vikramaditya as he raises his sword slightly, his voice resonating with authority: \"Leave this land in peace, or face the consequences.\" The camera captures the intensity in his eyes, a fierce determination that speaks of a kingdom's resilience. \n\nAs his words echo, switch to a wide shot that showcases the standoff, the tension palpable in the air. The drums crescendo, signaling the impending clash, while dust swirls around the warriors, encapsulating the moment as one of destiny. Fade to black, leaving the audience anticipating the storm that is about to unfold.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 99,
+                  "completionTokens": 272,
+                  "totalTokens": 371,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:32.972Z",
+                "duration": 4532,
+                "callIndex": 5
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "After a tense silence, the chieftain sneered again. With a swift motion, he drew a weapon, igniting chaos. The clash of steel filled the air, but the king fought valiantly, embodying the heart of his people. His courage inspired his soldiers, and together, they triumphed.",
+                  "systemPrompt": "Generate a cinematic video motion prompt for this scene. Return only the prompt.",
+                  "temperature": 0.8
+                },
+                "response": {
+                  "text": "**Cinematic Video Motion Prompt:** \n\nOpen with an overhead shot of a desolate battlefield, shrouded in mist. Slowly zoom in on the tense faces of soldiers, their eyes filled with anxiety. Cut to a close-up of the chieftain's sneer, highlighting his cruel demeanor. Suddenly, with a rapid camera movement, focus on his hand as it swiftly draws a weapon, igniting chaos. \n\nTransition to a wide shot capturing the eruption of battle; the clash of steel ringing out, swords clashing, and men shouting in the heat of conflict. \n\nShift to the king, framed heroically amidst the chaos, his expression fierce and determined. Slow-motion captures his first strike as he deflects an attack, embodying the spirit and heart of his people. \n\nIn a dynamic montage, intersperse shots of the king's bravery inspiring his soldiers, rallying them as they fight with renewed vigor. \n\nCut to a triumphant wide shot of the battlefield, the chaos subsiding as the king and his soldiers emerge victorious, their cheers echoing amidst the remnants of battle, capturing the essence of unity and courage. Close with a lingering shot of the king, standing tall, the sun breaking through the clouds, symbolizing hope and resilience.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 90,
+                  "completionTokens": 256,
+                  "totalTokens": 346,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:32.660Z",
+                "duration": 4219,
+                "callIndex": 6
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "The marauders fled, terror cementing their defeat. As silence fell, relief washed over the kingdom. Citizens emerged, eyes wide with gratitude. Vikramaditya, breathing heavily, surveyed the scene.",
+                  "systemPrompt": "Generate a cinematic video motion prompt for this scene. Return only the prompt.",
+                  "temperature": 0.8
+                },
+                "response": {
+                  "text": "**Cinematic Video Motion Prompt:**  \nOpen with a sweeping aerial shot of a once-chaotic battlefield, now eerily quiet under a fading sunset. Slowly zoom in on the distant silhouettes of fleeing marauders, their figures diminishing as they retreat into the horizon. Cut to a close-up of the kingdom’s citizens cautiously emerging from their hiding spots, their faces slowly transforming from fear to relief. Capture their wide eyes filled with gratitude and hope, as they survey the aftermath. Transition to a medium shot of Vikramaditya standing tall amidst the remnants of battle, his armor glistening in the dim light, breathing heavily as he surveys the scene with a mix of exhaustion and triumph. The camera slowly circles him, emphasizing his resolve and the sense of safety returning to the kingdom. End with a fade-out, focusing on the peaceful faces of the citizens, hinting at the dawn of a new era.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 67,
+                  "completionTokens": 181,
+                  "totalTokens": 248,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:31.953Z",
+                "duration": 3512,
+                "callIndex": 7
+              },
+              {
+                "request": {
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "prompt": "Respect gleamed in their eyes, but he sought none. He understood true strength lay not in power, but in protecting his people. “In our unity, let us find peace,” he declared quietly, knowing his duty would lead them forward.",
+                  "systemPrompt": "Generate a cinematic video motion prompt for this scene. Return only the prompt.",
+                  "temperature": 0.8
+                },
+                "response": {
+                  "text": "**Cinematic Video Motion Prompt:**\n\nOpen with a sweeping aerial shot of a rugged landscape, the sun rising over distant mountains, casting a warm glow. Transition to a close-up of a rugged leader standing on a rocky outcrop, wind gently tousling his hair. His eyes reflect determination and wisdom, glistening with respect from a diverse gathering of his people below. \n\nAs he speaks softly, the camera slowly pans across the faces of the crowd, capturing their reverence and hope. The shot shifts to a low-angle view of the leader as he raises his hand, symbolizing unity and strength. \n\nCut to scenes of the people coming together, forming a circle under the vast sky, hands clasped in solidarity. The music swells, underscoring the power of community. \n\nThe final shot zooms out, revealing the leader at the center, surrounded by his people, as they look toward the horizon—a symbol of their shared journey toward peace and strength in unity. Fade to black with the words “In our unity, let us find peace” appearing on screen.",
+                  "model": "gpt-4o-mini-2024-07-18",
+                  "promptTokens": 75,
+                  "completionTokens": 218,
+                  "totalTokens": 293,
+                  "finishReason": "stop"
+                },
+                "timestamp": "2026-01-04T14:32:32.454Z",
+                "duration": 4012,
+                "callIndex": 8
+              }
+            ],
+            "itemsCount": 8,
+            "nodeType": "text_to_text"
+          }
+        }
+      },
+      {
+        "nodeId": "node-tts-all",
+        "nodeType": "text_to_speech",
+        "success": false,
+        "error": "Request failed with status code 502"
+      }
+    ],
+    "videoUrl": null
+  },
+  {
     "workflowId": "e7916cc5-e923-11f0-8b3d-3e25e3b76fba",
     "workflowName": "Story to Scenes (Parallel Template)",
     "status": "failed",
@@ -28463,23 +29318,6 @@
     "startTime": "2025-12-25T06:27:38.847Z",
     "endTime": "2025-12-25T06:27:39.255Z",
     "durationMs": 408,
-    "nodeCount": 1,
-    "results": [
-      {
-        "nodeId": "node1",
-        "nodeType": "text_to_text",
-        "success": false,
-        "error": "Request failed with status code 401"
-      }
-    ]
-  },
-  {
-    "workflowId": "9b730cdd-e15a-11f0-922e-8e98c6eac3ff",
-    "workflowName": "OpenAI Test Workflow",
-    "status": "failed",
-    "startTime": "2025-12-25T06:26:11.980Z",
-    "endTime": "2025-12-25T06:26:13.067Z",
-    "durationMs": 1087,
     "nodeCount": 1,
     "results": [
       {
