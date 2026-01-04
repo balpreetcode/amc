@@ -1,0 +1,64 @@
+services:
+  workflow-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: workflow-frontend
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.workflow-frontend.rule=Host(`workflow.localhost`)"
+      - "traefik.http.routers.workflow-frontend.entrypoints=web"
+      - "traefik.http.services.workflow-frontend.loadbalancer.server.port=8080"
+    networks:
+      - proxy
+      - workflow-internal
+    depends_on:
+      - workflow-backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  workflow-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: workflow-backend
+    restart: unless-stopped
+    environment:
+      - PORT=8080
+      - CONDUCTOR_URL=${CONDUCTOR_URL:-https://p5200.winds-os.com/api}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - FAL_KEY=${FAL_KEY}
+      - WORKER_ID=workflow-worker-docker
+      - POLL_INTERVAL_MS=1000
+    env_file:
+      - ./backend/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.workflow-backend.rule=Host(`workflow-api.localhost`)"
+      - "traefik.http.routers.workflow-backend.entrypoints=web"
+      - "traefik.http.services.workflow-backend.loadbalancer.server.port=8080"
+    networks:
+      - proxy
+      - workflow-internal
+    volumes:
+      - workflow-output:/app/../output
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  proxy:
+    external: true
+  workflow-internal:
+    driver: bridge
+
+volumes:
+  workflow-output:

@@ -26,7 +26,7 @@ interface ExecutionResult {
     status: 'completed' | 'failed';
     startTime: string;
     endTime: string;
-    durationMs: number;
+    durationMs: number | null;
     nodeCount: number;
     videoUrl?: string;
     results?: NodeResult[];
@@ -63,7 +63,8 @@ export function ExecutionHistory() {
         fetchHistory();
     }, []);
 
-    const formatDuration = (ms: number) => {
+    const formatDuration = (ms: number | null | undefined) => {
+        if (ms == null || isNaN(ms)) return 'NA';
         if (ms < 1000) return `${ms}ms`;
         const seconds = Math.floor(ms / 1000);
         if (seconds < 60) return `${seconds}s`;

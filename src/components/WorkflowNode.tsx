@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import type { WorkflowNodeData } from '../types/nodes';
 import { getNodeTypeConfig } from '../types/nodes';
 import { useWorkflowContext } from '../context/WorkflowContext';
@@ -21,9 +21,31 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
     isCurrentlyRunning = false,
     arrayInputCount
 }) => {
-    const { selectedNodeId, setSelectedNodeId } = useWorkflowContext();
+    const { selectedNodeId, setSelectedNodeId, runFromNode, execution } = useWorkflowContext();
     const [menuOpen, setMenuOpen] = React.useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
+
+    useEffect(() => {
+        if (!menuOpen) return;
+
+        const handleInteractionOutside = (e: MouseEvent | FocusEvent) => {
+            const isClickOnToggle = buttonRef.current && buttonRef.current.contains(e.target as Node);
+            if (menuRef.current && !menuRef.current.contains(e.target as Node) && !isClickOnToggle) {
+                setMenuOpen(false);
+            }
+        };
+
+        window.addEventListener('mousedown', handleInteractionOutside, true);
+        window.addEventListener('focusin', handleInteractionOutside, true);
+
+        return () => {
+            window.removeEventListener('mousedown', handleInteractionOutside, true);
+            window.removeEventListener('focusin', handleInteractionOutside, true);
+        };
+    }, [menuOpen]);
     const config = getNodeTypeConfig(node.type);
+    const hasMockData = node.mockData?.enabled && node.mockData?.data != null;
 
     const getStatusBadge = () => {
         switch (node.status) {
@@ -62,14 +84,18 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
                     <span className="meta-badge meta-parallel">Parallel</span>
                 )}
                 <button
+                    ref={buttonRef}
                     className="node-menu-btn"
-                    onClick={() => setMenuOpen(!menuOpen)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuOpen(!menuOpen);
+                    }}
                 >
                     ⋮
                 </button>
 
                 {menuOpen && (
-                    <div className="node-menu">
+                    <div className="node-menu" ref={menuRef}>
                         <button onClick={() => {
                             onUpdate(node.id, { title: prompt('Enter new title:', node.title.replace(/^\d+\.\s*/, '')) || node.title });
                             setMenuOpen(false);
@@ -91,6 +117,18 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
                         >
                             🗑️ Delete
                         </button>
+                        {hasMockData && (
+                            <button
+                                className="run-from-btn"
+                                onClick={() => {
+                                    runFromNode(node.id);
+                                    setMenuOpen(false);
+                                }}
+                                disabled={execution.isRunning}
+                            >
+                                ▶️ Run from here
+                            </button>
+                        )}
                     </div>
                 )}
             </div>

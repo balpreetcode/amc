@@ -1,0 +1,15 @@
+node_modules
+.git
+.gitignore
+*.md
+.env.example
+*.json.backup
+test-*.js
+verify-*.js
+migrate-*.js
+mock-*.js
+workflow-history.json
+templates.json
+templates.json.backup
+*.log
+.DS_Store

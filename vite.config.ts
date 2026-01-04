@@ -8,7 +8,12 @@ export default defineConfig({
     port: 3465,
     proxy: {
       '/workflow': 'http://localhost:3002',
-      '/health': 'http://localhost:3002'
+      '/health': 'http://localhost:3002',
+      '/api': 'http://localhost:3002',
+      '/templates': 'http://localhost:3002',
+      '/template': 'http://localhost:3002',
+      '/download': 'http://localhost:3002',
+      '/session': 'http://localhost:3002'
     }
   }
 })

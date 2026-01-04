@@ -14,6 +14,8 @@ const { generateSpeech } = require('./generators/speech');
 const { generateImageOpenAI, editImageOpenAI } = require('./generators/openai-image');
 const { composeVideo, concatAudioUrls, concatVideoUrls } = require('./generators/ffmpeg');
 const db = require('./db');
+const { generateToken, verifyToken, getAllTokens, deleteToken } = require('./tokens');
+const { validateSessionToken } = require('./mongodb');
 
 const HISTORY_FILE = path.join(__dirname, 'workflow-history.json');
 const CONDUCTOR_URL = process.env.CONDUCTOR_URL || 'https://p5200.winds-os.com/api';
@@ -34,6 +36,34 @@ app.use(express.json());
 // Serve output folder for videos and audio files
 const OUTPUT_DIR = path.join(__dirname, '..', 'output');
 app.use('/output', express.static(OUTPUT_DIR));
+
+// API Routes
+const authRoutes = require('./routes/auth');
+const workflowRoutes = require('./routes/workflows');
+const executionRoutes = require('./routes/executions');
+const nodeRoutes = require('./routes/nodes');
+
+app.use('/auth', authRoutes);
+app.use('/workflows', workflowRoutes);
+app.use('/executions', executionRoutes);
+app.use('/nodes', nodeRoutes);
+
+// Session token validation endpoint
+app.get('/session/validate', async (req, res) => {
+    const token = req.query.token;
+
+    if (!token) {
+        return res.json({ valid: false, error: 'No token provided' });
+    }
+
+    try {
+        const result = await validateSessionToken(token);
+        res.json(result);
+    } catch (error) {
+        console.error('[Session] Validation error:', error.message);
+        res.json({ valid: false, error: 'Validation failed' });
+    }
+});
 
 const savedHistoryIds = new Set();
 
@@ -692,6 +722,130 @@ function saveExecutionHistory(executionData) {
     }
 }
 
+async function syncHistoryFromConductor() {
+    try {
+        console.log('[History] Checking if sync from Conductor is needed...');
+
+        // Load local history
+        let localHistory = [];
+        if (fs.existsSync(HISTORY_FILE)) {
+            const data = fs.readFileSync(HISTORY_FILE, 'utf8');
+            localHistory = JSON.parse(data);
+        }
+
+        const localCount = localHistory.length;
+        console.log(`[History] Local history has ${localCount} entries`);
+
+        // Only sync if local history has fewer than 50 entries
+        if (localCount >= 50) {
+            console.log('[History] Local history is full (50 entries), skipping sync');
+            return localHistory;
+        }
+
+        // Search for workflows in Conductor
+        // Use the search API to get workflow executions
+        const searchResponse = await conductor.get('/workflow/search', {
+            params: {
+                start: 0,
+                size: 100,  // Fetch up to 100 to check count
+                sort: 'startTime:DESC',
+                freeText: '*'  // Search all workflows
+            }
+        });
+
+        const conductorWorkflows = searchResponse.data.results || [];
+        const conductorCount = searchResponse.data.totalHits || conductorWorkflows.length;
+
+        console.log(`[History] Conductor has ${conductorCount} total executions`);
+
+        // Sync needed: local < 50 AND conductor >= 50
+        if (conductorCount >= 50) {
+            console.log('[History] Syncing workflows from Conductor...');
+
+            // Get existing workflow IDs to avoid duplicates
+            const existingIds = new Set(localHistory.map(entry => entry.workflowId));
+
+            // Process workflows from Conductor
+            const syncedWorkflows = [];
+            for (const workflow of conductorWorkflows) {
+                // Skip if already in local history
+                if (existingIds.has(workflow.workflowId)) {
+                    continue;
+                }
+
+                const status = mapWorkflowStatus(workflow.status);
+                if (status !== 'completed' && status !== 'failed') {
+                    continue;
+                }
+
+                const startTime = workflow.startTime ? new Date(workflow.startTime).toISOString() : new Date().toISOString();
+                const endTime = workflow.endTime ? new Date(workflow.endTime).toISOString() : new Date().toISOString();
+                const durationMs = workflow.endTime && workflow.startTime ? workflow.endTime - workflow.startTime : 0;
+
+                const results = (workflow.tasks || []).map(task => ({
+                    nodeId: task.inputData?.nodeId || task.taskReferenceName,
+                    nodeType: task.inputData?.nodeType || task.taskType,
+                    success: task.status === 'COMPLETED',
+                    data: task.status === 'COMPLETED' ? { type: task.taskType, output: task.outputData } : undefined,
+                    error: task.status === 'FAILED' ? task.reasonForIncompletion || task.failureReason : undefined
+                }));
+
+                // Extract video URL
+                let videoUrl = null;
+                if (status === 'completed') {
+                    for (const task of workflow.tasks || []) {
+                        if (task.status === 'COMPLETED' &&
+                            (task.inputData?.nodeType === 'edit_video' || task.taskType === 'edit_video')) {
+                            videoUrl = task.outputData?.videoUrl || null;
+                            if (videoUrl) break;
+                        }
+                    }
+                }
+
+                syncedWorkflows.push({
+                    workflowId: workflow.workflowId,
+                    workflowName: workflow.input?.workflowName || 'Untitled Workflow',
+                    status,
+                    startTime,
+                    endTime,
+                    durationMs,
+                    nodeCount: workflow.tasks?.length || 0,
+                    results,
+                    videoUrl
+                });
+            }
+
+            // Merge synced workflows with local history
+            const mergedHistory = [...syncedWorkflows, ...localHistory];
+
+            // Keep only the most recent 50
+            const finalHistory = mergedHistory.slice(0, 50);
+
+            // Save merged history
+            fs.writeFileSync(HISTORY_FILE, JSON.stringify(finalHistory, null, 2));
+
+            console.log(`[History] Synced ${syncedWorkflows.length} new workflows from Conductor`);
+            console.log(`[History] Total history now: ${finalHistory.length} entries`);
+
+            // Update saved IDs cache
+            finalHistory.forEach(entry => savedHistoryIds.add(entry.workflowId));
+
+            return finalHistory;
+        } else {
+            console.log(`[History] No sync needed (Conductor has ${conductorCount} < 50)`);
+            return localHistory;
+        }
+    } catch (error) {
+        console.error('[History] Failed to sync from Conductor:', error.message);
+        // Return local history on error
+        if (fs.existsSync(HISTORY_FILE)) {
+            const data = fs.readFileSync(HISTORY_FILE, 'utf8');
+            return JSON.parse(data);
+        }
+        return [];
+    }
+}
+
 function mapTaskStatus(status) {
     switch (status) {
         case 'IN_PROGRESS':
@@ -1200,29 +1354,79 @@ function maybeSaveHistory(workflow) {
 
 app.post('/workflow/run', async (req, res) => {
     try {
-        const { nodes, workflowName } = req.body;
+        const { nodes, workflowName, startFromNodeId, mockData } = req.body;
 
         if (!nodes || !Array.isArray(nodes) || nodes.length === 0) {
             return res.status(400).json({ error: 'Nodes array is required' });
         }
 
-        const uniqueTaskTypes = [...new Set(nodes.map(node => node.type))];
+        // If we're starting from a specific node with mock data, inject it
+        let processedNodes = nodes;
+        if (startFromNodeId && mockData !== undefined) {
+            console.log(`[API] Starting workflow from node ${startFromNodeId} with mock data`);
+
+            // Find the starting node index
+            const startNodeIndex = nodes.findIndex(n => n.id === startFromNodeId);
+            if (startNodeIndex === -1) {
+                return res.status(400).json({ error: 'Start node not found' });
+            }
+
+            // Process nodes: inject mock data into the first node's config
+            processedNodes = nodes.map((node, idx) => {
+                if (idx === 0) {
+                    // For the first node (the starting node), we need to replace
+                    // any references in its config with actual mock data values
+                    const newConfig = { ...node.config };
+
+                    // If mock data is a simple object with known keys, inject them
+                    if (mockData && typeof mockData === 'object' && !Array.isArray(mockData)) {
+                        // Inject mock data fields into config, replacing references
+                        for (const [key, value] of Object.entries(newConfig)) {
+                            if (value && typeof value === 'object' && value._type === 'reference') {
+                                // Replace reference with mock data value for that output key
+                                const outputKey = value.outputKey;
+                                if (mockData[outputKey] !== undefined) {
+                                    newConfig[key] = mockData[outputKey];
+                                } else if (Object.keys(mockData).length === 1) {
+                                    // If mock data has only one key, use it
+                                    newConfig[key] = Object.values(mockData)[0];
+                                }
+                            }
+                        }
+                    }
+
+                    return {
+                        ...node,
+                        config: newConfig,
+                        // Also store the full mock data for the task to use
+                        _mockData: mockData
+                    };
+                }
+                return node;
+            });
+        }
+
+        const uniqueTaskTypes = [...new Set(processedNodes.map(node => node.type))];
         for (const taskType of uniqueTaskTypes) {
             await ensureTaskDefinition(taskType);
         }
 
         const workflowDefName = `flow_builder_${uuidv4().replace(/-/g, '')}`;
-        const workflowDef = buildWorkflowDefinition(workflowDefName, nodes);
+        const workflowDef = buildWorkflowDefinition(workflowDefName, processedNodes);
         await ensureWorkflowDefinition(workflowDef);
 
         const workflowId = await startWorkflow(workflowDefName, {
-            workflowName: workflowName || 'Untitled Workflow'
+            workflowName: workflowName || 'Untitled Workflow',
+            startFromNodeId: startFromNodeId || null,
+            mockData: startFromNodeId ? mockData : null
         });
 
         res.json({
             success: true,
             workflowId,
-            message: 'Workflow queued for execution'
+            message: startFromNodeId
+                ? `Workflow started from node ${startFromNodeId} with mock data`
+                : 'Workflow queued for execution'
         });
     } catch (error) {
         console.error('[API] Error queueing workflow:', error.message);
@@ -1267,15 +1471,13 @@ app.get('/workflow/:id/status', async (req, res) => {
     }
 });
 
-app.get('/workflow/history', (req, res) => {
+app.get('/workflow/history', async (req, res) => {
     try {
-        if (fs.existsSync(HISTORY_FILE)) {
-            const data = fs.readFileSync(HISTORY_FILE, 'utf8');
-            res.json(JSON.parse(data));
-        } else {
-            res.json([]);
-        }
+        // Sync from Conductor if needed (local < 50 and conductor >= 50)
+        const history = await syncHistoryFromConductor();
+        res.json(history);
     } catch (err) {
+        console.error('[History] Error fetching history:', err);
         res.status(500).json({ error: 'Failed to read history' });
     }
 });
@@ -1496,6 +1698,75 @@ app.get('/download/:filename', (req, res) => {
         } else {
             console.log('[Download] File sent successfully:', filename);
         }
+    });
+});
+
+// API Token Management Routes
+
+// Middleware to check for valid token (optional authentication)
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+    if (!token) {
+        return next(); // Allow unauthenticated access for now
+    }
+
+    const result = verifyToken(token);
+    if (!result.valid) {
+        return res.status(401).json({ error: result.reason });
+    }
+
+    req.tokenData = result.token;
+    next();
+}
+
+// Generate new API token
+app.post('/api/tokens', (req, res) => {
+    const { name, expiresInDays } = req.body;
+    const token = generateToken(name, expiresInDays);
+    res.json(token);
+});
+
+// List all tokens
+app.get('/api/tokens', (req, res) => {
+    const tokens = getAllTokens();
+    res.json(tokens);
+});
+
+// Delete a token
+app.delete('/api/tokens/:id', (req, res) => {
+    const { id } = req.params;
+    const deleted = deleteToken(id);
+    if (deleted) {
+        res.json({ success: true, message: 'Token deleted' });
+    } else {
+        res.status(404).json({ error: 'Token not found' });
+    }
+});
+
+// Get iframe embed URL
+app.get('/api/embed-url', (req, res) => {
+    const { token } = req.query;
+
+    if (!token) {
+        return res.status(400).json({ error: 'Token required' });
+    }
+
+    const result = verifyToken(token);
+    if (!result.valid) {
+        return res.status(401).json({ error: result.reason });
+    }
+
+    // Generate iframe embed code
+    const baseUrl = process.env.FRONTEND_URL || 'http://workflow.localhost';
+    const embedUrl = `${baseUrl}?token=${token}`;
+    const iframeCode = `<iframe src="${embedUrl}" width="100%" height="800" frameborder="0" allow="fullscreen"></iframe>`;
+
+    res.json({
+        embedUrl,
+        iframeCode,
+        tokenValid: true
     });
 });
 

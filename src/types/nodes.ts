@@ -1,3 +1,8 @@
+export interface MockDataConfig {
+  enabled: boolean;
+  data: unknown;  // Single JSON object or array of JSON objects for parallel execution
+}
+
 export interface WorkflowNodeData {
   id: string;
   type: NodeType;
@@ -7,6 +12,7 @@ export interface WorkflowNodeData {
   estimatedTime: string;
   config?: Record<string, unknown>;
   execution?: NodeExecutionConfig;
+  mockData?: MockDataConfig;
 }
 
 export type ExecutionMode = 'parallel' | 'sequential';

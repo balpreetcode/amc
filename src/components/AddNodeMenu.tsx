@@ -18,13 +18,17 @@ export const AddNodeMenu: React.FC<AddNodeMenuProps> = ({
     const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
+        const handleInteractionOutside = (e: MouseEvent | FocusEvent) => {
             if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
                 onClose();
             }
         };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        document.addEventListener('mousedown', handleInteractionOutside, true);
+        document.addEventListener('focusin', handleInteractionOutside, true);
+        return () => {
+            document.removeEventListener('mousedown', handleInteractionOutside, true);
+            document.removeEventListener('focusin', handleInteractionOutside, true);
+        };
     }, [onClose]);
 
     const categories = [
