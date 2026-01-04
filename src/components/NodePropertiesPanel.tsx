@@ -105,6 +105,8 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
     ],
     'edit_video': [
         { name: 'videoUrl', label: 'Source Video', type: 'video' },
+        { name: 'speechVolume', label: 'Speech Volume', type: 'slider', min: 0, max: 2, step: 0.1 },
+        { name: 'musicVolume', label: 'Music Volume', type: 'slider', min: 0, max: 2, step: 0.1 },
         { name: 'startTime', label: 'Trim Start', type: 'text' },
         { name: 'endTime', label: 'Trim End', type: 'text' },
         { name: 'cropRatio', label: 'Crop Ratio', type: 'select', options: ['1:1', '16:9', '9:16'] },
@@ -402,10 +404,10 @@ export const NodePropertiesPanel: React.FC = () => {
                                                 min={field.min}
                                                 max={field.max}
                                                 step={field.step}
-                                                value={fieldValue || field.min}
+                                                value={fieldValue !== undefined ? fieldValue : (field.name === 'speechVolume' ? 1.0 : field.name === 'musicVolume' ? 0.3 : field.min)}
                                                 onChange={(e) => handleFieldChange(field.name, parseFloat(e.target.value))}
                                             />
-                                            <span className="slider-value">{fieldValue || field.min}</span>
+                                            <span className="slider-value">{fieldValue !== undefined ? fieldValue : (field.name === 'speechVolume' ? 1.0 : field.name === 'musicVolume' ? 0.3 : field.min)}</span>
                                         </div>
                                     )}
                                     {field.type === 'toggle' && (

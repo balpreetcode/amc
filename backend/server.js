@@ -181,12 +181,24 @@ const nodeProcessors = {
             // Calculate total video duration from previous nodes
             let totalVideoDuration = 0;
 
-            // Check for image_to_video nodes with duration config
+            // Check for image_to_video and text_to_video nodes with duration config
             previousResults.forEach(result => {
-                if (result.success && result.nodeType === 'image_to_video') {
-                    const videoDuration = result.data?.output?.duration || result.data?.config?.duration || 5;
-                    totalVideoDuration += videoDuration;
-                    console.log(`[text_to_music] Found video node with duration: ${videoDuration}s`);
+                if (result.success && (result.nodeType === 'image_to_video' || result.nodeType === 'text_to_video')) {
+                    const durationData = result.data?.output?.duration || result.data?.config?.duration || 5;
+
+                    // Handle array case (when multiple videos are generated)
+                    if (Array.isArray(durationData)) {
+                        const sum = durationData.reduce((acc, d) => acc + (Number(d) || 5), 0);
+                        totalVideoDuration += sum;
+                        console.log(`[text_to_music] Found ${result.nodeType} node: ${durationData.length} videos with total duration: ${sum}s`);
+                    } else {
+                        // Handle single video case
+                        const videoDuration = Number(durationData) || 5;
+                        const itemsCount = result.data?.output?.itemsCount || 1;
+                        const totalDuration = videoDuration * itemsCount;
+                        totalVideoDuration += totalDuration;
+                        console.log(`[text_to_music] Found ${result.nodeType} node: ${itemsCount} video(s) × ${videoDuration}s = ${totalDuration}s`);
+                    }
                 }
             });
 
