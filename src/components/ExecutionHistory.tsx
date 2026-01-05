@@ -34,6 +34,33 @@ interface ExecutionResult {
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
 
+/**
+ * Normalize video URL for playback through Vite proxy
+ * Converts localhost URLs to relative paths that go through the proxy
+ */
+function normalizeVideoUrl(url: string | undefined): string | null {
+    if (!url) return null;
+
+    // If it's already an external URL (e.g., from Fal AI), return as-is
+    if (url.startsWith('http') && !url.includes('localhost')) {
+        return url;
+    }
+
+    // If it's a localhost URL, extract the path part (e.g., /output/composed_XXX.mp4)
+    if (url.includes('localhost')) {
+        try {
+            const urlObj = new URL(url);
+            return urlObj.pathname; // Returns just the path, e.g., /output/composed_XXX.mp4
+        } catch (e) {
+            console.error('Failed to parse video URL:', url, e);
+            return url;
+        }
+    }
+
+    // Already a relative path
+    return url;
+}
+
 export function ExecutionHistory() {
     const [history, setHistory] = useState<ExecutionResult[]>([]);
     const [loading, setLoading] = useState(true);
@@ -79,8 +106,11 @@ export function ExecutionHistory() {
 
     const handleDownloadVideo = async (videoUrl: string) => {
         try {
+            // Normalize the URL first
+            const normalizedUrl = normalizeVideoUrl(videoUrl) || videoUrl;
+
             // Extract filename from URL
-            const filename = videoUrl.split('/').pop() || 'video.mp4';
+            const filename = normalizedUrl.split('/').pop() || 'video.mp4';
 
             // Use the download endpoint that forces download with correct headers
             const downloadUrl = `${BACKEND_URL}/download/${filename}`;
@@ -155,7 +185,10 @@ export function ExecutionHistory() {
                                         {run.status === 'completed' && run.videoUrl ? (
                                             <button
                                                 className="video-play-button"
-                                                onClick={() => setPlayingVideo(run.videoUrl!)}
+                                                onClick={() => {
+                                                    const normalizedUrl = normalizeVideoUrl(run.videoUrl);
+                                                    if (normalizedUrl) setPlayingVideo(normalizedUrl);
+                                                }}
                                                 title="Play video"
                                             >
                                                 ▶ Play
@@ -205,6 +238,11 @@ export function ExecutionHistory() {
                                 controls
                                 autoPlay
                                 className="video-player"
+                                onError={(e) => {
+                                    console.error('Video playback error:', e);
+                                    alert('Failed to load video. The file may have been generated in a different environment (Docker). Please re-run the workflow to regenerate the video locally.');
+                                    setPlayingVideo(null);
+                                }}
                             >
                                 Your browser does not support the video tag.
                             </video>

@@ -564,6 +564,11 @@
   overflow-y: auto;
   white-space: pre-wrap;
   word-break: break-word;
+  /* Make text selectable and copyable */
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
 }
 
 /* JSON viewer scrollbar */
@@ -736,6 +741,11 @@
   font-weight: 500;
   border: none;
   transition: all 0.2s ease;
+  /* Make error text selectable and copyable */
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
 }
 
 .error-badge.clickable {

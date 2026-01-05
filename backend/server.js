@@ -672,7 +672,6 @@ function loadHistoryIndex() {
 
         // Migrate old history entries to add videoUrl if missing
         let needsUpdate = false;
-        const currentPort = PORT;
         const updatedHistory = history.map(entry => {
             if (!entry.videoUrl && entry.status === 'completed' && entry.results) {
                 // Try to extract videoUrl from results
@@ -687,21 +686,31 @@ function loadHistoryIndex() {
                 }
             }
 
-            // Fix video URLs with wrong port (3001 -> current port)
-            if (entry.videoUrl && entry.videoUrl.includes('localhost:3001')) {
-                entry.videoUrl = entry.videoUrl.replace('localhost:3001', `localhost:${currentPort}`);
-                needsUpdate = true;
+            // Convert video URLs to relative paths (strip http://localhost:PORT)
+            // This ensures URLs work regardless of environment (Docker vs local)
+            if (entry.videoUrl && entry.videoUrl.includes('localhost')) {
+                const originalUrl = entry.videoUrl;
+                try {
+                    const urlObj = new URL(entry.videoUrl);
+                    entry.videoUrl = urlObj.pathname; // Keep only the path, e.g., /output/composed_XXX.mp4
+                    if (entry.videoUrl !== originalUrl) {
+                        needsUpdate = true;
+                    }
+                } catch (e) {
+                    // If URL parsing fails, leave as-is
+                    console.warn('[History] Failed to parse video URL:', entry.videoUrl);
+                }
             }
 
             savedHistoryIds.add(entry.workflowId);
             return entry;
         });
 
-        // Save updated history if we added videoUrls or fixed ports
+        // Save updated history if we added videoUrls or converted to relative paths
         if (needsUpdate) {
             fs.writeFileSync(HISTORY_FILE, JSON.stringify(updatedHistory, null, 2));
             const withVideo = updatedHistory.filter(e => e.videoUrl).length;
-            console.log(`[History] Migrated ${withVideo} entries with video URLs (fixed ports to ${currentPort})`);
+            console.log(`[History] Migrated ${withVideo} entries with video URLs (converted to relative paths)`);
         }
     } catch (error) {
         console.error('[History] Failed to load history index:', error.message);
@@ -797,14 +806,27 @@ async function syncHistoryFromConductor() {
                     error: task.status === 'FAILED' ? task.reasonForIncompletion || task.failureReason : undefined
                 }));
 
-                // Extract video URL
+                // Extract video URL and convert to relative path if needed
                 let videoUrl = null;
                 if (status === 'completed') {
                     for (const task of workflow.tasks || []) {
                         if (task.status === 'COMPLETED' &&
                             (task.inputData?.nodeType === 'edit_video' || task.taskType === 'edit_video')) {
-                            videoUrl = task.outputData?.videoUrl || null;
-                            if (videoUrl) break;
+                            const rawVideoUrl = task.outputData?.videoUrl || null;
+                            if (rawVideoUrl) {
+                                // Convert localhost URLs to relative paths
+                                if (rawVideoUrl.includes('localhost')) {
+                                    try {
+                                        const urlObj = new URL(rawVideoUrl);
+                                        videoUrl = urlObj.pathname;
+                                    } catch (e) {
+                                        videoUrl = rawVideoUrl;
+                                    }
+                                } else {
+                                    videoUrl = rawVideoUrl;
+                                }
+                                break;
+                            }
                         }
                     }
                 }
@@ -1324,22 +1346,40 @@ function maybeSaveHistory(workflow) {
     const endTime = workflow.endTime ? new Date(workflow.endTime).toISOString() : new Date().toISOString();
     const durationMs = workflow.endTime && workflow.startTime ? workflow.endTime - workflow.startTime : 0;
 
-    const results = (workflow.tasks || []).map(task => ({
-        nodeId: task.inputData?.nodeId || task.taskReferenceName,
-        nodeType: task.inputData?.nodeType || task.taskType,
-        success: task.status === 'COMPLETED',
-        data: task.status === 'COMPLETED' ? { type: task.taskType, output: task.outputData } : undefined,
-        error: task.status === 'FAILED' ? task.reasonForIncompletion || task.failureReason : undefined
-    }));
+    const results = (workflow.tasks || []).map(task => {
+        const errorMsg = task.status === 'FAILED'
+            ? (task.reasonForIncompletion || task.failureReason || `Task failed with status: ${task.status}`)
+            : undefined;
+        return {
+            nodeId: task.inputData?.nodeId || task.taskReferenceName,
+            nodeType: task.inputData?.nodeType || task.taskType,
+            success: task.status === 'COMPLETED',
+            data: task.status === 'COMPLETED' ? { type: task.taskType, output: task.outputData } : undefined,
+            error: errorMsg
+        };
+    });
 
-    // Extract video URL from results (look for edit_video node)
+    // Extract video URL from results (look for edit_video node) and convert to relative path
     let videoUrl = null;
     if (status === 'completed') {
         for (const task of workflow.tasks || []) {
             if (task.status === 'COMPLETED' &&
                 (task.inputData?.nodeType === 'edit_video' || task.taskType === 'edit_video')) {
-                videoUrl = task.outputData?.videoUrl || null;
-                if (videoUrl) break;
+                const rawVideoUrl = task.outputData?.videoUrl || null;
+                if (rawVideoUrl) {
+                    // Convert localhost URLs to relative paths
+                    if (rawVideoUrl.includes('localhost')) {
+                        try {
+                            const urlObj = new URL(rawVideoUrl);
+                            videoUrl = urlObj.pathname;
+                        } catch (e) {
+                            videoUrl = rawVideoUrl;
+                        }
+                    } else {
+                        videoUrl = rawVideoUrl;
+                    }
+                    break;
+                }
             }
         }
     }

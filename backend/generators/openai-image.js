@@ -195,7 +195,8 @@ async function generateImageOpenAI(prompt, options = {}) {
             const timestamp = Date.now();
             const outputPath = path.join(OUTPUT_DIR, `openai_gen_${timestamp}.png`);
             fs.writeFileSync(outputPath, Buffer.from(imageData.b64_json, 'base64'));
-            imageUrl = `http://localhost:3002/output/openai_gen_${timestamp}.png`;
+            // Return relative URL (frontend will use its own backend URL via proxy)
+            imageUrl = `/output/openai_gen_${timestamp}.png`;
         } else {
             imageUrl = imageData.url;
         }
@@ -307,7 +308,8 @@ async function editImageOpenAI(imageInputs, prompt, options = {}) {
             const timestamp = Date.now();
             const outputPath = path.join(OUTPUT_DIR, `openai_edit_${timestamp}.png`);
             fs.writeFileSync(outputPath, Buffer.from(imageData.b64_json, 'base64'));
-            return `http://localhost:3002/output/openai_edit_${timestamp}.png`;
+            // Return relative URL (frontend will use its own backend URL via proxy)
+            return `/output/openai_edit_${timestamp}.png`;
         }
 
         return imageData.url;

@@ -26,12 +26,25 @@ if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });
  */
 function downloadFile(url, destPath) {
     return new Promise((resolve, reject) => {
-        // Check if it's a local file path (starts with / or contains full path)
-        const isLocalPath = url.startsWith('/') || url.startsWith('.') || !url.includes('://');
+        // Convert /output/XXX paths to absolute filesystem paths
+        let normalizedUrl = url;
+        if (url.startsWith('/output/') || url.startsWith('/temp/')) {
+            // Convert relative URL path to absolute filesystem path
+            const filename = path.basename(url);
+            if (url.startsWith('/output/')) {
+                normalizedUrl = path.join(OUTPUT_DIR, filename);
+            } else {
+                normalizedUrl = path.join(TEMP_DIR, filename);
+            }
+            console.log(`[downloadFile] Converted URL path ${url} to filesystem path ${normalizedUrl}`);
+        }
 
-        if (isLocalPath && fs.existsSync(url)) {
-            console.log(`[downloadFile] Copying local file: ${url} -> ${destPath}`);
-            fs.copyFile(url, destPath, (err) => {
+        // Check if it's a local file path (starts with / or contains full path)
+        const isLocalPath = normalizedUrl.startsWith('/') || normalizedUrl.startsWith('.') || !normalizedUrl.includes('://');
+
+        if (isLocalPath && fs.existsSync(normalizedUrl)) {
+            console.log(`[downloadFile] Copying local file: ${normalizedUrl} -> ${destPath}`);
+            fs.copyFile(normalizedUrl, destPath, (err) => {
                 if (err) {
                     console.error(`[downloadFile] Copy failed:`, err.message);
                     reject(err);
@@ -50,19 +63,19 @@ function downloadFile(url, destPath) {
         }
 
         // It's a URL - download it
-        if (!url.includes('://')) {
-            reject(new Error(`Invalid URL or file not found: ${url}`));
+        if (!normalizedUrl.includes('://')) {
+            reject(new Error(`Invalid URL or file not found: ${normalizedUrl}`));
             return;
         }
 
         // FIX: Normalize localhost URLs to use current PORT
-        let normalizedUrl = url;
-        if (url.includes('localhost:')) {
+        if (normalizedUrl.includes('localhost:')) {
             const currentPort = process.env.PORT || 3002;
             // Replace any localhost:XXXX with localhost:currentPort
-            normalizedUrl = url.replace(/localhost:\d+/, `localhost:${currentPort}`);
-            if (normalizedUrl !== url) {
-                console.log(`[downloadFile] Normalized URL from ${url} to ${normalizedUrl}`);
+            const localhostNormalized = normalizedUrl.replace(/localhost:\d+/, `localhost:${currentPort}`);
+            if (localhostNormalized !== normalizedUrl) {
+                console.log(`[downloadFile] Normalized URL from ${normalizedUrl} to ${localhostNormalized}`);
+                normalizedUrl = localhostNormalized;
             }
         }
 
@@ -471,8 +484,9 @@ async function composeVideo(options) {
             if (fs.existsSync(f)) fs.unlinkSync(f);
         });
 
-        const PORT = process.env.PORT || 3002;
-        const outputUrl = `http://localhost:${PORT}/output/composed_${timestamp}.mp4`;
+        // Store relative URL instead of hardcoded localhost:PORT
+        // This allows the frontend to use its own backend URL (via proxy)
+        const outputUrl = `/output/composed_${timestamp}.mp4`;
         console.log('Composition complete:', outputUrl);
 
         return {
