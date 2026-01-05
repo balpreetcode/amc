@@ -18,23 +18,52 @@ async function postToFalQueue(model, body) {
 
     // Submit to queue
     console.log('[Fal AI Video] Request payload:', JSON.stringify(body, null, 2));
-    const queueResponse = await axios.post(
-        `https://queue.fal.run/${model}`,
-        body,
-        {
-            headers: {
-                'Authorization': `Key ${FAL_API_KEY}`,
-                'Content-Type': 'application/json'
+    let queueResponse;
+    try {
+        queueResponse = await axios.post(
+            `https://queue.fal.run/${model}`,
+            body,
+            {
+                headers: {
+                    'Authorization': `Key ${FAL_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                timeout: 30000 // 30 second timeout for queue submission
             }
+        );
+    } catch (error) {
+        const errorDetail = error.response?.data?.detail;
+
+        // FIX: Provide detailed error messages to users
+        let errorMessage = `Fal AI video generation failed: ${error.message}`;
+
+        // Extract validation error details (for 422 errors)
+        if (Array.isArray(errorDetail)) {
+            const details = errorDetail.map(e => `${e.loc.join('.')}: ${e.msg}`).join(', ');
+            errorMessage = `Fal AI validation error: ${details}`;
+            console.error('[Fal AI Video] Validation error details:', errorDetail);
+        } else if (typeof errorDetail === 'string') {
+            errorMessage = `Fal AI error: ${errorDetail}`;
+
+            // Check if it's a balance exhausted error
+            if (errorDetail.toLowerCase().includes('exhausted balance') ||
+                errorDetail.toLowerCase().includes('locked')) {
+                errorMessage = 'Your FAL API balance exhausted';
+            }
+        } else if (error.response?.status === 403 || error.response?.status === 402) {
+            errorMessage = 'Your FAL API balance exhausted or access denied';
         }
-    ).catch(error => {
+
+        // Log full error details for debugging
         console.error('[Fal AI Video] Queue submission error:', {
             status: error.response?.status,
-            data: JSON.stringify(error.response?.data, null, 2),
+            message: errorMessage,
+            detail: errorDetail,
             requestBody: body
         });
-        throw error;
-    });
+
+        throw new Error(errorMessage);
+    }
 
     const { request_id, response_url, status_url } = queueResponse.data;
     console.log(`[Fal AI Video] Queued with request_id: ${request_id}`);
@@ -48,7 +77,8 @@ async function postToFalQueue(model, body) {
 
         try {
             const statusResponse = await axios.get(status_url, {
-                headers: { 'Authorization': `Key ${FAL_API_KEY}` }
+                headers: { 'Authorization': `Key ${FAL_API_KEY}` },
+                timeout: 10000 // 10 second timeout for status checks
             });
 
             const { status } = statusResponse.data;
@@ -58,7 +88,8 @@ async function postToFalQueue(model, body) {
 
             if (status === 'COMPLETED') {
                 const resultResponse = await axios.get(response_url, {
-                    headers: { 'Authorization': `Key ${FAL_API_KEY}` }
+                    headers: { 'Authorization': `Key ${FAL_API_KEY}` },
+                    timeout: 30000 // 30 second timeout for result retrieval
                 });
                 return resultResponse.data;
             } else if (status === 'FAILED') {
@@ -107,9 +138,19 @@ async function generateVideo(imageUrl, prompt = '', duration = 5, model = 'fal-a
     console.log(`[Fal AI Video] Image to video from: ${urlStr.substring(0, 50)}...`);
 
     const frameRate = 24;
+
+    // FIX: Validate duration (minimum 0.375s = 9 frames, maximum 60s = 1441 frames)
+    let validDuration = Number(duration) || 5;
+    if (validDuration < 0.375) {
+        console.warn(`[Fal AI Video] Duration ${validDuration}s too short, using minimum 0.375s (9 frames)`);
+        validDuration = 0.375;
+    }
+
     // Cap at 60 seconds (Fal AI ltxv model maximum)
-    const cappedDuration = Math.min(duration, 60);
-    const numFrames = Math.round(cappedDuration * frameRate);
+    const cappedDuration = Math.min(validDuration, 60);
+
+    // FIX: Ensure minimum 9 frames (Fal AI requirement)
+    const numFrames = Math.max(9, Math.round(cappedDuration * frameRate));
 
     console.log(`[Fal AI Video] Requesting ${numFrames} frames (${cappedDuration}s at ${frameRate} fps)`);
 
@@ -175,9 +216,19 @@ async function generateVideoFromText(prompt, duration = 5, model = 'fal-ai/ltxv-
     console.log(`[Fal AI Video] Text to video: ${prompt.substring(0, 50)}...`);
 
     const frameRate = 24;
+
+    // FIX: Validate duration (minimum 0.375s = 9 frames, maximum 60s = 1441 frames)
+    let validDuration = Number(duration) || 5;
+    if (validDuration < 0.375) {
+        console.warn(`[Fal AI Video] Duration ${validDuration}s too short, using minimum 0.375s (9 frames)`);
+        validDuration = 0.375;
+    }
+
     // Cap at 60 seconds (Fal AI ltxv model maximum)
-    const cappedDuration = Math.min(duration, 60);
-    const numFrames = Math.round(cappedDuration * frameRate);
+    const cappedDuration = Math.min(validDuration, 60);
+
+    // FIX: Ensure minimum 9 frames (Fal AI requirement)
+    const numFrames = Math.max(9, Math.round(cappedDuration * frameRate));
 
     console.log(`[Fal AI Video] Requesting ${numFrames} frames (${cappedDuration}s at ${frameRate} fps)`);
 

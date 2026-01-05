@@ -157,11 +157,18 @@ const nodeProcessors = {
         };
     },
     image_to_video: async (config, previousResults) => {
-        const imageUrl = config.imageUrl || getLastOutput(previousResults, 'imageUrl');
+        let imageUrl = config.imageUrl || getLastOutput(previousResults, 'imageUrl');
         const prompt = config.prompt || 'gentle animation with subtle movement';
         const duration = config.duration || 5;
 
         if (!imageUrl) throw new Error('No input image provided');
+
+        // FIX: Handle array inputs from parallel nodes (e.g., parallel text_to_image)
+        if (Array.isArray(imageUrl)) {
+            if (imageUrl.length === 0) throw new Error('Empty image array provided');
+            console.warn(`[image_to_video] Received array of ${imageUrl.length} images, using first one: ${imageUrl[0]}`);
+            imageUrl = imageUrl[0];  // Take first image from array
+        }
 
         const response = await generateVideo(imageUrl, prompt, duration, config.model, true);
         const videoUrl = response.result;

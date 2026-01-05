@@ -14,17 +14,30 @@ const FAL_API_KEY = process.env.FAL_KEY;
  * @returns {Promise<object>} API response
  */
 async function postToFal(model, body) {
-    const response = await axios.post(
-        `https://fal.run/${model}`,
-        body,
-        {
-            headers: {
-                'Authorization': `Key ${FAL_API_KEY}`,
-                'Content-Type': 'application/json'
+    try {
+        const response = await axios.post(
+            `https://fal.run/${model}`,
+            body,
+            {
+                headers: {
+                    'Authorization': `Key ${FAL_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                timeout: 120000 // 2 minute timeout for music generation
+            }
+        );
+        return response.data;
+    } catch (error) {
+        // Check if it's a balance exhausted error
+        if (error.response?.status === 403 || error.response?.status === 402) {
+            const errorDetail = error.response?.data?.detail || '';
+            if (errorDetail.toLowerCase().includes('exhausted balance') ||
+                errorDetail.toLowerCase().includes('locked')) {
+                throw new Error('Your FAL API balance exhausted');
             }
         }
-    );
-    return response.data;
+        throw error;
+    }
 }
 
 /**

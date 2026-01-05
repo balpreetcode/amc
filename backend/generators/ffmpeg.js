@@ -55,11 +55,22 @@ function downloadFile(url, destPath) {
             return;
         }
 
-        console.log(`[downloadFile] Downloading from URL: ${url}`);
-        const file = fs.createWriteStream(destPath);
-        const protocol = url.startsWith('https') ? https : http;
+        // FIX: Normalize localhost URLs to use current PORT
+        let normalizedUrl = url;
+        if (url.includes('localhost:')) {
+            const currentPort = process.env.PORT || 3002;
+            // Replace any localhost:XXXX with localhost:currentPort
+            normalizedUrl = url.replace(/localhost:\d+/, `localhost:${currentPort}`);
+            if (normalizedUrl !== url) {
+                console.log(`[downloadFile] Normalized URL from ${url} to ${normalizedUrl}`);
+            }
+        }
 
-        protocol.get(url, (response) => {
+        console.log(`[downloadFile] Downloading from URL: ${normalizedUrl}`);
+        const file = fs.createWriteStream(destPath);
+        const protocol = normalizedUrl.startsWith('https') ? https : http;
+
+        protocol.get(normalizedUrl, (response) => {
             if (response.statusCode === 301 || response.statusCode === 302) {
                 file.close();
                 fs.unlink(destPath, () => {});
@@ -69,7 +80,7 @@ function downloadFile(url, destPath) {
             if (response.statusCode !== 200) {
                 file.close();
                 fs.unlink(destPath, () => {});
-                reject(new Error(`HTTP ${response.statusCode}: ${url}`));
+                reject(new Error(`HTTP ${response.statusCode}: ${normalizedUrl}`));
                 return;
             }
             response.pipe(file);

@@ -48,7 +48,8 @@ async function translateText(text, targetLanguage) {
             headers: {
                 'Authorization': `Bearer ${OPENAI_API_KEY}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            timeout: 30000 // 30 second timeout
         }
     );
 
@@ -66,17 +67,30 @@ const OUTPUT_DIR = path.join(BASE_DIR, 'output');
  * Post to Fal AI API
  */
 async function postToFal(model, body) {
-    const response = await axios.post(
-        `https://fal.run/${model}`,
-        body,
-        {
-            headers: {
-                'Authorization': `Key ${FAL_API_KEY}`,
-                'Content-Type': 'application/json'
+    try {
+        const response = await axios.post(
+            `https://fal.run/${model}`,
+            body,
+            {
+                headers: {
+                    'Authorization': `Key ${FAL_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                timeout: 60000 // 60 second timeout
+            }
+        );
+        return response.data;
+    } catch (error) {
+        // Check if it's a balance exhausted error
+        if (error.response?.status === 403 || error.response?.status === 402) {
+            const errorDetail = error.response?.data?.detail || '';
+            if (errorDetail.toLowerCase().includes('exhausted balance') ||
+                errorDetail.toLowerCase().includes('locked')) {
+                throw new Error('Your FAL API balance exhausted');
             }
         }
-    );
-    return response.data;
+        throw error;
+    }
 }
 
 /**
@@ -101,7 +115,8 @@ async function generateSpeechOpenAI(text, voice = 'alloy', model = 'tts-1', lang
                 'Authorization': `Bearer ${OPENAI_API_KEY}`,
                 'Content-Type': 'application/json'
             },
-            responseType: 'arraybuffer'
+            responseType: 'arraybuffer',
+            timeout: 60000 // 60 second timeout
         }
     );
 
@@ -199,6 +214,7 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
             };
         }
 
+        console.log(`[TTS] Calling Fal AI with model: ${model}`);
         const result = await postToFal(model, requestBody);
 
         // Handle different response formats
@@ -212,6 +228,8 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
         } else {
             throw new Error('No audio URL in response');
         }
+
+        console.log(`[TTS] Fal AI success: ${audioUrl}`);
 
         if (includeMetadata) {
             return {
@@ -231,27 +249,36 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
 
         return audioUrl;
     } catch (error) {
-        console.warn(`Fal AI TTS failed, falling back to OpenAI: ${error.message}`);
-        // Fallback to OpenAI if Fal AI fails
-        const audioUrl = await generateSpeechOpenAI(text, 'alloy', 'tts-1', language);
+        const errorMsg = error.response ? `HTTP ${error.response.status}: ${error.response.statusText}` : error.message;
+        console.warn(`[TTS] Fal AI failed (${errorMsg}), falling back to OpenAI TTS...`);
 
-        if (includeMetadata) {
-            requestMetadata.provider = 'openai';
-            requestMetadata.fallback = true;
-            return {
-                result: audioUrl,
-                apiCall: {
-                    request: requestMetadata,
-                    response: {
-                        audioUrl,
-                        format: 'mp3'
-                    },
-                    timestamp: new Date().toISOString(),
-                    duration: Date.now() - startTime
-                }
-            };
+        // Fallback to OpenAI if Fal AI fails
+        try {
+            const audioUrl = await generateSpeechOpenAI(text, 'alloy', 'tts-1', language);
+            console.log(`[TTS] OpenAI fallback success: ${audioUrl}`);
+
+            if (includeMetadata) {
+                requestMetadata.provider = 'openai';
+                requestMetadata.fallback = true;
+                requestMetadata.fallbackReason = errorMsg;
+                return {
+                    result: audioUrl,
+                    apiCall: {
+                        request: requestMetadata,
+                        response: {
+                            audioUrl,
+                            format: 'mp3'
+                        },
+                        timestamp: new Date().toISOString(),
+                        duration: Date.now() - startTime
+                    }
+                };
+            }
+            return audioUrl;
+        } catch (fallbackError) {
+            console.error(`[TTS] OpenAI fallback also failed: ${fallbackError.message}`);
+            throw new Error(`TTS failed: Fal (${errorMsg}) and OpenAI fallback (${fallbackError.message})`);
         }
-        return audioUrl;
     }
 }
 

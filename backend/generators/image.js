@@ -15,18 +15,30 @@ const FAL_API_KEY = process.env.FAL_KEY;
  */
 async function postToFal(type, model, body) {
     // Use fal.run for synchronous requests
-    const response = await axios.post(
-        `https://fal.run/${model}`,
-        body,
-        {
-            headers: {
-                'Authorization': `Key ${FAL_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            timeout: 120000 // 2 minute timeout for image generation
+    try {
+        const response = await axios.post(
+            `https://fal.run/${model}`,
+            body,
+            {
+                headers: {
+                    'Authorization': `Key ${FAL_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                timeout: 120000 // 2 minute timeout for image generation
+            }
+        );
+        return response.data;
+    } catch (error) {
+        // Check if it's a balance exhausted error
+        if (error.response?.status === 403 || error.response?.status === 402) {
+            const errorDetail = error.response?.data?.detail || '';
+            if (errorDetail.toLowerCase().includes('exhausted balance') ||
+                errorDetail.toLowerCase().includes('locked')) {
+                throw new Error('Your FAL API balance exhausted');
+            }
         }
-    );
-    return response.data;
+        throw error;
+    }
 }
 
 /**
@@ -39,16 +51,30 @@ async function postToFalQueue(model, body) {
     console.log(`[Fal AI] Submitting to queue: ${model}`);
 
     // Submit to queue
-    const queueResponse = await axios.post(
-        `https://queue.fal.run/${model}`,
-        body,
-        {
-            headers: {
-                'Authorization': `Key ${FAL_API_KEY}`,
-                'Content-Type': 'application/json'
+    let queueResponse;
+    try {
+        queueResponse = await axios.post(
+            `https://queue.fal.run/${model}`,
+            body,
+            {
+                headers: {
+                    'Authorization': `Key ${FAL_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                timeout: 30000 // 30 second timeout for queue submission
+            }
+        );
+    } catch (error) {
+        // Check if it's a balance exhausted error
+        if (error.response?.status === 403 || error.response?.status === 402) {
+            const errorDetail = error.response?.data?.detail || '';
+            if (errorDetail.toLowerCase().includes('exhausted balance') ||
+                errorDetail.toLowerCase().includes('locked')) {
+                throw new Error('Your FAL API balance exhausted');
             }
         }
-    );
+        throw error;
+    }
 
     const { request_id, response_url, status_url } = queueResponse.data;
     console.log(`[Fal AI] Queued with request_id: ${request_id}`);
@@ -62,7 +88,8 @@ async function postToFalQueue(model, body) {
 
         try {
             const statusResponse = await axios.get(status_url, {
-                headers: { 'Authorization': `Key ${FAL_API_KEY}` }
+                headers: { 'Authorization': `Key ${FAL_API_KEY}` },
+                timeout: 10000 // 10 second timeout for status checks
             });
 
             const { status } = statusResponse.data;
@@ -71,7 +98,8 @@ async function postToFalQueue(model, body) {
             if (status === 'COMPLETED') {
                 // Fetch the result
                 const resultResponse = await axios.get(response_url, {
-                    headers: { 'Authorization': `Key ${FAL_API_KEY}` }
+                    headers: { 'Authorization': `Key ${FAL_API_KEY}` },
+                    timeout: 30000 // 30 second timeout for result retrieval
                 });
                 return resultResponse.data;
             } else if (status === 'FAILED') {
@@ -98,6 +126,7 @@ async function postToFalQueue(model, body) {
  * @returns {Promise<string|object>} Generated image URL or object with result and metadata
  */
 async function generateImage(prompt, aspectRatio = '16:9', model = 'fal-ai/z-image/turbo', includeMetadata = false) {
+    const startTime = Date.now();
     const imageSize = aspectRatio === '16:9' ? 'landscape_16_9' :
         aspectRatio === '9:16' ? 'portrait_16_9' : 'square';
 
@@ -120,8 +149,6 @@ async function generateImage(prompt, aspectRatio = '16:9', model = 'fal-ai/z-ima
         aspectRatio,
         imageSize
     };
-
-    const startTime = Date.now();
 
     // Use queue endpoint for reliability
     const result = await postToFalQueue(model, requestPayload);
