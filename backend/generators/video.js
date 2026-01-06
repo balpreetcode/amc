@@ -149,8 +149,8 @@ async function generateVideo(imageUrl, prompt = '', duration = 5, model = 'fal-a
     // Cap at 60 seconds (Fal AI ltxv model maximum)
     const cappedDuration = Math.min(validDuration, 60);
 
-    // FIX: Ensure minimum 9 frames (Fal AI requirement)
-    const numFrames = Math.max(9, Math.round(cappedDuration * frameRate));
+    // FIX: Ensure minimum 9 frames and maximum 100 frames (Fal AI requirement)
+    const numFrames = Math.min(100, Math.max(9, Math.round(cappedDuration * frameRate)));
 
     console.log(`[Fal AI Video] Requesting ${numFrames} frames (${cappedDuration}s at ${frameRate} fps)`);
 
@@ -227,8 +227,8 @@ async function generateVideoFromText(prompt, duration = 5, model = 'fal-ai/ltxv-
     // Cap at 60 seconds (Fal AI ltxv model maximum)
     const cappedDuration = Math.min(validDuration, 60);
 
-    // FIX: Ensure minimum 9 frames (Fal AI requirement)
-    const numFrames = Math.max(9, Math.round(cappedDuration * frameRate));
+    // FIX: Ensure minimum 9 frames and maximum 100 frames (Fal AI requirement)
+    const numFrames = Math.min(100, Math.max(9, Math.round(cappedDuration * frameRate)));
 
     console.log(`[Fal AI Video] Requesting ${numFrames} frames (${cappedDuration}s at ${frameRate} fps)`);
 
