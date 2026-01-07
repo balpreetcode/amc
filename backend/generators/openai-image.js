@@ -10,6 +10,9 @@ const https = require('https');
 const http = require('http');
 const { exec } = require('child_process');
 
+// Base directories
+const BASE_DIR = path.resolve(__dirname, '..', '..');
+
 // OpenAI API configuration
 // OpenAI API configuration
 // OPENAI_API_KEY is read dynamically in functions
@@ -24,10 +27,9 @@ const OPENAI_IMAGE_MODELS = {
     'dall-e-2': 'dall-e-2'                       // Legacy
 };
 
-// Base directories
-const BASE_DIR = path.resolve(__dirname, '..', '..');
-const TEMP_DIR = path.join(BASE_DIR, 'temp');
-const OUTPUT_DIR = path.join(BASE_DIR, 'output');
+// Base directories - use absolute paths in Docker, relative paths locally
+const TEMP_DIR = process.env.TEMP_DIR || path.join(BASE_DIR, 'temp');
+const OUTPUT_DIR = process.env.OUTPUT_DIR || path.join(BASE_DIR, 'output');
 
 // Ensure directories exist
 if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });

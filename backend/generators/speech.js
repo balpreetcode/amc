@@ -1,6 +1,19 @@
 /**
  * Speech Generation Module
- * Uses Fal AI for text-to-speech generation
+ *
+ * Supports two TTS providers with different return patterns:
+ *
+ * 1. FAL AI TTS (Primary):
+ *    - Returns external URL directly (e.g., https://v3b.fal.media/files/.../audio.mp3)
+ *    - No local download needed until final composition
+ *    - Consistent with video and music generators
+ *
+ * 2. OpenAI TTS (Fallback):
+ *    - OpenAI API returns binary audio data, not URL
+ *    - Saves to local filesystem
+ *    - Returns absolute filesystem path (e.g., /home/app/output/speech_openai_123.mp3)
+ *    - downloadFile() in ffmpeg.js will copy directly without HTTP requests
+ *    - Avoids localhost HTTP 404 errors in Docker environments
  */
 
 const axios = require('axios');
@@ -61,7 +74,10 @@ async function translateText(text, targetLanguage) {
 
 // Base directories
 const BASE_DIR = path.resolve(__dirname, '..', '..');
-const OUTPUT_DIR = path.join(BASE_DIR, 'output');
+// Use OUTPUT_DIR env var for Docker, otherwise use relative path (consistent with server.js, ffmpeg.js, openai-image.js)
+const OUTPUT_DIR = process.env.OUTPUT_DIR || path.join(BASE_DIR, 'output');
+// Ensure output directory exists
+if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
 /**
  * Post to Fal AI API
@@ -95,6 +111,7 @@ async function postToFal(model, body) {
 
 /**
  * Generate speech using OpenAI TTS
+ * Returns the saved file path for local file system access
  */
 async function generateSpeechOpenAI(text, voice = 'alloy', model = 'tts-1', language = 'English') {
     if (!OPENAI_API_KEY) {
@@ -133,9 +150,11 @@ async function generateSpeechOpenAI(text, voice = 'alloy', model = 'tts-1', lang
 
     const fileSize = fs.statSync(outputPath).size;
     console.log(`[OpenAI TTS] Saved ${fileSize} bytes to: ${outputPath}`);
+    console.log(`[OpenAI TTS] Absolute path: ${outputPath}`);
 
-    // Return relative URL (frontend will use its own backend URL via proxy)
-    return `/output/${filename}`;
+    // CRITICAL: Return absolute filesystem path (not URL) so downloadFile() can copy directly
+    // This avoids localhost HTTP requests that fail in Docker
+    return outputPath;
 }
 
 /**
@@ -170,17 +189,19 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
     // Extract model name if it has openai/ prefix
     const openaiModel = model.startsWith('openai/') ? model.replace('openai/', '') : 'tts-1';
 
-    // If model is openai or fal fails, use OpenAI
+    // If model is openai, use OpenAI TTS
     if (model === 'openai-tts' || model.startsWith('openai')) {
-        const audioUrl = await generateSpeechOpenAI(text, voice === 'af_bella' ? 'alloy' : voice, openaiModel, language);
+        const audioPath = await generateSpeechOpenAI(text, voice === 'af_bella' ? 'alloy' : voice, openaiModel, language);
+
+        console.log(`[TTS] OpenAI TTS complete. File path: ${audioPath}`);
 
         if (includeMetadata) {
             return {
-                result: audioUrl,
+                result: audioPath,  // Return filesystem path for direct file access
                 apiCall: {
                     request: requestMetadata,
                     response: {
-                        audioUrl,
+                        audioUrl: audioPath,  // Store filesystem path
                         format: 'mp3'
                     },
                     timestamp: new Date().toISOString(),
@@ -188,7 +209,7 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
                 }
             };
         }
-        return audioUrl;
+        return audioPath;
     }
 
     try {
@@ -228,15 +249,15 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
             throw new Error('No audio URL in response');
         }
 
-        console.log(`[TTS] Fal AI success: ${audioUrl}`);
+        console.log(`[TTS] Fal AI success. External URL: ${audioUrl}`);
 
         if (includeMetadata) {
             return {
-                result: audioUrl,
+                result: audioUrl,  // Return external FAL URL for direct download
                 apiCall: {
                     request: requestMetadata,
                     response: {
-                        audioUrl,
+                        audioUrl,  // Store external FAL URL
                         format: 'mp3',
                         duration: result.duration
                     },
@@ -246,26 +267,26 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
             };
         }
 
-        return audioUrl;
+        return audioUrl;  // Return external FAL URL
     } catch (error) {
         const errorMsg = error.response ? `HTTP ${error.response.status}: ${error.response.statusText}` : error.message;
         console.warn(`[TTS] Fal AI failed (${errorMsg}), falling back to OpenAI TTS...`);
 
         // Fallback to OpenAI if Fal AI fails
         try {
-            const audioUrl = await generateSpeechOpenAI(text, 'alloy', 'tts-1', language);
-            console.log(`[TTS] OpenAI fallback success: ${audioUrl}`);
+            const audioPath = await generateSpeechOpenAI(text, 'alloy', 'tts-1', language);
+            console.log(`[TTS] OpenAI fallback success. File path: ${audioPath}`);
 
             if (includeMetadata) {
                 requestMetadata.provider = 'openai';
                 requestMetadata.fallback = true;
                 requestMetadata.fallbackReason = errorMsg;
                 return {
-                    result: audioUrl,
+                    result: audioPath,  // Return filesystem path
                     apiCall: {
                         request: requestMetadata,
                         response: {
-                            audioUrl,
+                            audioUrl: audioPath,  // Store filesystem path
                             format: 'mp3'
                         },
                         timestamp: new Date().toISOString(),
@@ -273,7 +294,7 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
                     }
                 };
             }
-            return audioUrl;
+            return audioPath;  // Return filesystem path
         } catch (fallbackError) {
             console.error(`[TTS] OpenAI fallback also failed: ${fallbackError.message}`);
             throw new Error(`TTS failed: Fal (${errorMsg}) and OpenAI fallback (${fallbackError.message})`);

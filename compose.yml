@@ -28,15 +28,14 @@ services:
       dockerfile: Dockerfile
     container_name: workflow-backend
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       - PORT=8080
-      - CONDUCTOR_URL=${CONDUCTOR_URL:-https://p5200.winds-os.com/api}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - FAL_KEY=${FAL_KEY}
       - WORKER_ID=workflow-worker-docker
       - POLL_INTERVAL_MS=1000
-    env_file:
-      - ./backend/.env
+      - OUTPUT_DIR=/output
+      - TEMP_DIR=/temp
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.workflow-backend.rule=Host(`workflow-api.localhost`)"
@@ -46,7 +45,7 @@ services:
       - proxy
       - workflow-internal
     volumes:
-      - workflow-output:/app/../output
+      - /home/usr2/code/output:/output
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
       interval: 30s
@@ -59,6 +58,3 @@ networks:
     external: true
   workflow-internal:
     driver: bridge
-
-volumes:
-  workflow-output:

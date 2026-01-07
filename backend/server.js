@@ -34,7 +34,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve output folder for videos and audio files
-const OUTPUT_DIR = path.join(__dirname, '..', 'output');
+const OUTPUT_DIR = process.env.OUTPUT_DIR || path.join(__dirname, '..', 'output');
 app.use('/output', express.static(OUTPUT_DIR));
 
 // API Routes
@@ -275,16 +275,18 @@ const nodeProcessors = {
         const language = config.language || 'English';
 
         const response = await generateSpeech(text, voice, model, true, language);
-        const audioUrl = response.result;
+        const audioUrl = response.result;  // Either external URL (FAL) or filesystem path (OpenAI)
         const apiCall = response.apiCall;
 
         // Extract translated text from metadata if available
         const translatedText = apiCall?.request?.translatedText || text;
 
+        console.log(`[text_to_speech] Generated audio: ${audioUrl}`);
+
         return {
             type: 'text_to_speech',
             output: {
-                audioUrl,
+                audioUrl,  // Pass through as-is (external URL or filesystem path)
                 text: translatedText.substring(0, 100),
                 originalText: text.substring(0, 100),
                 voice,

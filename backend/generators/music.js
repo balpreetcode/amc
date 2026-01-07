@@ -23,7 +23,7 @@ async function postToFal(model, body) {
                     'Authorization': `Key ${FAL_API_KEY}`,
                     'Content-Type': 'application/json'
                 },
-                timeout: 120000 // 2 minute timeout for music generation
+                timeout: 300000 // 5 minute timeout for music generation
             }
         );
         return response.data;

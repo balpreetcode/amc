@@ -9,10 +9,11 @@ const path = require('path');
 const https = require('https');
 const http = require('http');
 
-// Base directories - relative to project root
+// Base directories
 const BASE_DIR = path.resolve(__dirname, '..', '..');
-const OUTPUT_DIR = path.join(BASE_DIR, 'output');
-const TEMP_DIR = path.join(BASE_DIR, 'temp');
+// Use absolute paths in Docker (via env vars), otherwise use relative paths
+const OUTPUT_DIR = process.env.OUTPUT_DIR || path.join(BASE_DIR, 'output');
+const TEMP_DIR = process.env.TEMP_DIR || path.join(BASE_DIR, 'temp');
 
 // Ensure directories exist
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
