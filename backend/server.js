@@ -271,7 +271,7 @@ const nodeProcessors = {
     text_to_speech: async (config, previousResults) => {
         const text = config.text || getLastOutput(previousResults, 'text') || 'Hello world';
         const voice = config.voice || 'alloy';
-        const model = config.model || 'fal-ai/playht/tts/v3';
+        const model = config.model || 'fal-ai/elevenlabs/tts/eleven-v3';
         const language = config.language || 'English';
 
         const response = await generateSpeech(text, voice, model, true, language);

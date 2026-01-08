@@ -46,8 +46,8 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
     'text_to_speech': [
         { name: 'text', label: 'Text Content', type: 'textarea' },
         { name: 'language', label: 'Language', type: 'select', options: ['English', 'Hindi'] },
-        { name: 'voice', label: 'Voice', type: 'select', options: ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'] },
-        { name: 'model', label: 'Model', type: 'select', options: ['fal-ai/playht/tts/v3', 'openai/tts-1', 'openai/gpt-4o-mini-tts'] },
+        { name: 'voice', label: 'Voice', type: 'select', options: ['21m00Tcm4TlvDq8ikWAM', 'AZnzlk1XvdvUeBnXmlld', 'EXAVITQu4vr4xnSDxMaL', 'ErXwobaYiN0WOjL6daga', 'D38z5ibotCL8ShYi7JkV'] },
+        { name: 'model', label: 'Model', type: 'select', options: ['fal-ai/elevenlabs/tts/eleven-v3', 'fal-ai/playai/tts/v3', 'openai/tts-1', 'openai/gpt-4o-mini-tts'] },
         { name: 'stability', label: 'Stability', type: 'slider', min: 0, max: 1, step: 0.1 }
     ],
     'image_to_video': [

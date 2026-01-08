@@ -80,9 +80,13 @@ const OUTPUT_DIR = process.env.OUTPUT_DIR || path.join(BASE_DIR, 'output');
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
 /**
- * Post to Fal AI API
+ * Post to Fal AI API - tries direct endpoint first, falls back to queue
  */
 async function postToFal(model, body) {
+    console.log(`[Fal AI TTS] Calling model: ${model}`);
+    console.log(`[Fal AI TTS] Request body:`, JSON.stringify(body, null, 2));
+
+    // First try the direct synchronous endpoint (faster for TTS)
     try {
         const response = await axios.post(
             `https://fal.run/${model}`,
@@ -92,21 +96,155 @@ async function postToFal(model, body) {
                     'Authorization': `Key ${FAL_API_KEY}`,
                     'Content-Type': 'application/json'
                 },
-                timeout: 60000 // 60 second timeout
+                timeout: 120000 // 2 minutes for direct processing
             }
         );
+
+        console.log(`[Fal AI TTS] Direct endpoint success!`);
         return response.data;
+    } catch (directError) {
+        console.warn(`[Fal AI TTS] Direct endpoint failed:`, directError.response?.status, directError.response?.data?.detail || directError.message);
+
+        // If direct fails with timeout or queue indication, use queue endpoint
+        if (directError.response?.status === 202 || directError.response?.status === 503 ||
+            directError.code === 'ECONNABORTED' ||
+            (directError.response?.data && typeof directError.response.data === 'object' &&
+             ('queue_position' in directError.response.data || 'request_id' in directError.response.data))) {
+
+            console.log(`[Fal AI TTS] Falling back to queue endpoint...`);
+            return await postToFalQueue(model, body);
+        }
+
+        // Otherwise throw the original error
+        throw directError;
+    }
+}
+
+/**
+ * Post to Fal AI Queue API with polling (fallback for slower requests)
+ */
+async function postToFalQueue(model, body) {
+    console.log(`[Fal AI TTS] Submitting to queue: ${model}`);
+
+    // Submit to queue
+    let queueResponse;
+    try {
+        queueResponse = await axios.post(
+            `https://queue.fal.run/${model}`,
+            body,
+            {
+                headers: {
+                    'Authorization': `Key ${FAL_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                timeout: 30000 // 30 second timeout for queue submission
+            }
+        );
     } catch (error) {
-        // Check if it's a balance exhausted error
-        if (error.response?.status === 403 || error.response?.status === 402) {
-            const errorDetail = error.response?.data?.detail || '';
+        const errorDetail = error.response?.data?.detail;
+
+        // Provide detailed error messages
+        let errorMessage = `Fal AI TTS failed: ${error.message}`;
+
+        // Extract validation error details (for 422 errors)
+        if (Array.isArray(errorDetail)) {
+            const details = errorDetail.map(e => `${e.loc.join('.')}: ${e.msg}`).join(', ');
+            errorMessage = `Fal AI validation error: ${details}`;
+            console.error('[Fal AI TTS] Validation error details:', errorDetail);
+        } else if (typeof errorDetail === 'string') {
+            errorMessage = `Fal AI error: ${errorDetail}`;
+
+            // Check if it's a balance exhausted error
             if (errorDetail.toLowerCase().includes('exhausted balance') ||
                 errorDetail.toLowerCase().includes('locked')) {
-                throw new Error('Your FAL API balance exhausted');
+                errorMessage = 'Your FAL API balance exhausted';
+            }
+        } else if (error.response?.status === 403 || error.response?.status === 402) {
+            errorMessage = 'Your FAL API balance exhausted or access denied';
+        }
+
+        console.error('[Fal AI TTS] Queue submission error:', {
+            status: error.response?.status,
+            message: errorMessage,
+            detail: errorDetail
+        });
+
+        throw new Error(errorMessage);
+    }
+
+    const { request_id, status_url, response_url } = queueResponse.data;
+    console.log(`[Fal AI TTS] Queued with request_id: ${request_id}`);
+
+    // Poll for completion (TTS is faster than video)
+    let attempts = 0;
+    const maxAttempts = 60; // 2 minutes max (2s intervals)
+
+    while (attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        try {
+            const statusResponse = await axios.get(status_url, {
+                headers: { 'Authorization': `Key ${FAL_API_KEY}` },
+                timeout: 10000
+            });
+
+            const status = statusResponse.data.status;
+
+            if (status === 'COMPLETED') {
+                console.log(`[Fal AI TTS] Request completed after ${attempts * 2}s`);
+
+                // Check if status response already contains the result
+                if (statusResponse.data.audio && statusResponse.data.audio.url) {
+                    console.log(`[Fal AI TTS] Audio URL in status response: ${statusResponse.data.audio.url}`);
+                    return statusResponse.data;
+                }
+
+                // Fetch the actual result from response_url
+                console.log(`[Fal AI TTS] Fetching result from: ${response_url}`);
+                try {
+                    let resultResponse;
+                    try {
+                        // Try without auth (public URL)
+                        resultResponse = await axios.get(response_url, { timeout: 30000 });
+                        console.log(`[Fal AI TTS] Result received without auth`);
+                    } catch (noAuthError) {
+                        // If that fails, try with auth
+                        console.log(`[Fal AI TTS] Retrying with authentication...`);
+                        resultResponse = await axios.get(response_url, {
+                            headers: { 'Authorization': `Key ${FAL_API_KEY}` },
+                            timeout: 30000
+                        });
+                    }
+
+                    console.log(`[Fal AI TTS] Result received:`, JSON.stringify(resultResponse.data, null, 2).substring(0, 200));
+                    return resultResponse.data;
+                } catch (resultError) {
+                    console.error(`[Fal AI TTS] Result fetch error:`, {
+                        status: resultError.response?.status,
+                        data: resultError.response?.data,
+                        message: resultError.message
+                    });
+                    throw new Error(`Fal AI result fetch failed: ${resultError.message}`);
+                }
+            } else if (status === 'FAILED') {
+                throw new Error(statusResponse.data.error || 'Fal AI request failed');
+            }
+
+            if (attempts % 10 === 0) {
+                console.log(`[Fal AI TTS] Still processing... (${attempts * 2}s elapsed)`);
+            }
+
+        } catch (error) {
+            if (error.response?.status !== 401 || error.config?.url === response_url) {
+                // Log all errors except 401 from status checks
+                console.error(`[Fal AI TTS] Status check error: ${error.message}`);
             }
         }
-        throw error;
+
+        attempts++;
     }
+
+    throw new Error('Fal AI TTS request timed out after 2 minutes');
 }
 
 /**
@@ -166,7 +304,7 @@ async function generateSpeechOpenAI(text, voice = 'alloy', model = 'tts-1', lang
  * @param {string} language - Language for speech generation (English or Hindi)
  * @returns {Promise<string|object>} Generated audio URL or object with result and metadata
  */
-async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/tts/v3', includeMetadata = false, language = 'English') {
+async function generateSpeech(text, voice = '21m00Tcm4TlvDq8ikWAM', model = 'fal-ai/elevenlabs/tts/eleven-v3', includeMetadata = false, language = 'English') {
     const startTime = Date.now();
     let originalText = text;
 
@@ -191,9 +329,26 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
 
     // If model is openai, use OpenAI TTS
     if (model === 'openai-tts' || model.startsWith('openai')) {
-        const audioPath = await generateSpeechOpenAI(text, voice === 'af_bella' ? 'alloy' : voice, openaiModel, language);
+        // Map Fal AI/ElevenLabs voices to OpenAI voices for direct OpenAI model selection
+        const openaiVoiceMap = {
+            // ElevenLabs voice IDs
+            '21m00Tcm4TlvDq8ikWAM': 'alloy',
+            'AZnzlk1XvdvUeBnXmlld': 'echo',
+            'EXAVITQu4vr4xnSDxMaL': 'nova',
+            'ErXwobaYiN0WOjL6daga': 'fable',
+            'D38z5ibotCL8ShYi7JkV': 'onyx',
+            // Fal AI playai voices
+            'af_bella': 'alloy',
+            'af_heart': 'echo',
+            'af_nicole': 'fable',
+            'af_sarah': 'nova',
+            'af_michael': 'onyx'
+        };
+        const mappedVoice = openaiVoiceMap[voice] || 'alloy';
 
-        console.log(`[TTS] OpenAI TTS complete. File path: ${audioPath}`);
+        const audioPath = await generateSpeechOpenAI(text, mappedVoice, openaiModel, language);
+
+        console.log(`[TTS] OpenAI TTS complete with voice '${mappedVoice}'. File path: ${audioPath}`);
 
         if (includeMetadata) {
             return {
@@ -216,11 +371,17 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
         // Different models have different request formats
         let requestBody;
 
-        if (model.includes('playht')) {
+        if (model.includes('elevenlabs')) {
+            // ElevenLabs format
+            requestBody = {
+                text: text,
+                voice_id: voice
+            };
+        } else if (model.includes('playai')) {
+            // Use playai model (updated from playht)
             requestBody = {
                 input: text,
-                voice: voice,
-                output_format: 'mp3'
+                voice: voice
             };
         } else if (model.includes('kokoro')) {
             requestBody = {
@@ -272,10 +433,11 @@ async function generateSpeech(text, voice = 'af_bella', model = 'fal-ai/playht/t
         const errorMsg = error.response ? `HTTP ${error.response.status}: ${error.response.statusText}` : error.message;
         console.warn(`[TTS] Fal AI failed (${errorMsg}), falling back to OpenAI TTS...`);
 
-        // Fallback to OpenAI if Fal AI fails
+        // Fallback to OpenAI if Fal AI fails - use hardcoded 'alloy' voice (works for both Hindi and English)
+        const OPENAI_FALLBACK_VOICE = 'alloy';
         try {
-            const audioPath = await generateSpeechOpenAI(text, 'alloy', 'tts-1', language);
-            console.log(`[TTS] OpenAI fallback success. File path: ${audioPath}`);
+            const audioPath = await generateSpeechOpenAI(text, OPENAI_FALLBACK_VOICE, 'tts-1', language);
+            console.log(`[TTS] OpenAI fallback success with voice '${OPENAI_FALLBACK_VOICE}'. File path: ${audioPath}`);
 
             if (includeMetadata) {
                 requestMetadata.provider = 'openai';

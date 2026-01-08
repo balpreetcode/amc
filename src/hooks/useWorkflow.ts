@@ -140,7 +140,7 @@ const defaultWorkflow: WorkflowState = {
             estimatedTime: '20s',
             config: {
                 text: { _type: 'reference', nodeId: 'node-narration-1', outputKey: 'text' },
-                voice: 'af_bella'
+                voice: '21m00Tcm4TlvDq8ikWAM'
             },
             execution: {
                 mode: 'parallel',
