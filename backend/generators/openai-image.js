@@ -25,7 +25,8 @@ const OPENAI_IMAGE_MODELS = {
 };
 
 // Base directories
-const BASE_DIR = path.resolve(__dirname, '..', '..');
+// Use __filename to ensure correct path resolution regardless of execution environment
+const BASE_DIR = path.dirname(path.dirname(path.dirname(__filename)));
 const TEMP_DIR = path.join(BASE_DIR, 'temp');
 const OUTPUT_DIR = path.join(BASE_DIR, 'output');
 

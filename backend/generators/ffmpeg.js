@@ -10,7 +10,8 @@ const https = require('https');
 const http = require('http');
 
 // Base directories - relative to project root
-const BASE_DIR = path.resolve(__dirname, '..', '..');
+// Use __filename to ensure correct path resolution regardless of execution environment
+const BASE_DIR = path.dirname(path.dirname(path.dirname(__filename)));
 const OUTPUT_DIR = path.join(BASE_DIR, 'output');
 const TEMP_DIR = path.join(BASE_DIR, 'temp');
 
@@ -313,6 +314,9 @@ async function composeVideo(options) {
         subtitleColor = '#ffffff',
         subtitleSize = 24
     } = options;
+
+    // PORT must be defined here since it's not available in module scope
+    const PORT = process.env.PORT || 3002;
 
     const timestamp = Date.now();
     const videoPath = path.join(TEMP_DIR, `video_${timestamp}.mp4`);
