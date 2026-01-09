@@ -6,6 +6,7 @@ import { Templates } from './components/Templates'
 import { SaveTemplateModal } from './components/SaveTemplateModal'
 import { ApiTokens } from './components/ApiTokens'
 import { ApiDocs } from './components/ApiDocs'
+import { Videos } from './components/Videos'
 import { SessionGate } from './components/SessionGate'
 import { useTemplates } from './hooks/useTemplates'
 import { useState } from 'react'
@@ -25,6 +26,7 @@ function AppContent() {
     if (location.pathname === '/templates') return 'templates';
     if (location.pathname === '/api-tokens') return 'api-tokens';
     if (location.pathname === '/api-docs') return 'api-docs';
+    if (location.pathname === '/videos') return 'videos';
     return 'builder';
   };
 
@@ -142,6 +144,12 @@ function AppContent() {
         >
           API Docs
         </button>
+        <button
+          className={`tab-btn ${activeTab === 'videos' ? 'active' : ''}`}
+          onClick={() => navigate('/videos')}
+        >
+          Videos
+        </button>
       </div>
 
       <main className="app-main">
@@ -158,6 +166,7 @@ function AppContent() {
           <Route path="/templates" element={<Templates onNavigateToHistory={() => navigate('/history')} />} />
           <Route path="/api-tokens" element={<ApiTokens />} />
           <Route path="/api-docs" element={<ApiDocs />} />
+          <Route path="/videos" element={<Videos />} />
         </Routes>
       </main>
 

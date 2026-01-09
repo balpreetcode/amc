@@ -30,7 +30,11 @@ export default defineConfig({
       '/template': 'http://localhost:3002',
       '/download': 'http://localhost:3002',
       '/output': 'http://localhost:3002',
-      '/session': 'http://localhost:3002'
+      '/session': 'http://localhost:3002',
+      '/auth': 'http://localhost:3002',
+      '/workflows': 'http://localhost:3002',
+      '/executions': 'http://localhost:3002',
+      '/nodes': 'http://localhost:3002'
     }
   }
 })

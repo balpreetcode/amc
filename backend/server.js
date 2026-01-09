@@ -42,11 +42,13 @@ const authRoutes = require('./routes/auth');
 const workflowRoutes = require('./routes/workflows');
 const executionRoutes = require('./routes/executions');
 const nodeRoutes = require('./routes/nodes');
+const videosRoutes = require('./routes/videos');
 
 app.use('/auth', authRoutes);
 app.use('/workflows', workflowRoutes);
 app.use('/executions', executionRoutes);
 app.use('/nodes', nodeRoutes);
+app.use('/api/videos', videosRoutes);
 
 // Session token validation endpoint
 app.get('/session/validate', async (req, res) => {
