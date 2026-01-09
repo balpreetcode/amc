@@ -1,0 +1,28 @@
+{
+    "watch": [
+        "*.js",
+        "controllers",
+        "generators",
+        "middleware",
+        "models",
+        "providers",
+        "routes",
+        "utils"
+    ],
+    "ext": "js,json",
+    "ignore": [
+        "node_modules",
+        "output",
+        "logs",
+        "storage",
+        "*.log",
+        "workflow-history.json",
+        "templates.json",
+        "templates.json.backup",
+        "temp",
+        "tempImages",
+        "_tmp"
+    ],
+    "delay": "500",
+    "verbose": false
+}

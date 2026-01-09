@@ -1,0 +1,298 @@
+.node-config-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.config-section {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.section-header {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #9ca3af;
+    margin: 0 0 0.75rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.config-row {
+    margin-bottom: 0.75rem;
+}
+
+.config-row:last-child {
+    margin-bottom: 0;
+}
+
+.config-row label {
+    display: block;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-bottom: 0.35rem;
+}
+
+.config-row input[type="text"],
+.config-row select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #e5e7eb;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.config-row input[type="text"]:focus,
+.config-row select:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.config-row select {
+    cursor: pointer;
+}
+
+.config-row.inline {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.config-field {
+    flex: 1;
+}
+
+.config-field label {
+    display: block;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-bottom: 0.35rem;
+}
+
+.config-field select {
+    width: 100%;
+}
+
+/* Provider Buttons */
+.provider-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.provider-btn {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #9ca3af;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.provider-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.provider-btn.active {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border-color: transparent;
+    color: white;
+    font-weight: 500;
+}
+
+/* Icon Picker */
+.icon-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.current-icon {
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.icon-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.icon-option {
+    padding: 0.35rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.15s ease;
+}
+
+.icon-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.icon-option.active {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+}
+
+/* Config Hint */
+.config-hint {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 4px;
+    border-left: 2px solid #6366f1;
+}
+
+.config-hint code {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.7rem;
+}
+
+/* Headers List */
+.headers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.header-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+.header-key {
+    color: #a78bfa;
+    font-weight: 500;
+    min-width: 100px;
+}
+
+.header-value {
+    flex: 1;
+    color: #9ca3af;
+    font-family: monospace;
+    font-size: 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.remove-header {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.25rem;
+    opacity: 0.6;
+    transition: opacity 0.15s ease;
+}
+
+.remove-header:hover {
+    opacity: 1;
+}
+
+/* Add Header Row */
+.add-header-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.add-header-row input {
+    flex: 1;
+    padding: 0.4rem 0.6rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: #e5e7eb;
+    font-size: 0.8rem;
+}
+
+.add-header-row input:focus {
+    outline: none;
+    border-color: #6366f1;
+}
+
+.btn-add-header {
+    padding: 0.4rem 0.75rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-add-header:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+/* Output Section */
+.output-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.output-section .node-output-display {
+    --bg-secondary: rgba(0, 0, 0, 0.2);
+    --bg-white: rgba(0, 0, 0, 0.1);
+    --bg-dark: rgba(0, 0, 0, 0.4);
+    --bg-hover: rgba(255, 255, 255, 0.1);
+    --border-light: rgba(255, 255, 255, 0.1);
+    --text-primary: #e5e7eb;
+    --text-secondary: #9ca3af;
+    --primary: #6366f1;
+}
+
+.output-section .output-header h4 {
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.output-section .output-item {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.output-section .text-content,
+.output-section .output-url {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.output-section .text-content pre {
+    color: #e5e7eb;
+}
+
+.output-section .output-url a {
+    color: #60a5fa;
+}

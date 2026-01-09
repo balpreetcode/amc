@@ -1,0 +1,44 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+output
+temp
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment files
+.env
+backend/.env
+.env.*
+
+# Generated and temporary files
+_tmp
+tempImages
+playwright-report
+test-results
+coverage
+backend/node_modules
+**/*.log
+backend/logs
+
+# Loose screenshots
+test-*.png
+image*.png

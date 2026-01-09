@@ -1,0 +1,770 @@
+[
+  {
+    "id": "template-test-r2-verify",
+    "name": "Verify OpenAI + R2",
+    "description": "Test template to verify OpenAI Text-to-Image generation and Cloudflare R2 upload.",
+    "createdAt": "2026-01-09T01:35:29.424Z",
+    "lastModified": "2026-01-09T01:35:29.427Z",
+    "nodeCount": 1,
+    "templateVersion": 1,
+    "nodes": [
+      {
+        "id": "node-test-gen-1",
+        "type": "text_to_image",
+        "title": "1. Generate & Upload",
+        "provider": "OpenAI",
+        "status": "idle",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": "A futuristic holographic interface displaying 'R2 UPLOAD SUCCESSFUL' in neon blue text, dark background, cyberpunk style, high detail 8k",
+          "size": "1024x1024",
+          "model": "dall-e-3"
+        },
+        "execution": {
+          "mode": "single",
+          "waitForAll": false,
+          "aggregateItems": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "template-1767097859384-1fcb7609",
+    "name": "Mahabharat",
+    "description": "",
+    "createdAt": "2025-12-30T12:30:59.384Z",
+    "lastModified": "2025-12-30T12:30:59.384Z",
+    "videoPreview": "http://localhost:3002/output/composed_1767096285043.mp4",
+    "nodes": [
+      {
+        "id": "node-story-1",
+        "type": "text_to_text",
+        "title": "Mahabharat",
+        "provider": "OpenAI",
+        "status": "completed",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": "Theme: Animal Saving Story\nDuration: 30 seconds\nScenes: 3 scenes × 10 seconds\nStyle: Cinematic, emotional, realistic, short-film\n\n🎞️ SCENE 1 (0–10 seconds) — Danger Introduced\n\nShow a tense situation where a helpless life is stuck (randomly choose each time):\n\na child trapped near water\n\nan elderly person collapsed on a road\n\na baby animal caught in debris\n\nVisuals:\n\nRealistic environment (street, village, forest, flood area)\n\nWorried expressions, slow dramatic camera movement\n\nSound of danger (rain, traffic, rushing water)\n\nMood: Fear, urgency, silence broken by tension\n\n🎞️ SCENE 2 (10–20 seconds) — The Rescue\n\nA dog notices the danger and takes action.\nShow the dog:\n\nrunning fast\n\nbarking for help OR\n\npulling, pushing, blocking danger, or guiding humans\n\nVisuals:\n\nSlow-motion shots\n\nClose-up of the dog’s determined eyes\n\nFast cuts showing effort, struggle, and bravery\n\nMood: Courage, hope, rising emotional music\n\n🎞️ SCENE 3 (20–30 seconds) — Life Saved\n\nThe stuck life is successfully saved.\nHumans arrive or the danger passes.\n\nVisuals:\n\nThe rescued life breathing safely\n\nPeople emotional, grateful\n\nThe dog calm, standing silently or walking away\n\nEnding Shot:\nText on screen:\n\n“Sometimes heroes walk on four legs.”\n\nMood: Relief, warmth, emotional closure",
+          "systemPrompt": "Ultra-realistic visuals\n\nNatural lighting\n\nEmotional cinematic background score\n\nNo narration (story told visually)\n\nHigh emotional impact suitable for YouTube Shorts",
+          "temperature": 0.7,
+          "concatPrompts": false
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": true
+        }
+      },
+      {
+        "id": "node-scenes-1",
+        "type": "split_text",
+        "title": "2. Split Story Into 3 Scenes",
+        "provider": "ClipZap",
+        "status": "completed",
+        "estimatedTime": "30s",
+        "config": {
+          "text": {
+            "_type": "reference",
+            "nodeId": "node-story-1",
+            "outputKey": "text"
+          },
+          "numSegments": "3",
+          "splitMode": "array",
+          "arrayPath": ""
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": true
+        }
+      },
+      {
+        "id": "node-narration-1",
+        "type": "text_to_text",
+        "title": "3. Narration For All Scenes",
+        "provider": "OpenAI",
+        "status": "completed",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-scenes-1",
+            "outputKey": "items"
+          },
+          "systemPrompt": "Write a short narration (2-3 sentences) for the given scene. Return only the narration text.",
+          "concatPrompts": false,
+          "temperature": 0.3
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-img-prompt-1",
+        "type": "text_to_text",
+        "title": "4. Image Prompts For All Scenes",
+        "provider": "OpenAI",
+        "status": "completed",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-scenes-1",
+            "outputKey": "items"
+          },
+          "systemPrompt": "A cinematic, ultra-realistic scene showing a brave dog saving a life in danger. The dog is alert and determined, actively rescuing a helpless being from a dangerous situation. Emotional expressions, intense moment of action, natural environment (street, village, forest, or disaster scene). Dramatic lighting, realistic motion, detailed fur and eyes, shallow depth of field, cinematic camera angle, high realism, 4K quality, film-still look, emotional storytelling",
+          "temperature": 0.9
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": false,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-video-prompt-1",
+        "type": "text_to_text",
+        "title": "5. Video Prompts For All Scenes",
+        "provider": "OpenAI",
+        "status": "completed",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-scenes-1",
+            "outputKey": "items"
+          },
+          "systemPrompt": "Generate a cinematic video motion prompt for this scene. Return only the prompt.",
+          "temperature": 0.2
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-tts-all",
+        "type": "text_to_speech",
+        "title": "6. Speech For All Narrations",
+        "provider": "ElevenLabs",
+        "status": "completed",
+        "estimatedTime": "20s",
+        "config": {
+          "text": {
+            "_type": "reference",
+            "nodeId": "node-narration-1",
+            "outputKey": "text"
+          },
+          "voice": "af_bella",
+          "model": "openai/tts-1",
+          "stability": 0.5
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-img-all",
+        "type": "text_to_image",
+        "title": "7. Images For All Scenes",
+        "provider": "Fal AI",
+        "status": "completed",
+        "estimatedTime": "30s",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-img-prompt-1",
+            "outputKey": "text"
+          },
+          "aspectRatio": "16:9",
+          "negativePrompt": "Do not include vey old images"
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": false,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-video-all",
+        "type": "image_to_video",
+        "title": "8. Videos For All Scenes",
+        "provider": "Runway",
+        "status": "completed",
+        "estimatedTime": "2min",
+        "config": {
+          "imageUrl": {
+            "_type": "reference",
+            "nodeId": "node-img-all",
+            "outputKey": "imageUrl"
+          },
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-video-prompt-1",
+            "outputKey": "text"
+          },
+          "duration": "5",
+          "motionBucket": ""
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-music-1",
+        "type": "text_to_music",
+        "title": "9. Story Music",
+        "provider": "MiniMax",
+        "status": "completed",
+        "estimatedTime": "3min",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-story-1",
+            "outputKey": "text"
+          },
+          "duration": "30",
+          "tempo": "150"
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": false,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-final-merge",
+        "type": "edit_video",
+        "title": "10. Merge All Scenes + Audio",
+        "provider": "FFmpeg",
+        "status": "completed",
+        "estimatedTime": "2min",
+        "config": {
+          "videoUrl": {
+            "_type": "reference",
+            "nodeId": "node-video-all",
+            "outputKey": "videoUrl"
+          },
+          "speechUrl": {
+            "_type": "reference",
+            "nodeId": "node-tts-all",
+            "outputKey": "audioUrl"
+          },
+          "musicUrl": {
+            "_type": "reference",
+            "nodeId": "node-music-1",
+            "outputKey": "audioUrl"
+          },
+          "speechVolume": 1,
+          "musicVolume": 0.3
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": true
+        }
+      }
+    ],
+    "nodeCount": 10,
+    "templateVersion": 1
+  },
+  {
+    "id": "template-1767093691846-c57cd0f4",
+    "name": "Animal Stories",
+    "description": "",
+    "createdAt": "2025-12-30T11:21:31.846Z",
+    "lastModified": "2025-12-30T12:19:01.557Z",
+    "videoPreview": "http://localhost:3002/output/composed_1767094615997.mp4",
+    "nodes": [
+      {
+        "id": "node-story-1",
+        "type": "text_to_text",
+        "title": "Animal Saving Stories 1",
+        "provider": "OpenAI",
+        "status": "completed",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": "Theme: Animal Saving Story\nDuration: 30 seconds\nScenes: 3 scenes × 10 seconds\nStyle: Cinematic, emotional, realistic, short-film\n\n🎞️ SCENE 1 (0–10 seconds) — Danger Introduced\n\nShow a tense situation where a helpless life is stuck (randomly choose each time):\n\na child trapped near water\n\nan elderly person collapsed on a road\n\na baby animal caught in debris\n\nVisuals:\n\nRealistic environment (street, village, forest, flood area)\n\nWorried expressions, slow dramatic camera movement\n\nSound of danger (rain, traffic, rushing water)\n\nMood: Fear, urgency, silence broken by tension\n\n🎞️ SCENE 2 (10–20 seconds) — The Rescue\n\nA dog notices the danger and takes action.\nShow the dog:\n\nrunning fast\n\nbarking for help OR\n\npulling, pushing, blocking danger, or guiding humans\n\nVisuals:\n\nSlow-motion shots\n\nClose-up of the dog’s determined eyes\n\nFast cuts showing effort, struggle, and bravery\n\nMood: Courage, hope, rising emotional music\n\n🎞️ SCENE 3 (20–30 seconds) — Life Saved\n\nThe stuck life is successfully saved.\nHumans arrive or the danger passes.\n\nVisuals:\n\nThe rescued life breathing safely\n\nPeople emotional, grateful\n\nThe dog calm, standing silently or walking away\n\nEnding Shot:\nText on screen:\n\n“Sometimes heroes walk on four legs.”\n\nMood: Relief, warmth, emotional closure",
+          "systemPrompt": "Ultra-realistic visuals\n\nNatural lighting\n\nEmotional cinematic background score\n\nNo narration (story told visually)\n\nHigh emotional impact suitable for YouTube Shorts",
+          "temperature": 0.8
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": true
+        }
+      },
+      {
+        "id": "node-scenes-1",
+        "type": "split_text",
+        "title": "2. Split Story Into 3 Scenes",
+        "provider": "ClipZap",
+        "status": "completed",
+        "estimatedTime": "30s",
+        "config": {
+          "text": {
+            "_type": "reference",
+            "nodeId": "node-story-1",
+            "outputKey": "text"
+          },
+          "numSegments": "3",
+          "splitMode": "array",
+          "arrayPath": ""
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": true
+        }
+      },
+      {
+        "id": "node-narration-1",
+        "type": "text_to_text",
+        "title": "3. Narration For All Scenes",
+        "provider": "OpenAI",
+        "status": "completed",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-scenes-1",
+            "outputKey": "items"
+          },
+          "systemPrompt": "Write a short narration (2-3 sentences) for the given scene. Return only the narration text.",
+          "concatPrompts": false,
+          "temperature": 0.3
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-img-prompt-1",
+        "type": "text_to_text",
+        "title": "4. Image Prompts For All Scenes",
+        "provider": "OpenAI",
+        "status": "completed",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-scenes-1",
+            "outputKey": "items"
+          },
+          "systemPrompt": "A cinematic, ultra-realistic scene showing a brave dog saving a life in danger. The dog is alert and determined, actively rescuing a helpless being from a dangerous situation. Emotional expressions, intense moment of action, natural environment (street, village, forest, or disaster scene). Dramatic lighting, realistic motion, detailed fur and eyes, shallow depth of field, cinematic camera angle, high realism, 4K quality, film-still look, emotional storytelling",
+          "temperature": 0.9
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": false,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-video-prompt-1",
+        "type": "text_to_text",
+        "title": "5. Video Prompts For All Scenes",
+        "provider": "OpenAI",
+        "status": "completed",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-scenes-1",
+            "outputKey": "items"
+          },
+          "systemPrompt": "Generate a cinematic video motion prompt for this scene. Return only the prompt.",
+          "temperature": 0.2
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-tts-all",
+        "type": "text_to_speech",
+        "title": "6. Speech For All Narrations",
+        "provider": "ElevenLabs",
+        "status": "completed",
+        "estimatedTime": "20s",
+        "config": {
+          "text": {
+            "_type": "reference",
+            "nodeId": "node-narration-1",
+            "outputKey": "text"
+          },
+          "voice": "af_bella",
+          "model": "openai/tts-1",
+          "stability": 0.5
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-img-all",
+        "type": "text_to_image",
+        "title": "7. Images For All Scenes",
+        "provider": "Fal AI",
+        "status": "completed",
+        "estimatedTime": "30s",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-img-prompt-1",
+            "outputKey": "text"
+          },
+          "aspectRatio": "16:9",
+          "negativePrompt": "Do not include vey old images"
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": false,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-video-all",
+        "type": "image_to_video",
+        "title": "8. Videos For All Scenes",
+        "provider": "Runway",
+        "status": "completed",
+        "estimatedTime": "2min",
+        "config": {
+          "imageUrl": {
+            "_type": "reference",
+            "nodeId": "node-img-all",
+            "outputKey": "imageUrl"
+          },
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-video-prompt-1",
+            "outputKey": "text"
+          },
+          "duration": "5",
+          "motionBucket": ""
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-music-1",
+        "type": "text_to_music",
+        "title": "9. Story Music",
+        "provider": "MiniMax",
+        "status": "completed",
+        "estimatedTime": "3min",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-story-1",
+            "outputKey": "text"
+          },
+          "duration": "30",
+          "tempo": "150"
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": false,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-final-merge",
+        "type": "edit_video",
+        "title": "10. Merge All Scenes + Audio",
+        "provider": "FFmpeg",
+        "status": "running",
+        "estimatedTime": "2min",
+        "config": {
+          "videoUrl": {
+            "_type": "reference",
+            "nodeId": "node-video-all",
+            "outputKey": "videoUrl"
+          },
+          "speechUrl": {
+            "_type": "reference",
+            "nodeId": "node-tts-all",
+            "outputKey": "audioUrl"
+          },
+          "musicUrl": {
+            "_type": "reference",
+            "nodeId": "node-music-1",
+            "outputKey": "audioUrl"
+          },
+          "speechVolume": 1,
+          "musicVolume": 0.3
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": true
+        }
+      }
+    ],
+    "nodeCount": 10,
+    "templateVersion": 1
+  },
+  {
+    "id": "template-1767082092624-ca0afb5f",
+    "name": "Animal Saving Stories",
+    "description": "",
+    "createdAt": "2025-12-30T08:08:12.624Z",
+    "lastModified": "2025-12-30T08:08:12.624Z",
+    "videoPreview": "http://localhost:3002/output/composed_1767073702375.mp4",
+    "nodes": [
+      {
+        "id": "node-story-1",
+        "type": "text_to_text",
+        "title": "Animal Saving stories",
+        "provider": "OpenAI",
+        "status": "completed",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": "Theme: Animal Saving Story\nDuration: 30 seconds\nScenes: 3 scenes × 10 seconds\nStyle: Cinematic, emotional, realistic, short-film\n\n🎞️ SCENE 1 (0–10 seconds) — Danger Introduced\n\nShow a tense situation where a helpless life is stuck (randomly choose each time):\n\na child trapped near water\n\nan elderly person collapsed on a road\n\na baby animal caught in debris\n\nVisuals:\n\nRealistic environment (street, village, forest, flood area)\n\nWorried expressions, slow dramatic camera movement\n\nSound of danger (rain, traffic, rushing water)\n\nMood: Fear, urgency, silence broken by tension\n\n🎞️ SCENE 2 (10–20 seconds) — The Rescue\n\nA dog notices the danger and takes action.\nShow the dog:\n\nrunning fast\n\nbarking for help OR\n\npulling, pushing, blocking danger, or guiding humans\n\nVisuals:\n\nSlow-motion shots\n\nClose-up of the dog’s determined eyes\n\nFast cuts showing effort, struggle, and bravery\n\nMood: Courage, hope, rising emotional music\n\n🎞️ SCENE 3 (20–30 seconds) — Life Saved\n\nThe stuck life is successfully saved.\nHumans arrive or the danger passes.\n\nVisuals:\n\nThe rescued life breathing safely\n\nPeople emotional, grateful\n\nThe dog calm, standing silently or walking away\n\nEnding Shot:\nText on screen:\n\n“Sometimes heroes walk on four legs.”\n\nMood: Relief, warmth, emotional closure",
+          "systemPrompt": "Ultra-realistic visuals\n\nNatural lighting\n\nEmotional cinematic background score\n\nNo narration (story told visually)\n\nHigh emotional impact suitable for YouTube Shorts",
+          "temperature": 0.7
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": true
+        }
+      },
+      {
+        "id": "node-scenes-1",
+        "type": "split_text",
+        "title": "2. Split Story Into 3 Scenes",
+        "provider": "ClipZap",
+        "status": "completed",
+        "estimatedTime": "30s",
+        "config": {
+          "text": {
+            "_type": "reference",
+            "nodeId": "node-story-1",
+            "outputKey": "text"
+          },
+          "numSegments": "4",
+          "splitMode": "array",
+          "arrayPath": ""
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": true
+        }
+      },
+      {
+        "id": "node-narration-1",
+        "type": "text_to_text",
+        "title": "3. Narration For All Scenes",
+        "provider": "OpenAI",
+        "status": "completed",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-scenes-1",
+            "outputKey": "items"
+          },
+          "systemPrompt": "Write a short narration (2-3 sentences) for the given scene. Return only the narration text.",
+          "concatPrompts": false,
+          "temperature": 0.3
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-img-prompt-1",
+        "type": "text_to_text",
+        "title": "4. Image Prompts For All Scenes",
+        "provider": "OpenAI",
+        "status": "completed",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-scenes-1",
+            "outputKey": "items"
+          },
+          "systemPrompt": "A cinematic, ultra-realistic scene showing a brave dog saving a life in danger. The dog is alert and determined, actively rescuing a helpless being from a dangerous situation. Emotional expressions, intense moment of action, natural environment (street, village, forest, or disaster scene). Dramatic lighting, realistic motion, detailed fur and eyes, shallow depth of field, cinematic camera angle, high realism, 4K quality, film-still look, emotional storytelling",
+          "temperature": 0.9
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": false,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-video-prompt-1",
+        "type": "text_to_text",
+        "title": "5. Video Prompts For All Scenes",
+        "provider": "OpenAI",
+        "status": "completed",
+        "estimatedTime": "10s",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-scenes-1",
+            "outputKey": "items"
+          },
+          "systemPrompt": "Generate a cinematic video motion prompt for this scene. Return only the prompt.",
+          "temperature": 0.2
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-tts-all",
+        "type": "text_to_speech",
+        "title": "6. Speech For All Narrations",
+        "provider": "ElevenLabs",
+        "status": "completed",
+        "estimatedTime": "20s",
+        "config": {
+          "text": {
+            "_type": "reference",
+            "nodeId": "node-narration-1",
+            "outputKey": "text"
+          },
+          "voice": "af_bella",
+          "model": "openai/tts-1",
+          "stability": 0.5
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-img-all",
+        "type": "text_to_image",
+        "title": "7. Images For All Scenes",
+        "provider": "Fal AI",
+        "status": "completed",
+        "estimatedTime": "30s",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-img-prompt-1",
+            "outputKey": "text"
+          },
+          "aspectRatio": "16:9",
+          "negativePrompt": "Do not include vey old images"
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": false,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-video-all",
+        "type": "image_to_video",
+        "title": "8. Videos For All Scenes",
+        "provider": "Runway",
+        "status": "completed",
+        "estimatedTime": "2min",
+        "config": {
+          "imageUrl": {
+            "_type": "reference",
+            "nodeId": "node-img-all",
+            "outputKey": "imageUrl"
+          },
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-video-prompt-1",
+            "outputKey": "text"
+          },
+          "duration": "5",
+          "motionBucket": ""
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-music-1",
+        "type": "text_to_music",
+        "title": "9. Story Music",
+        "provider": "MiniMax",
+        "status": "completed",
+        "estimatedTime": "3min",
+        "config": {
+          "prompt": {
+            "_type": "reference",
+            "nodeId": "node-story-1",
+            "outputKey": "text"
+          },
+          "duration": "30",
+          "tempo": "150"
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": false,
+          "aggregateItems": false
+        }
+      },
+      {
+        "id": "node-final-merge",
+        "type": "edit_video",
+        "title": "10. Merge All Scenes + Audio",
+        "provider": "FFmpeg",
+        "status": "completed",
+        "estimatedTime": "2min",
+        "config": {
+          "videoUrl": {
+            "_type": "reference",
+            "nodeId": "node-video-all",
+            "outputKey": "videoUrl"
+          },
+          "speechUrl": {
+            "_type": "reference",
+            "nodeId": "node-tts-all",
+            "outputKey": "audioUrl"
+          },
+          "musicUrl": {
+            "_type": "reference",
+            "nodeId": "node-music-1",
+            "outputKey": "audioUrl"
+          },
+          "speechVolume": 1,
+          "musicVolume": 0.3
+        },
+        "execution": {
+          "mode": "parallel",
+          "waitForAll": true,
+          "aggregateItems": true
+        }
+      }
+    ],
+    "nodeCount": 10,
+    "templateVersion": 1
+  }
+]
