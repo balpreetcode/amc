@@ -67,6 +67,11 @@ const OUTPUT_DIR = path.join(BASE_DIR, 'output');
  * Post to Fal AI API
  */
 async function postToFal(model, body) {
+    console.log('[Fal AI] Calling model:', model);
+    console.log('[Fal AI] Request body:', JSON.stringify(body, null, 2));
+    console.log('[Fal AI] FAL_API_KEY present:', FAL_API_KEY ? 'YES (' + FAL_API_KEY.substring(0, 10) + '...)' : 'NO!');
+    console.log('[Fal AI] Authorization header:', 'Key ' + (FAL_API_KEY ? FAL_API_KEY.substring(0, 10) + '...' : 'MISSING'));
+
     const response = await axios.post(
         `https://fal.run/${model}`,
         body,
@@ -203,21 +208,28 @@ async function generateSpeech(text, voice = 'aaron', model = 'fal-ai/chatterbox/
         let requestBody;
 
         if (model.includes('playht')) {
+            // Validate and map voice for PlayHT
+            const validPlayHTVoices = ['Jennifer', 'Dexter', 'Scarlett', 'Brandon'];
+            let playhtVoice = voice;
+            if (!validPlayHTVoices.includes(voice)) {
+                playhtVoice = 'Jennifer'; // Default fallback voice
+                console.log(`[PlayHT] Voice '${voice}' not valid, using '${playhtVoice}'`);
+            }
             requestBody = {
                 input: text,
-                voice: voice,
+                voice: playhtVoice,
                 output_format: 'mp3'
             };
         } else if (model.includes('chatterbox')) {
+            // Chatterbox uses text + language format
+            const languageMap = {
+                'English': 'en',
+                'Hindi': 'hi'
+            };
             requestBody = {
                 text: text,
-                voice: voice,
-                temperature: 0.8
+                language: languageMap[language] || 'en'
             };
-            if (model.includes('turbo')) {
-                // Ensure exact model match if needed, or just use the passed model
-                // The 'turbo' model uses the same payload structure
-            }
         } else if (model.includes('kokoro')) {
             requestBody = {
                 text: text,
@@ -262,16 +274,73 @@ async function generateSpeech(text, voice = 'aaron', model = 'fal-ai/chatterbox/
 
         return audioUrl;
     } catch (error) {
-        console.warn(`Fal AI TTS failed: ${error.message}`);
+        console.warn(`Fal AI TTS failed with model ${model}: ${error.message}`);
         if (error.response) {
             console.warn('Fal AI Error Response:', JSON.stringify(error.response.data, null, 2));
         }
+
+        // If not already using playht, try falling back to fal-ai/playht/tts/v3 first
+        if (model !== 'fal-ai/playht/tts/v3') {
+            console.warn('Falling back to fal-ai/playht/tts/v3...');
+            const fallbackModel = 'fal-ai/playht/tts/v3';
+
+            // Map voices to valid PlayHT voices
+            const validPlayHTVoices = ['Jennifer', 'Dexter', 'Scarlett', 'Brandon'];
+            let playhtVoice = voice;
+            if (!validPlayHTVoices.includes(voice)) {
+                playhtVoice = 'Jennifer'; // Default fallback voice
+                console.log(`[Fallback] Voice '${voice}' not valid for PlayHT, using '${playhtVoice}'`);
+            }
+
+            try {
+                const result = await postToFal(fallbackModel, {
+                    input: text,
+                    voice: playhtVoice,
+                    output_format: 'mp3'
+                });
+
+                let audioUrl;
+                if (result.audio && result.audio.url) {
+                    audioUrl = result.audio.url;
+                } else if (result.audio_url) {
+                    audioUrl = result.audio_url;
+                } else if (result.url) {
+                    audioUrl = result.url;
+                } else {
+                    throw new Error('No audio URL in response from fallback model');
+                }
+
+                if (includeMetadata) {
+                    requestMetadata.provider = 'fal';
+                    requestMetadata.model = fallbackModel;
+                    requestMetadata.fallback = true;
+                    return {
+                        result: audioUrl,
+                        apiCall: {
+                            request: requestMetadata,
+                            response: {
+                                audioUrl,
+                                format: 'mp3',
+                                duration: result.duration
+                            },
+                            timestamp: new Date().toISOString(),
+                            duration: Date.now() - startTime
+                        }
+                    };
+                }
+                return audioUrl;
+            } catch (fallbackError) {
+                console.warn(`Fallback to fal-ai/playht/tts/v3 also failed: ${fallbackError.message}`);
+            }
+        }
+
+        // Final fallback to OpenAI
         console.warn('Falling back to OpenAI...');
-        // Fallback to OpenAI if Fal AI fails
         const audioUrl = await generateSpeechOpenAI(text, 'alloy', 'tts-1', language);
 
         if (includeMetadata) {
             requestMetadata.provider = 'openai';
+            requestMetadata.model = model;
             requestMetadata.fallback = true;
             return {
                 result: audioUrl,

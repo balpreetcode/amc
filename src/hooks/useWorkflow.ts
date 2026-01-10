@@ -140,7 +140,8 @@ const defaultWorkflow: WorkflowState = {
             estimatedTime: '20s',
             config: {
                 text: { _type: 'reference', nodeId: 'node-narration-1', outputKey: 'text' },
-                voice: 'af_bella'
+                voice: 'Default (auto-selected)',
+                model: 'fal-ai/chatterbox/text-to-speech/turbo'
             },
             execution: {
                 mode: 'parallel',

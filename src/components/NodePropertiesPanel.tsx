@@ -8,6 +8,7 @@ interface FormField {
     label: string;
     type: 'text' | 'textarea' | 'select' | 'number' | 'slider' | 'toggle' | 'file' | 'video' | 'audio' | 'image';
     options?: string[];
+    dynamicOptions?: string;
     min?: number;
     max?: number;
     step?: number;
@@ -46,7 +47,7 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
     'text_to_speech': [
         { name: 'text', label: 'Text Content', type: 'textarea' },
         { name: 'language', label: 'Language', type: 'select', options: ['English', 'Hindi'] },
-        { name: 'voice', label: 'Voice', type: 'select', options: ['aaron', 'alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'] },
+        { name: 'voice', label: 'Voice', type: 'select', options: [], dynamicOptions: 'model' },
         { name: 'model', label: 'Model', type: 'select', options: ['fal-ai/chatterbox/text-to-speech/turbo', 'fal-ai/playht/tts/v3', 'openai/tts-1', 'openai/gpt-4o-mini-tts'] },
         { name: 'stability', label: 'Stability', type: 'slider', min: 0, max: 1, step: 0.1 }
     ],
@@ -130,6 +131,16 @@ const OUTPUT_KEYS: Record<string, string[]> = {
     'clip_merger': ['videoUrl'],
     'upload_files': ['files'],
 };
+
+// Voice options based on TTS model
+const VOICE_OPTIONS_BY_MODEL: Record<string, string[]> = {
+    'fal-ai/chatterbox/text-to-speech/turbo': ['Default (auto-selected)'],
+    'fal-ai/playht/tts/v3': ['Jennifer', 'Dexter', 'Scarlett', 'Brandon'],
+    'openai/tts-1': ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'],
+    'openai/gpt-4o-mini-tts': ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'],
+};
+
+const DEFAULT_VOICE_OPTIONS = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'];
 
 type TabType = 'params' | 'config' | 'docs' | 'input' | 'output';
 
@@ -695,10 +706,17 @@ export const NodePropertiesPanel: React.FC = () => {
                                         )}
                                         {field.type === 'select' && (
                                             <select
-                                                value={fieldValue || field.options?.[0]}
+                                                value={fieldValue || (
+                                                    field.dynamicOptions
+                                                        ? (VOICE_OPTIONS_BY_MODEL[(selectedNode.config as any)?.[field.dynamicOptions]] || DEFAULT_VOICE_OPTIONS)[0]
+                                                        : field.options?.[0]
+                                                )}
                                                 onChange={(e) => handleFieldChange(field.name, e.target.value)}
                                             >
-                                                {field.options?.map(opt => (
+                                                {(field.dynamicOptions
+                                                    ? (VOICE_OPTIONS_BY_MODEL[(selectedNode.config as any)?.[field.dynamicOptions]] || DEFAULT_VOICE_OPTIONS)
+                                                    : (field.options || [])
+                                                ).map(opt => (
                                                     <option key={opt} value={opt}>{opt}</option>
                                                 ))}
                                             </select>
