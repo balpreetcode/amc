@@ -29,7 +29,7 @@ export interface ExecutionState {
 const DEFAULT_TEMPLATE_VERSION = 5;
 
 const DEFAULT_NODE_EXECUTION = {
-    mode: 'parallel' as const,
+    mode: 'sequential' as const,
     waitForAll: false,
     aggregateItems: false
 };
@@ -50,7 +50,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-story-1',
             type: 'text_to_text',
-            title: '1. Generate Story',
+            title: 'Generate Story',
             provider: 'OpenAI',
             status: 'not_run',
             estimatedTime: '10s',
@@ -66,7 +66,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-scenes-1',
             type: 'split_text',
-            title: '2. Split Story Into 3 Scenes',
+            title: 'Split Story Into 3 Scenes',
             provider: 'ClipZap',
             status: 'not_run',
             estimatedTime: '30s',
@@ -83,7 +83,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-narration-1',
             type: 'text_to_text',
-            title: '3. Narration For All Scenes',
+            title: 'Narration For All Scenes',
             provider: 'OpenAI',
             status: 'not_run',
             estimatedTime: '10s',
@@ -100,7 +100,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-img-prompt-1',
             type: 'text_to_text',
-            title: '4. Image Prompts For All Scenes',
+            title: 'Image Prompts For All Scenes',
             provider: 'OpenAI',
             status: 'not_run',
             estimatedTime: '10s',
@@ -117,7 +117,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-video-prompt-1',
             type: 'text_to_text',
-            title: '5. Video Prompts For All Scenes',
+            title: 'Video Prompts For All Scenes',
             provider: 'OpenAI',
             status: 'not_run',
             estimatedTime: '10s',
@@ -134,8 +134,8 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-tts-all',
             type: 'text_to_speech',
-            title: '6. Speech For All Narrations',
-            provider: 'ElevenLabs',
+            title: 'Speech For All Narrations',
+            provider: 'Fal AI',
             status: 'not_run',
             estimatedTime: '20s',
             config: {
@@ -152,7 +152,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-img-all',
             type: 'text_to_image',
-            title: '7. Images For All Scenes',
+            title: 'Images For All Scenes',
             provider: 'Fal AI',
             status: 'not_run',
             estimatedTime: '30s',
@@ -169,7 +169,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-video-all',
             type: 'image_to_video',
-            title: '8. Videos For All Scenes',
+            title: 'Videos For All Scenes',
             provider: 'Runway',
             status: 'not_run',
             estimatedTime: '2min',
@@ -187,7 +187,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-music-1',
             type: 'text_to_music',
-            title: '9. Story Music',
+            title: 'Story Music',
             provider: 'MiniMax',
             status: 'not_run',
             estimatedTime: '3min',
@@ -204,7 +204,7 @@ const defaultWorkflow: WorkflowState = {
         {
             id: 'node-final-merge',
             type: 'edit_video',
-            title: '10. Merge All Scenes + Audio',
+            title: 'Merge All Scenes + Audio',
             provider: 'FFmpeg',
             status: 'not_run',
             estimatedTime: '2min',
@@ -259,6 +259,71 @@ export const useWorkflow = () => {
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
     const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+    // Undo/Redo history stacks
+    const MAX_HISTORY = 50;
+    const undoStackRef = useRef<WorkflowState[]>([]);
+    const redoStackRef = useRef<WorkflowState[]>([]);
+    const [historyVersion, setHistoryVersion] = useState(0); // Force re-render on undo/redo
+
+    // Push current state to undo stack before mutations
+    const pushToHistory = useCallback(() => {
+        const currentState = JSON.parse(JSON.stringify(workflow));
+        undoStackRef.current.push(currentState);
+        if (undoStackRef.current.length > MAX_HISTORY) {
+            undoStackRef.current.shift();
+        }
+        // Clear redo stack on new action
+        redoStackRef.current = [];
+        setHistoryVersion(v => v + 1);
+    }, [workflow]);
+
+    // Undo function
+    const undo = useCallback(() => {
+        if (undoStackRef.current.length === 0) return;
+
+        const previousState = undoStackRef.current.pop()!;
+        const currentState = JSON.parse(JSON.stringify(workflow));
+        redoStackRef.current.push(currentState);
+
+        setWorkflow(previousState);
+        setHistoryVersion(v => v + 1);
+    }, [workflow]);
+
+    // Redo function
+    const redo = useCallback(() => {
+        if (redoStackRef.current.length === 0) return;
+
+        const nextState = redoStackRef.current.pop()!;
+        const currentState = JSON.parse(JSON.stringify(workflow));
+        undoStackRef.current.push(currentState);
+
+        setWorkflow(nextState);
+        setHistoryVersion(v => v + 1);
+    }, [workflow]);
+
+    // Computed values for UI
+    const canUndo = undoStackRef.current.length > 0;
+    const canRedo = redoStackRef.current.length > 0;
+
+    // Keyboard shortcuts for undo/redo
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Check for Cmd+Z (Mac) or Ctrl+Z (Windows)
+            const isMod = e.metaKey || e.ctrlKey;
+            if (isMod && e.key === 'z') {
+                e.preventDefault();
+                if (e.shiftKey) {
+                    redo();
+                } else {
+                    undo();
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [undo, redo]);
+
     // Auto-select first node if none selected and nodes exist
     useEffect(() => {
         if (!selectedNodeId && workflow.nodes.length > 0) {
@@ -281,8 +346,9 @@ export const useWorkflow = () => {
     }, []);
 
     const addNode = useCallback((type: NodeType, afterIndex?: number) => {
+        pushToHistory();
         setWorkflow(prev => {
-            const newNode = createNode(type, afterIndex !== undefined ? afterIndex + 1 : prev.nodes.length);
+            const newNode = createNode(type);
             const nodes = [...prev.nodes];
 
             if (afterIndex !== undefined) {
@@ -291,11 +357,7 @@ export const useWorkflow = () => {
                 nodes.push(newNode);
             }
 
-            // Update titles with correct numbering
-            const updatedNodes = nodes.map((node, index) => ({
-                ...node,
-                title: `${index + 1}. ${node.title.replace(/^\d+\.\s*/, '')}`,
-            }));
+            const updatedNodes = nodes;
 
             return {
                 ...prev,
@@ -303,17 +365,14 @@ export const useWorkflow = () => {
                 lastModified: new Date().toISOString(),
             };
         });
-    }, []);
+    }, [pushToHistory]);
 
     const removeNode = useCallback((nodeId: string) => {
+        pushToHistory();
         setWorkflow(prev => {
             const nodes = prev.nodes.filter(n => n.id !== nodeId);
 
-            // Update titles with correct numbering
-            const updatedNodes = nodes.map((node, index) => ({
-                ...node,
-                title: `${index + 1}. ${node.title.replace(/^\d+\.\s*/, '')}`,
-            }));
+            const updatedNodes = nodes;
 
             return {
                 ...prev,
@@ -321,9 +380,10 @@ export const useWorkflow = () => {
                 lastModified: new Date().toISOString(),
             };
         });
-    }, []);
+    }, [pushToHistory]);
 
     const updateNode = useCallback((nodeId: string, updates: Partial<WorkflowNodeData>) => {
+        pushToHistory();
         setWorkflow(prev => ({
             ...prev,
             nodes: prev.nodes.map(node =>
@@ -331,19 +391,16 @@ export const useWorkflow = () => {
             ),
             lastModified: new Date().toISOString(),
         }));
-    }, []);
+    }, [pushToHistory]);
 
     const moveNode = useCallback((fromIndex: number, toIndex: number) => {
+        pushToHistory();
         setWorkflow(prev => {
             const nodes = [...prev.nodes];
             const [removed] = nodes.splice(fromIndex, 1);
             nodes.splice(toIndex, 0, removed);
 
-            // Update titles with correct numbering
-            const updatedNodes = nodes.map((node, index) => ({
-                ...node,
-                title: `${index + 1}. ${node.title.replace(/^\d+\.\s*/, '')}`,
-            }));
+            const updatedNodes = nodes;
 
             return {
                 ...prev,
@@ -351,7 +408,7 @@ export const useWorkflow = () => {
                 lastModified: new Date().toISOString(),
             };
         });
-    }, []);
+    }, [pushToHistory]);
 
     const clearWorkflow = useCallback(() => {
         setWorkflow(normalizeWorkflow({
@@ -834,5 +891,10 @@ export const useWorkflow = () => {
         stopWorkflow,
         selectedNodeId,
         setSelectedNodeId,
+        // Undo/Redo
+        undo,
+        redo,
+        canUndo,
+        canRedo,
     };
 };

@@ -100,7 +100,7 @@ export const NodeConfigTab: React.FC<NodeConfigTabProps> = ({ node, onUpdate }) 
         if (!newAvailableTypes.includes(node.type)) {
             updates.type = newAvailableTypes[0];
             const typeConfig = getNodeTypeConfig(newAvailableTypes[0]);
-            updates.title = node.title.replace(/^\d+\.\s*\w+/, `${node.title.match(/^\d+/)?.[0] || '1'}. ${typeConfig.label}`);
+            updates.title = typeConfig.label;
         }
 
         onUpdate(updates);
@@ -122,7 +122,7 @@ export const NodeConfigTab: React.FC<NodeConfigTabProps> = ({ node, onUpdate }) 
         const typeConfig = getNodeTypeConfig(type);
         onUpdate({
             type,
-            title: node.title.replace(/^\d+\.\s*[\w\s]+/, `${node.title.match(/^\d+/)?.[0] || '1'}. ${typeConfig.label}`)
+            title: typeConfig.label
         });
     };
 

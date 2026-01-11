@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import type { WorkflowNodeData } from '../types/nodes';
-import { getNodeTypeConfig } from '../types/nodes';
+import { getNodeTypeConfig, getProviderFromModel } from '../types/nodes';
 import { useWorkflowContext } from '../context/WorkflowContext';
 import './WorkflowNode.css';
 
@@ -76,70 +76,42 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
             className={nodeClasses}
             onClick={() => setSelectedNodeId(node.id)}
         >
-            <div className="node-header">
-                <div className="node-icon">{config.icon}</div>
-                <div className="node-title">{node.title}</div>
-                {getStatusBadge()}
-                {showParallelBadge && (
-                    <span className="meta-badge meta-parallel">Parallel</span>
-                )}
-                <button
-                    ref={buttonRef}
-                    className="node-menu-btn"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setMenuOpen(!menuOpen);
-                    }}
-                >
-                    ⋮
-                </button>
+            <div className="node-icon">{config.icon}</div>
 
-                {menuOpen && (
-                    <div className="node-menu" ref={menuRef}>
-                        <button onClick={() => {
-                            onUpdate(node.id, { title: prompt('Enter new title:', node.title.replace(/^\d+\.\s*/, '')) || node.title });
-                            setMenuOpen(false);
-                        }}>
-                            ✏️ Rename
-                        </button>
-                        <button onClick={() => {
-                            // TODO: Open config modal
-                            setMenuOpen(false);
-                        }}>
-                            ⚙️ Configure
-                        </button>
-                        <button
-                            className="delete-btn"
-                            onClick={() => {
-                                onRemove(node.id);
-                                setMenuOpen(false);
-                            }}
-                        >
-                            🗑️ Delete
-                        </button>
-                        {hasMockData && (
-                            <button
-                                className="run-from-btn"
-                                onClick={() => {
-                                    runFromNode(node.id);
-                                    setMenuOpen(false);
-                                }}
-                                disabled={execution.isRunning}
-                            >
-                                ▶️ Run from here
-                            </button>
-                        )}
-                    </div>
-                )}
+            <div className="node-content-wrapper">
+                <div className="node-title">{node.title}</div>
+
+                <div className="node-badges">
+                    {getStatusBadge()}
+                    <span className="node-type-label">{config.label}</span>
+                    <span className="node-provider">{getProviderFromModel((node.config as any)?.model, node.type)}</span>
+                    {showParallelBadge && (
+                        <span className="meta-badge meta-parallel">Parallel</span>
+                    )}
+                    {showArrayHint && (
+                        <span className="meta-badge meta-array">Array ({arrayInputCount})</span>
+                    )}
+                </div>
             </div>
 
-            <div className="node-body">
-                <span className="node-type-label">{config.label}</span>
-                <span className="node-provider">{node.provider}</span>
-                {showArrayHint && (
-                    <span className="meta-badge meta-array">Array input ({arrayInputCount})</span>
-                )}
-                <span className="node-time">⏱ {node.estimatedTime}</span>
+            <span className="node-time">⏱ {node.estimatedTime}</span>
+
+            <div className="node-actions-container">
+                <button
+                    className="node-delete-btn"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove(node.id);
+                    }}
+                    title="Delete node"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </button>
             </div>
         </div>
     );

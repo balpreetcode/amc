@@ -87,7 +87,7 @@ export const NODE_TYPES: NodeTypeConfig[] = [
   { type: 'text_to_image', label: 'Text To Image', icon: '🖼️', defaultProvider: 'Fal AI', defaultTime: '30s', category: 'generation' },
   { type: 'text_to_video', label: 'Text To Video', icon: '📹', defaultProvider: 'Google', defaultTime: '5min', category: 'generation' },
   { type: 'text_to_music', label: 'Text To Music', icon: '🎵', defaultProvider: 'MiniMax', defaultTime: '3min', category: 'generation' },
-  { type: 'text_to_speech', label: 'Text To Speech', icon: '🔊', defaultProvider: 'ElevenLabs', defaultTime: '20s', category: 'generation' },
+  { type: 'text_to_speech', label: 'Text To Speech', icon: '🔊', defaultProvider: 'Fal AI', defaultTime: '20s', category: 'generation' },
   { type: 'image_to_video', label: 'Image To Video', icon: '🎬', defaultProvider: 'Runway', defaultTime: '2min', category: 'generation' },
   { type: 'image_to_image', label: 'Image To Image', icon: '🔄', defaultProvider: 'Fal AI', defaultTime: '30s', category: 'processing' },
   { type: 'face_swap', label: 'Face Swap', icon: '🎭', defaultProvider: 'InsightFace', defaultTime: '45s', category: 'processing' },
@@ -113,20 +113,56 @@ export const getNodeTypeConfig = (type: NodeType): NodeTypeConfig => {
   return NODE_TYPES.find(n => n.type === type) || NODE_TYPES[0];
 };
 
-export const createNode = (type: NodeType, index: number): WorkflowNodeData => {
+export const createNode = (type: NodeType): WorkflowNodeData => {
   const config = getNodeTypeConfig(type);
   return {
     id: `node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     type,
-    title: `${index + 1}. ${config.label}`,
+    title: config.label,
     provider: config.defaultProvider,
     status: 'not_run',
     estimatedTime: config.defaultTime,
     config: {},
     execution: {
-      mode: 'parallel',
+      mode: 'sequential',
       waitForAll: false,
       aggregateItems: false
     }
   };
+};
+
+// Derive provider display name from model string and node type
+export const getProviderFromModel = (model: string | undefined, nodeType: NodeType): string => {
+  // FFmpeg nodes
+  if (nodeType === 'edit_video' || nodeType === 'clip_merger') {
+    return 'FFmpeg';
+  }
+
+  // AMC internal nodes (not ClipZap)
+  if (nodeType === 'split_text') {
+    return 'AMC';
+  }
+
+  // If no model specified, return Others
+  if (!model) {
+    return 'Others';
+  }
+
+  const modelLower = model.toLowerCase();
+
+  // Fal AI models
+  if (modelLower.startsWith('fal-ai/') || modelLower.startsWith('fal-ai')) {
+    return 'Fal AI';
+  }
+
+  // OpenAI models
+  if (modelLower.startsWith('openai/') ||
+    modelLower.includes('gpt') ||
+    modelLower.includes('dall-e') ||
+    modelLower.includes('tts-1') ||
+    modelLower.includes('whisper')) {
+    return 'OpenAI';
+  }
+
+  return 'Others';
 };

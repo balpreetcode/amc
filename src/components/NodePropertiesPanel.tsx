@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useWorkflowContext } from '../context/WorkflowContext';
-import { getNodeTypeConfig, type NodeExecutionConfig, type NodeType, type MockDataConfig } from '../types/nodes';
+import { getNodeTypeConfig, getProviderFromModel, type NodeExecutionConfig, type NodeType, type MockDataConfig } from '../types/nodes';
 import './NodePropertiesPanel.css';
 
 interface FormField {
@@ -42,7 +42,8 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
     'text_to_music': [
         { name: 'prompt', label: 'Prompt', type: 'textarea' },
         { name: 'duration', label: 'Duration (sec)', type: 'number' },
-        { name: 'tempo', label: 'Tempo (BPM)', type: 'number' }
+        { name: 'tempo', label: 'Tempo (BPM)', type: 'number' },
+        { name: 'model', label: 'Model', type: 'select', options: ['fal-ai/stable-audio', 'fal-ai/minimax/music-01'] }
     ],
     'text_to_speech': [
         { name: 'text', label: 'Text Content', type: 'textarea' },
@@ -849,7 +850,7 @@ export const NodePropertiesPanel: React.FC = () => {
                 <div className="node-stats">
                     <div className="stat">
                         <span className="stat-label">Provider:</span>
-                        <span className="stat-value">{selectedNode.provider}</span>
+                        <span className="stat-value">{getProviderFromModel((selectedNode.config as any)?.model, selectedNode.type)}</span>
                     </div>
                     <div className="stat">
                         <span className="stat-label">Estimated Time:</span>
