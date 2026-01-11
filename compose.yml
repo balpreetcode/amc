@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
     environment:
       - PORT=8080
-      - CONDUCTOR_URL=${CONDUCTOR_URL:-https://p5200.winds-os.com/api}
+      - CONDUCTOR_URL=${CONDUCTOR_URL:-https://p5300.winds-os.com/api}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - FAL_KEY=${FAL_KEY}
       - WORKER_ID=workflow-worker-docker

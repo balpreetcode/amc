@@ -695,7 +695,7 @@ JWT_EXPIRES_IN=1h
 REFRESH_TOKEN_EXPIRES_IN=7d
 
 # Conductor Configuration
-CONDUCTOR_URL=https://p5200.winds-os.com/api
+CONDUCTOR_URL=https://p5300.winds-os.com/api
 
 # Server Configuration
 PORT=8080`}</pre>

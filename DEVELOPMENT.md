@@ -43,7 +43,7 @@ npm run dev
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                   External Services                          │
-│   - Conductor API (https://p5200.winds-os.com/api)          │
+│   - Conductor API (https://p5300.winds-os.com/api)          │
 │   - OpenAI API                                               │
 │   - Fal.ai API                                               │
 │   - Cloudflare R2                                            │
@@ -81,14 +81,14 @@ Nodemon watches for changes in (`backend/nodemon.json`):
 ```
 OPENAI_API_KEY=...
 FAL_KEY=...
-CONDUCTOR_URL=https://p5200.winds-os.com/api
+CONDUCTOR_URL=https://p5300.winds-os.com/api
 ```
 
 ### Backend `.env`
 ```
 OPENAI_API_KEY=...
 FAL_KEY=...
-CONDUCTOR_URL=https://p5200.winds-os.com/api
+CONDUCTOR_URL=https://p5300.winds-os.com/api
 R2_ENDPOINT=...
 R2_ACCESS_KEY_ID=...
 R2_SECRET_ACCESS_KEY=...

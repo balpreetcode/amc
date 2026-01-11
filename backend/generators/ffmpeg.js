@@ -466,24 +466,32 @@ async function composeVideo(options) {
 
         let outputUrl = `http://localhost:${PORT}/output/composed_${timestamp}.mp4`;
 
-        // Try uploading to R2
+        // Try uploading to R2 - this should always succeed for production use
         try {
             const { uploadToR2, isR2Configured } = require('../utils/r2Storage');
+            console.log('[FFmpeg] Checking R2 configuration...');
+            console.log('[FFmpeg] R2_ACCESS_KEY_ID:', process.env.R2_ACCESS_KEY_ID ? 'SET' : 'NOT SET');
+            console.log('[FFmpeg] R2_SECRET_ACCESS_KEY:', process.env.R2_SECRET_ACCESS_KEY ? 'SET' : 'NOT SET');
+            console.log('[FFmpeg] R2_PUBLIC_URL:', process.env.R2_PUBLIC_URL || 'NOT SET');
+
             if (isR2Configured()) {
-                console.log('R2 configured, uploading output...');
+                console.log('[FFmpeg] R2 configured, uploading composed video...');
                 const videoBuffer = fs.readFileSync(outputPath);
+                console.log(`[FFmpeg] Video file size: ${videoBuffer.length} bytes`);
                 const r2Url = await uploadToR2(videoBuffer, `composed_${timestamp}`, 'video/mp4');
-                console.log('Uploaded to R2:', r2Url);
+                console.log('[FFmpeg] Uploaded to R2:', r2Url);
                 outputUrl = r2Url;
             } else {
-                console.log('R2 not configured, returning local URL');
+                console.warn('[FFmpeg] WARNING: R2 not configured! Returning local URL which will not work remotely.');
+                console.warn('[FFmpeg] Please set R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY in .env');
             }
         } catch (uploadError) {
-            console.error('R2 upload failed:', uploadError);
-            console.log('Falling back to local URL');
+            console.error('[FFmpeg] R2 upload failed:', uploadError.message);
+            console.error('[FFmpeg] Full error:', uploadError);
+            console.warn('[FFmpeg] Falling back to local URL - this may not work for remote access');
         }
 
-        console.log('Composition complete:', outputUrl);
+        console.log('[FFmpeg] Composition complete:', outputUrl);
 
         return {
             success: true,

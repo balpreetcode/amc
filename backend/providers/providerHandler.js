@@ -262,7 +262,7 @@ class ProviderHandler {
      */
     getDefaultFalModel(nodeType) {
         const defaults = {
-            'text_to_speech': 'fal-ai/playht/tts/v3',
+            'text_to_speech': 'fal-ai/chatterbox/text-to-speech/turbo',
             'text_to_image': 'fal-ai/flux/schnell',
             'image_to_image': 'fal-ai/stable-diffusion-v3-medium',
             'text_to_video': 'fal-ai/ltxv-13b-098-distilled',

@@ -36,6 +36,39 @@ interface ExecutionResult {
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
 
+const CopyButton = ({ text, title = "Copy" }: { text: string; title?: string }) => {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <button
+            onClick={handleCopy}
+            title={title}
+            style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                marginLeft: '8px',
+                padding: '2px',
+                fontSize: '14px',
+                verticalAlign: 'middle',
+                opacity: 0.7,
+                transition: 'opacity 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+        >
+            {copied ? '✅' : '📋'}
+        </button>
+    );
+};
+
 export function ExecutionHistory() {
     const [history, setHistory] = useState<ExecutionResult[]>([]);
     const [loading, setLoading] = useState(true);
@@ -154,6 +187,7 @@ export function ExecutionHistory() {
                         <thead>
                             <tr>
                                 <th>Status</th>
+                                <th>ID</th>
                                 <th>Workflow Name</th>
                                 <th>Date</th>
                                 <th>Duration</th>
@@ -170,6 +204,12 @@ export function ExecutionHistory() {
                                         <span className={`status-badge ${run.status}`}>
                                             {run.status === 'completed' ? '✓ Success' : '✕ Failed'}
                                         </span>
+                                    </td>
+                                    <td>
+                                        <span title={run.workflowId} style={{ fontFamily: 'monospace', fontSize: '12px' }}>
+                                            {run.workflowId.substring(0, 8)}...
+                                        </span>
+                                        <CopyButton text={run.workflowId} title="Copy Full ID" />
                                     </td>
                                     <td>{run.workflowName}</td>
                                     <td>{formatDate(run.startTime)}</td>
@@ -264,6 +304,10 @@ export function ExecutionHistory() {
                         {/* Metadata Bar */}
                         <div className="details-meta-bar">
                             <span className="details-meta-item">
+                                <strong>ID:</strong> {viewingDetails.workflowId}
+                                <CopyButton text={viewingDetails.workflowId} />
+                            </span>
+                            <span className="details-meta-item">
                                 <strong>Workflow:</strong> {viewingDetails.workflowName}
                             </span>
                             <span className="details-meta-item">
@@ -354,7 +398,8 @@ export function ExecutionHistory() {
                         </div>
                     </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }

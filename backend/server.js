@@ -11,6 +11,7 @@ const { generateImage } = require('./generators/image');
 const { generateVideo, generateVideoFromText } = require('./generators/video');
 const { generateMusic } = require('./generators/music');
 const { generateSpeech } = require('./generators/speech');
+const crypto = require('crypto');
 const { generateImageOpenAI, editImageOpenAI } = require('./generators/openai-image');
 const { composeVideo, concatAudioUrls, concatVideoUrls } = require('./generators/ffmpeg');
 const db = require('./db');
@@ -18,16 +19,59 @@ const { generateToken, verifyToken, getAllTokens, deleteToken } = require('./tok
 const { validateSessionToken } = require('./mongodb');
 
 const HISTORY_FILE = path.join(__dirname, 'workflow-history.json');
-const CONDUCTOR_URL = process.env.CONDUCTOR_URL || 'https://p5200.winds-os.com/api';
+const CONDUCTOR_URL = process.env.CONDUCTOR_URL || 'https://p5300.winds-os.com/api';
 const CONTENT_SERVICE_URL = process.env.CONTENT_SERVICE_URL; // Optional external service for face_swap, lip_sync, etc.
 const WORKER_ID = process.env.WORKER_ID || `worker-${process.pid}`;
 const POLL_INTERVAL_MS = Number(process.env.POLL_INTERVAL_MS || 1000);
 const PORT = Number(process.env.PORT || 3002);
+const CONDUCTOR_TIMEOUT = Number(process.env.CONDUCTOR_TIMEOUT || 300000);
 
 const conductor = axios.create({
     baseURL: CONDUCTOR_URL,
-    timeout: 30000
+    timeout: CONDUCTOR_TIMEOUT
 });
+
+const API_BASE_URL = process.env.API_BASE_URL || `http://localhost:${PORT}`;
+const PROXY_SECRET = process.env.PROXY_SECRET || 'a_secure_random_32_byte_string_key!!'; // 32 bytes for AES-256
+const IV_LENGTH = 16;
+
+function encryptUrl(text) {
+    if (!text) return null;
+    const iv = crypto.randomBytes(IV_LENGTH);
+    // Ensure key is 32 bytes
+    const key = crypto.createHash('sha256').update(String(PROXY_SECRET)).digest();
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return iv.toString('hex') + ':' + encrypted.toString('hex');
+}
+
+function decryptUrl(text) {
+    if (!text) return null;
+    const textParts = text.split(':');
+    const iv = Buffer.from(textParts.shift(), 'hex');
+    const encryptedText = Buffer.from(textParts.join(':'), 'hex');
+    const key = crypto.createHash('sha256').update(String(PROXY_SECRET)).digest();
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+}
+
+function createProxyUrl(originalUrl) {
+    if (!originalUrl) return null;
+    // Don't proxy if already local or relative
+    if (originalUrl.startsWith('http://localhost') || originalUrl.startsWith('/')) {
+        return originalUrl;
+    }
+    try {
+        const encrypted = encryptUrl(originalUrl);
+        return `${API_BASE_URL}/media-proxy?token=${encodeURIComponent(encrypted)}`;
+    } catch (err) {
+        console.error('Error creating proxy URL:', err);
+        return originalUrl;
+    }
+}
 
 const app = express();
 app.use(cors());
@@ -36,6 +80,45 @@ app.use(express.json({ limit: '50mb' }));
 // Serve output folder for videos and audio files
 const OUTPUT_DIR = path.join(__dirname, '..', 'output');
 app.use('/output', express.static(OUTPUT_DIR));
+
+// Proxy endpoint for masked URLs
+app.get('/media-proxy', async (req, res) => {
+    const { token } = req.query;
+    if (!token) {
+        return res.status(400).send('Missing token');
+    }
+
+    try {
+        const targetUrl = decryptUrl(token);
+        if (!targetUrl) {
+            return res.status(400).send('Invalid token');
+        }
+
+        // Validate target URL (optional, but good practice)
+        // const allowedDomains = ['fal.ai', 'fal.media', 'cloudflare.com', 'r2.dev'];
+        // const urlObj = new URL(targetUrl);
+        // if (!allowedDomains.some(d => urlObj.hostname.endsWith(d))) { ... }
+
+        const response = await axios({
+            method: 'get',
+            url: targetUrl,
+            responseType: 'stream'
+        });
+
+        // Forward content type header
+        if (response.headers['content-type']) {
+            res.setHeader('Content-Type', response.headers['content-type']);
+        }
+        if (response.headers['content-length']) {
+            res.setHeader('Content-Length', response.headers['content-length']);
+        }
+
+        response.data.pipe(res);
+    } catch (error) {
+        console.error('Proxy error:', error.message);
+        res.status(500).send('Failed to fetch resource');
+    }
+});
 
 // API Routes
 const authRoutes = require('./routes/auth');
@@ -137,14 +220,20 @@ const nodeProcessors = {
             apiCall = response.apiCall;
         }
 
+        const proxyUrl = createProxyUrl(imageUrl);
         return {
             type: 'text_to_image',
-            output: { imageUrl, prompt, aspectRatio },
+            output: {
+                imageUrl: proxyUrl,
+                originalImageUrl: imageUrl,
+                prompt,
+                aspectRatio
+            },
             apiCalls: [apiCall]
         };
     },
     image_to_image: async (config, previousResults) => {
-        const imageUrl = config.imageUrl || getLastOutput(previousResults, 'imageUrl');
+        const imageUrl = config.imageUrl || getLastOutput(previousResults, 'originalImageUrl') || getLastOutput(previousResults, 'imageUrl');
         const prompt = config.prompt || 'Enhance this image';
 
         if (!imageUrl) throw new Error('No input image provided');
@@ -153,13 +242,18 @@ const nodeProcessors = {
             model: config.model || 'gpt-image-1-mini'
         });
 
+        const proxyUrl = createProxyUrl(resultUrl);
         return {
             type: 'image_to_image',
-            output: { imageUrl: resultUrl, originalUrl: imageUrl }
+            output: {
+                imageUrl: proxyUrl,
+                originalImageUrl: resultUrl,
+                originalUrl: imageUrl // Keep tracking source 
+            }
         };
     },
     image_to_video: async (config, previousResults) => {
-        const imageUrl = config.imageUrl || getLastOutput(previousResults, 'imageUrl');
+        const imageUrl = config.imageUrl || getLastOutput(previousResults, 'originalImageUrl') || getLastOutput(previousResults, 'imageUrl');
         const prompt = config.prompt || 'gentle animation with subtle movement';
         const duration = config.duration || 5;
 
@@ -169,9 +263,15 @@ const nodeProcessors = {
         const videoUrl = response.result;
         const apiCall = response.apiCall;
 
+        const proxyVideoUrl = createProxyUrl(videoUrl);
         return {
             type: 'image_to_video',
-            output: { videoUrl, sourceImage: imageUrl, duration },
+            output: {
+                videoUrl: proxyVideoUrl,
+                originalVideoUrl: videoUrl,
+                sourceImage: imageUrl,
+                duration
+            },
             apiCalls: [apiCall]
         };
     },
@@ -191,9 +291,15 @@ const nodeProcessors = {
         const videoUrl = response.result;
         const apiCall = response.apiCall;
 
+        const proxyVideoUrl = createProxyUrl(videoUrl);
         return {
             type: 'text_to_video',
-            output: { videoUrl, prompt, duration },
+            output: {
+                videoUrl: proxyVideoUrl,
+                originalVideoUrl: videoUrl,
+                prompt,
+                duration
+            },
             apiCalls: [apiCall]
         };
     },
@@ -205,16 +311,22 @@ const nodeProcessors = {
         const audioUrl = response.result;
         const apiCall = response.apiCall;
 
+        const proxyAudioUrl = createProxyUrl(audioUrl);
         return {
             type: 'text_to_music',
-            output: { audioUrl, prompt, duration },
+            output: {
+                audioUrl: proxyAudioUrl,
+                originalAudioUrl: audioUrl,
+                prompt,
+                duration
+            },
             apiCalls: [apiCall]
         };
     },
     text_to_speech: async (config, previousResults) => {
         const text = config.text || getLastOutput(previousResults, 'text') || 'Hello world';
         const voice = config.voice || 'alloy';
-        const model = config.model || 'fal-ai/playht/tts/v3';
+        const model = config.model || 'fal-ai/chatterbox/text-to-speech/turbo';
         const language = config.language || 'English';
 
         const response = await generateSpeech(text, voice, model, true, language);
@@ -227,7 +339,8 @@ const nodeProcessors = {
         return {
             type: 'text_to_speech',
             output: {
-                audioUrl,
+                audioUrl: createProxyUrl(audioUrl),
+                originalAudioUrl: audioUrl,
                 text: translatedText.substring(0, 100),
                 originalText: text.substring(0, 100),
                 voice,
@@ -235,6 +348,7 @@ const nodeProcessors = {
             },
             apiCalls: [apiCall]
         };
+
     },
     split_text: async (config, previousResults) => {
         const source = config.text ?? getLastOutput(previousResults, 'text') ?? '';
@@ -506,8 +620,8 @@ const nodeProcessors = {
     },
     edit_video: async (config, previousResults) => {
         let items = Array.isArray(config.items) ? config.items : null;
-        let videoUrl = config.videoUrl || getLastOutput(previousResults, 'videoUrl');
-        let speechUrl = config.speechUrl || getLastOutput(previousResults, 'audioUrl');
+        let videoUrl = config.videoUrl || getLastOutput(previousResults, 'originalVideoUrl') || getLastOutput(previousResults, 'videoUrl');
+        let speechUrl = config.speechUrl || getLastOutput(previousResults, 'originalAudioUrl') || getLastOutput(previousResults, 'audioUrl');
         const musicUrl = config.musicUrl;
 
         const speechVolume = config.speechVolume || 1.0;
@@ -572,13 +686,17 @@ const nodeProcessors = {
 
         return {
             type: 'edit_video',
-            output: { videoUrl: result.videoUrl, localPath: result.localPath }
+            output: {
+                videoUrl: createProxyUrl(result.videoUrl),
+                originalVideoUrl: result.videoUrl,
+                localPath: result.localPath
+            }
         };
     },
     clip_merger: async (config, previousResults) => {
         const clips = config.clips || previousResults
             .filter(r => r.data?.output?.videoUrl)
-            .map(r => r.data.output.videoUrl);
+            .map(r => r.data.output.originalVideoUrl || r.data.output.videoUrl);
 
         if (!clips || clips.length === 0) {
             throw new Error('No video clips to merge');

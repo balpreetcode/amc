@@ -9,7 +9,7 @@ This is an **AI Video Workflow Builder** - a full-stack application for creating
 **Tech Stack:**
 - **Frontend**: React 19 + TypeScript + Vite
 - **Backend**: Node.js + Express (workflow orchestration worker)
-- **Orchestration**: Netflix Conductor (external service at `https://p5200.winds-os.com/api`)
+- **Orchestration**: Netflix Conductor (external service at `https://p5300.winds-os.com/api`)
 - **Database**: PostgreSQL (for templates)
 - **Deployment**: Docker + Traefik (domain-based routing)
 
@@ -111,7 +111,7 @@ docker compose logs -f
 ```env
 OPENAI_API_KEY=sk-...
 FAL_KEY=...
-CONDUCTOR_URL=https://p5200.winds-os.com/api
+CONDUCTOR_URL=https://p5300.winds-os.com/api
 PORT=8080  # For Docker; defaults to 3002 locally
 ```
 

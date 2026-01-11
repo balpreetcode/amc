@@ -41,7 +41,7 @@ export function Templates({ onNavigateToHistory }: TemplatesProps = {}) {
             name: template.name,
             lastModified: new Date().toISOString(),
             templateVersion: template.templateVersion
-        });
+        }, template.id);
         navigate('/');
     };
 

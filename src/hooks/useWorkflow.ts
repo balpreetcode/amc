@@ -257,6 +257,7 @@ export const useWorkflow = () => {
 
     const [execution, setExecution] = useState<ExecutionState>(defaultExecution);
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+    const [loadedTemplateId, setLoadedTemplateId] = useState<string | null>(null);
     const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     // Undo/Redo history stacks
@@ -535,9 +536,12 @@ export const useWorkflow = () => {
     }, []);
 
     // Load template into builder
-    const loadTemplate = useCallback((templateData: WorkflowState) => {
+    const loadTemplate = useCallback((templateData: WorkflowState, templateId?: string) => {
         // Reset execution state
         setExecution(defaultExecution);
+
+        // Track the loaded template ID for direct save
+        setLoadedTemplateId(templateId || null);
 
         // Load new workflow state from template
         setWorkflow({
@@ -549,6 +553,11 @@ export const useWorkflow = () => {
         if (templateData.nodes.length > 0) {
             setSelectedNodeId(templateData.nodes[0].id);
         }
+    }, []);
+
+    // Clear the loaded template ID (e.g., after creating a new workflow)
+    const clearLoadedTemplateId = useCallback(() => {
+        setLoadedTemplateId(null);
     }, []);
 
     // Poll for workflow status
@@ -891,6 +900,10 @@ export const useWorkflow = () => {
         stopWorkflow,
         selectedNodeId,
         setSelectedNodeId,
+        // Template tracking
+        loadedTemplateId,
+        setLoadedTemplateId,
+        clearLoadedTemplateId,
         // Undo/Redo
         undo,
         redo,

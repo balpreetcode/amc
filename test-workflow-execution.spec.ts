@@ -65,7 +65,7 @@ test.describe('Workflow Execution Tests', () => {
   });
 
   test('should check conductor connectivity', async ({ request }) => {
-    const CONDUCTOR_URL = process.env.CONDUCTOR_URL || 'https://p5200.winds-os.com/api';
+    const CONDUCTOR_URL = process.env.CONDUCTOR_URL || 'https://p5300.winds-os.com/api';
 
     try {
       const response = await request.get(`${CONDUCTOR_URL}/health`, {

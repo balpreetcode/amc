@@ -1,10 +1,11 @@
 const axios = require('axios');
 
-const CONDUCTOR_URL = process.env.CONDUCTOR_URL || 'https://p5200.winds-os.com/api';
+const CONDUCTOR_URL = process.env.CONDUCTOR_URL || 'https://p5300.winds-os.com/api';
+const CONDUCTOR_TIMEOUT = Number(process.env.CONDUCTOR_TIMEOUT || 300000);
 
 const conductor = axios.create({
     baseURL: CONDUCTOR_URL,
-    timeout: 30000
+    timeout: CONDUCTOR_TIMEOUT
 });
 
 /**
