@@ -57,14 +57,16 @@
 
 .connector-items {
     position: absolute;
-    right: -88px;
+    right: 50%;
+    margin-right: 40px;
     top: 50%;
     transform: translateY(-50%);
     font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
+    color: #000;
     background: var(--color-surface);
     border: 1px solid var(--color-border-light);
     border-radius: var(--radius-full);
     padding: 2px 8px;
     white-space: nowrap;
+    z-index: 10;
 }

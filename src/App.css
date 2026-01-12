@@ -942,7 +942,10 @@
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
 }
 
-.error-badge {
+.error-badge-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: var(--space-1) var(--space-3);
   background: #FEE2E2;
   color: #DC2626;
@@ -950,17 +953,46 @@
   font-size: var(--font-size-xs);
   font-weight: 500;
   border: none;
+  max-width: 600px;
   transition: all 0.2s ease;
 }
 
-.error-badge.clickable {
-  cursor: pointer;
-}
-
-.error-badge.clickable:hover {
+.error-badge-container:hover {
   background: #FECACA;
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+}
+
+.error-content {
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.error-content:hover {
+  text-decoration: underline;
+}
+
+.error-copy-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #DC2626;
+  padding: 4px;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.error-copy-btn:hover {
+  background: rgba(220, 38, 38, 0.15);
+  color: #b91c1c;
 }
 
 /* Main */

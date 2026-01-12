@@ -123,37 +123,49 @@ async function generateImage(prompt, aspectRatio = '16:9', model = 'fal-ai/z-ima
 
     const startTime = Date.now();
 
-    // Use queue endpoint for reliability
-    const result = await postToFalQueue(model, requestPayload);
+    try {
+        // Use queue endpoint for reliability
+        const result = await postToFalQueue(model, requestPayload);
 
-    const duration = Date.now() - startTime;
+        const duration = Date.now() - startTime;
 
-    if (result.images && result.images.length > 0) {
-        const imageUrl = result.images[0].url;
-        console.log(`[Fal AI] Image generated: ${imageUrl}`);
+        if (result.images && result.images.length > 0) {
+            const imageUrl = result.images[0].url;
+            console.log(`[Fal AI] Image generated: ${imageUrl}`);
 
-        if (includeMetadata) {
-            return {
-                result: imageUrl,
-                apiCall: {
-                    request: requestMetadata,
-                    response: {
-                        imageUrl,
-                        width: result.images[0].width,
-                        height: result.images[0].height,
-                        contentType: result.images[0].content_type,
-                        seed: result.seed,
-                        hasNsfwConcepts: result.has_nsfw_concepts,
-                        timings: result.timings
-                    },
-                    timestamp: new Date().toISOString(),
-                    duration
-                }
-            };
+            if (includeMetadata) {
+                return {
+                    result: imageUrl,
+                    apiCall: {
+                        request: requestMetadata,
+                        response: {
+                            imageUrl,
+                            width: result.images[0].width,
+                            height: result.images[0].height,
+                            contentType: result.images[0].content_type,
+                            seed: result.seed,
+                            hasNsfwConcepts: result.has_nsfw_concepts,
+                            timings: result.timings
+                        },
+                        timestamp: new Date().toISOString(),
+                        duration
+                    }
+                };
+            }
+            return imageUrl;
         }
-        return imageUrl;
+        throw new Error('No image generated');
+    } catch (error) {
+        // Attach metadata to error
+        const duration = Date.now() - startTime;
+        error.apiCall = {
+            request: requestMetadata,
+            response: error.response?.data || { error: error.message },
+            timestamp: new Date().toISOString(),
+            duration
+        };
+        throw error;
     }
-    throw new Error('No image generated');
 }
 
 module.exports = {

@@ -128,35 +128,47 @@ async function generateVideo(imageUrl, prompt = '', duration = 5, model = 'fal-a
 
     const startTime = Date.now();
 
-    const result = await postToFalQueue(model, requestPayload);
+    try {
+        const result = await postToFalQueue(model, requestPayload);
 
-    const apiDuration = Date.now() - startTime;
+        const apiDuration = Date.now() - startTime;
 
-    if (result.video && result.video.url) {
-        const videoUrl = result.video.url;
-        console.log(`[Fal AI Video] Generated: ${videoUrl}`);
+        if (result.video && result.video.url) {
+            const videoUrl = result.video.url;
+            console.log(`[Fal AI Video] Generated: ${videoUrl}`);
 
-        if (includeMetadata) {
-            return {
-                result: videoUrl,
-                apiCall: {
-                    request: requestMetadata,
-                    response: {
-                        videoUrl,
-                        width: result.video.width,
-                        height: result.video.height,
-                        contentType: result.video.content_type,
-                        seed: result.seed,
-                        timings: result.timings
-                    },
-                    timestamp: new Date().toISOString(),
-                    duration: apiDuration
-                }
-            };
+            if (includeMetadata) {
+                return {
+                    result: videoUrl,
+                    apiCall: {
+                        request: requestMetadata,
+                        response: {
+                            videoUrl,
+                            width: result.video.width,
+                            height: result.video.height,
+                            contentType: result.video.content_type,
+                            seed: result.seed,
+                            timings: result.timings
+                        },
+                        timestamp: new Date().toISOString(),
+                        duration: apiDuration
+                    }
+                };
+            }
+            return videoUrl;
         }
-        return videoUrl;
+        throw new Error('No video generated');
+    } catch (error) {
+        // Attach metadata to error for debugging/logging
+        const apiDuration = Date.now() - startTime;
+        error.apiCall = {
+            request: requestMetadata,
+            response: error.response?.data || { error: error.message },
+            timestamp: new Date().toISOString(),
+            duration: apiDuration
+        };
+        throw error;
     }
-    throw new Error('No video generated');
 }
 
 /**
@@ -194,35 +206,47 @@ async function generateVideoFromText(prompt, duration = 5, model = 'fal-ai/ltxv-
 
     const startTime = Date.now();
 
-    const result = await postToFalQueue(model, requestPayload);
+    try {
+        const result = await postToFalQueue(model, requestPayload);
 
-    const apiDuration = Date.now() - startTime;
+        const apiDuration = Date.now() - startTime;
 
-    if (result.video && result.video.url) {
-        const videoUrl = result.video.url;
-        console.log(`[Fal AI Video] Generated: ${videoUrl}`);
+        if (result.video && result.video.url) {
+            const videoUrl = result.video.url;
+            console.log(`[Fal AI Video] Generated: ${videoUrl}`);
 
-        if (includeMetadata) {
-            return {
-                result: videoUrl,
-                apiCall: {
-                    request: requestMetadata,
-                    response: {
-                        videoUrl,
-                        width: result.video.width,
-                        height: result.video.height,
-                        contentType: result.video.content_type,
-                        seed: result.seed,
-                        timings: result.timings
-                    },
-                    timestamp: new Date().toISOString(),
-                    duration: apiDuration
-                }
-            };
+            if (includeMetadata) {
+                return {
+                    result: videoUrl,
+                    apiCall: {
+                        request: requestMetadata,
+                        response: {
+                            videoUrl,
+                            width: result.video.width,
+                            height: result.video.height,
+                            contentType: result.video.content_type,
+                            seed: result.seed,
+                            timings: result.timings
+                        },
+                        timestamp: new Date().toISOString(),
+                        duration: apiDuration
+                    }
+                };
+            }
+            return videoUrl;
         }
-        return videoUrl;
+        throw new Error('No video generated');
+    } catch (error) {
+        // Attach metadata to error for debugging/logging
+        const apiDuration = Date.now() - startTime;
+        error.apiCall = {
+            request: requestMetadata,
+            response: error.response?.data || { error: error.message },
+            timestamp: new Date().toISOString(),
+            duration: apiDuration
+        };
+        throw error;
     }
-    throw new Error('No video generated');
 }
 
 module.exports = {

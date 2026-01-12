@@ -7,9 +7,13 @@ const { validateSessionToken } = require('../mongodb');
 
 /**
  * Middleware to validate session token and set req.userId
+ * Reads session token from: HTTP header, cookie, or URL query param
  */
 async function sessionMiddleware(req, res, next) {
-    const sessionToken = req.headers['x-session-token'];
+    // Check multiple sources for session token (priority order)
+    const sessionToken = req.headers['x-session-token']
+        || req.cookies?.workflow_session
+        || req.query?.sessiontoken;
 
     if (!sessionToken) {
         // Allow requests without session token, but no userId
@@ -37,9 +41,13 @@ async function sessionMiddleware(req, res, next) {
 
 /**
  * Middleware that requires a valid session
+ * Reads session token from: HTTP header, cookie, or URL query param
  */
 async function requireSession(req, res, next) {
-    const sessionToken = req.headers['x-session-token'];
+    // Check multiple sources for session token (priority order)
+    const sessionToken = req.headers['x-session-token']
+        || req.cookies?.workflow_session
+        || req.query?.sessiontoken;
 
     if (!sessionToken) {
         return res.status(401).json({ error: 'Session token required' });

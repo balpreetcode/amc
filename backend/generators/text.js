@@ -43,40 +43,52 @@ async function generateText(prompt, systemPrompt = '', model = 'gpt-4o-mini', te
 
     const startTime = Date.now();
 
-    const response = await axios.post(
-        OPENAI_API_URL,
-        requestPayload,
-        {
-            headers: {
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-                'Content-Type': 'application/json'
+    try {
+        const response = await axios.post(
+            OPENAI_API_URL,
+            requestPayload,
+            {
+                headers: {
+                    'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+                    'Content-Type': 'application/json'
+                }
             }
+        );
+
+        const duration = Date.now() - startTime;
+        const generatedText = response.data.choices[0].message.content;
+
+        if (includeMetadata) {
+            return {
+                result: generatedText,
+                apiCall: {
+                    request: requestMetadata,
+                    response: {
+                        text: generatedText,
+                        model: response.data.model,
+                        promptTokens: response.data.usage?.prompt_tokens,
+                        completionTokens: response.data.usage?.completion_tokens,
+                        totalTokens: response.data.usage?.total_tokens,
+                        finishReason: response.data.choices[0].finish_reason
+                    },
+                    timestamp: new Date().toISOString(),
+                    duration
+                }
+            };
         }
-    );
 
-    const duration = Date.now() - startTime;
-    const generatedText = response.data.choices[0].message.content;
-
-    if (includeMetadata) {
-        return {
-            result: generatedText,
-            apiCall: {
-                request: requestMetadata,
-                response: {
-                    text: generatedText,
-                    model: response.data.model,
-                    promptTokens: response.data.usage?.prompt_tokens,
-                    completionTokens: response.data.usage?.completion_tokens,
-                    totalTokens: response.data.usage?.total_tokens,
-                    finishReason: response.data.choices[0].finish_reason
-                },
-                timestamp: new Date().toISOString(),
-                duration
-            }
+        return generatedText;
+    } catch (error) {
+        // Attach metadata to error
+        const duration = Date.now() - startTime;
+        error.apiCall = {
+            request: requestMetadata,
+            response: error.response?.data || { error: error.message },
+            timestamp: new Date().toISOString(),
+            duration
         };
+        throw error;
     }
-
-    return generatedText;
 }
 
 /**

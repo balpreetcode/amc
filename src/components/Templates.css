@@ -15,7 +15,41 @@
     font-size: 1.875rem;
     font-weight: 700;
     color: var(--color-text-primary);
-    margin: 0 0 0.5rem 0;
+    margin: 0;
+}
+
+.templates-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.templates-filter {
+    flex-shrink: 0;
+}
+
+.filter-select {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.filter-select:hover {
+    border-color: var(--color-accent);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
 }
 
 .templates-subtitle {

@@ -10,6 +10,7 @@ export interface Template {
   nodes: WorkflowNodeData[];
   nodeCount: number;
   templateVersion: number;
+  userId?: string | null;
 }
 
 export interface TemplateCreateRequest {

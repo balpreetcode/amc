@@ -3,11 +3,18 @@
  */
 
 /**
- * Get session token from URL query params
+ * Get session token from URL query params or cookie
+ * Priority: URL param (iframe mode) > Cookie (reverse proxy mode)
  */
 export function getSessionToken(): string | null {
+    // First check URL params (for iframe mode / backwards compatibility)
     const params = new URLSearchParams(window.location.search);
-    return params.get('sessiontoken');
+    const urlToken = params.get('sessiontoken');
+    if (urlToken) return urlToken;
+
+    // Then check cookies (for reverse proxy mode)
+    const match = document.cookie.match(/workflow_session=([^;]+)/);
+    return match ? match[1] : null;
 }
 
 /**

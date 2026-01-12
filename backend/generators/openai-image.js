@@ -183,44 +183,55 @@ async function generateImageOpenAI(prompt, options = {}) {
 
     const startTime = Date.now();
 
-    const result = await openaiRequest('/generations', body);
+    try {
+        const result = await openaiRequest('/generations', body);
 
-    const duration = Date.now() - startTime;
+        const duration = Date.now() - startTime;
 
-    if (result.data && result.data.length > 0) {
-        const imageData = result.data[0];
-        let imageUrl;
+        if (result.data && result.data.length > 0) {
+            const imageData = result.data[0];
+            let imageUrl;
 
-        // If response is base64, save to file and return URL
-        if (imageData.b64_json) {
-            const timestamp = Date.now();
-            const outputPath = path.join(OUTPUT_DIR, `openai_gen_${timestamp}.png`);
-            fs.writeFileSync(outputPath, Buffer.from(imageData.b64_json, 'base64'));
-            imageUrl = `http://localhost:3002/output/openai_gen_${timestamp}.png`;
-        } else {
-            imageUrl = imageData.url;
+            // If response is base64, save to file and return URL
+            if (imageData.b64_json) {
+                const timestamp = Date.now();
+                const outputPath = path.join(OUTPUT_DIR, `openai_gen_${timestamp}.png`);
+                fs.writeFileSync(outputPath, Buffer.from(imageData.b64_json, 'base64'));
+                imageUrl = `http://localhost:3002/output/openai_gen_${timestamp}.png`;
+            } else {
+                imageUrl = imageData.url;
+            }
+
+            if (includeMetadata) {
+                return {
+                    result: imageUrl,
+                    apiCall: {
+                        request: requestMetadata,
+                        response: {
+                            imageUrl,
+                            revisedPrompt: imageData.revised_prompt,
+                            format: imageData.b64_json ? 'b64_json' : 'url'
+                        },
+                        timestamp: new Date().toISOString(),
+                        duration
+                    }
+                };
+            }
+
+            return imageUrl;
         }
-
-        if (includeMetadata) {
-            return {
-                result: imageUrl,
-                apiCall: {
-                    request: requestMetadata,
-                    response: {
-                        imageUrl,
-                        revisedPrompt: imageData.revised_prompt,
-                        format: imageData.b64_json ? 'b64_json' : 'url'
-                    },
-                    timestamp: new Date().toISOString(),
-                    duration
-                }
-            };
-        }
-
-        return imageUrl;
+        throw new Error('No image generated from OpenAI');
+    } catch (error) {
+        // Attach metadata to error
+        const duration = Date.now() - startTime;
+        error.apiCall = {
+            request: requestMetadata,
+            response: error.response?.data || { error: error.message },
+            timestamp: new Date().toISOString(),
+            duration
+        };
+        throw error;
     }
-
-    throw new Error('No image generated from OpenAI');
 }
 
 /**

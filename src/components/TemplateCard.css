@@ -154,3 +154,28 @@
     cursor: not-allowed;
     transform: none;
 }
+
+/* Template Ownership Badge */
+.template-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    z-index: 10;
+}
+
+.badge-system {
+    background: rgba(99, 102, 241, 0.85);
+    color: white;
+    border: 1px solid rgba(99, 102, 241, 0.5);
+}
+
+.badge-user {
+    background: rgba(16, 185, 129, 0.85);
+    color: white;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+}

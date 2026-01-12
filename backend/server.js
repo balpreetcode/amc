@@ -58,8 +58,16 @@ function decryptUrl(text) {
     return decrypted.toString();
 }
 
+const ENABLE_MEDIA_PROXY = process.env.ENABLE_MEDIA_PROXY === 'true'; // Default to false
+
 function createProxyUrl(originalUrl) {
     if (!originalUrl) return null;
+
+    // Feature flag check: If masking is disabled, return original URL
+    if (!ENABLE_MEDIA_PROXY) {
+        return originalUrl;
+    }
+
     // Don't proxy if already local or relative
     if (originalUrl.startsWith('http://localhost') || originalUrl.startsWith('/')) {
         return originalUrl;
@@ -73,8 +81,31 @@ function createProxyUrl(originalUrl) {
     }
 }
 
+function resolveOriginalUrl(url) {
+    if (!url || typeof url !== 'string') return url;
+
+    // Check if it's our proxy URL
+    if (url.includes('/media-proxy?token=')) {
+        try {
+            const tokenMatch = url.match(/token=([^&]+)/);
+            if (tokenMatch && tokenMatch[1]) {
+                const encryptedToken = decodeURIComponent(tokenMatch[1]);
+                const originalUrl = decryptUrl(encryptedToken);
+                if (originalUrl) {
+                    return originalUrl;
+                }
+            }
+        } catch (err) {
+            console.warn('[Proxy] Failed to resolve original URL:', err.message);
+        }
+    }
+    return url;
+}
+
 const app = express();
 app.use(cors());
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 app.use(express.json({ limit: '50mb' }));
 
 // Serve output folder for videos and audio files
@@ -233,7 +264,11 @@ const nodeProcessors = {
         };
     },
     image_to_image: async (config, previousResults) => {
-        const imageUrl = config.imageUrl || getLastOutput(previousResults, 'originalImageUrl') || getLastOutput(previousResults, 'imageUrl');
+        let imageUrl = config.imageUrl || getLastOutput(previousResults, 'originalImageUrl') || getLastOutput(previousResults, 'imageUrl');
+
+        // Resolve proxy URL to original URL for external API calls
+        imageUrl = resolveOriginalUrl(imageUrl);
+
         const prompt = config.prompt || 'Enhance this image';
 
         if (!imageUrl) throw new Error('No input image provided');
@@ -253,7 +288,11 @@ const nodeProcessors = {
         };
     },
     image_to_video: async (config, previousResults) => {
-        const imageUrl = config.imageUrl || getLastOutput(previousResults, 'originalImageUrl') || getLastOutput(previousResults, 'imageUrl');
+        let imageUrl = config.imageUrl || getLastOutput(previousResults, 'originalImageUrl') || getLastOutput(previousResults, 'imageUrl');
+
+        // Resolve proxy URL to original URL for external API calls
+        imageUrl = resolveOriginalUrl(imageUrl);
+
         const prompt = config.prompt || 'gentle animation with subtle movement';
         const duration = config.duration || 5;
 
@@ -622,6 +661,11 @@ const nodeProcessors = {
         let items = Array.isArray(config.items) ? config.items : null;
         let videoUrl = config.videoUrl || getLastOutput(previousResults, 'originalVideoUrl') || getLastOutput(previousResults, 'videoUrl');
         let speechUrl = config.speechUrl || getLastOutput(previousResults, 'originalAudioUrl') || getLastOutput(previousResults, 'audioUrl');
+
+        // Resolve proxy URLs
+        videoUrl = resolveOriginalUrl(videoUrl);
+        speechUrl = resolveOriginalUrl(speechUrl);
+
         const musicUrl = config.musicUrl;
 
         const speechVolume = config.speechVolume || 1.0;
@@ -638,8 +682,8 @@ const nodeProcessors = {
             items = [];
             for (let i = 0; i < maxLength; i++) {
                 const item = {};
-                if (videoUrls[i]) item.videoUrl = videoUrls[i];
-                if (speechUrls[i]) item.speechUrl = speechUrls[i];
+                if (videoUrls[i]) item.videoUrl = resolveOriginalUrl(videoUrls[i]);
+                if (speechUrls[i]) item.speechUrl = resolveOriginalUrl(speechUrls[i]);
                 items.push(item);
             }
             console.log(`[edit_video] Created ${items.length} items from arrays`);
@@ -854,7 +898,7 @@ async function syncHistoryFromConductor() {
                     nodeId: task.inputData?.nodeId || task.taskReferenceName,
                     nodeType: task.inputData?.nodeType || task.taskType,
                     success: task.status === 'COMPLETED',
-                    data: task.status === 'COMPLETED' ? { type: task.taskType, output: task.outputData } : undefined,
+                    data: (task.status === 'COMPLETED' || (task.outputData && Object.keys(task.outputData).length > 0)) ? { type: task.taskType, output: task.outputData } : undefined,
                     error: task.status === 'FAILED' ? task.reasonForIncompletion || task.failureReason : undefined
                 }));
 
@@ -1327,7 +1371,31 @@ async function executeTask(task) {
     } catch (error) {
         console.log(`❌ NODE FAILED: ${nodeId}`);
         console.log(`   Error: ${error.message}\n`);
-        await updateTaskStatus(task, 'FAILED', {}, error.message);
+
+        // Include API call details if available in the error object
+        const outputData = {};
+        if (error.apiCall) {
+            outputData.apiCalls = [error.apiCall];
+        }
+
+        // Extract detailed error message from response if available
+        let failureReason = error.message;
+        const responseData = error.response?.data || error.apiCall?.response;
+
+        if (responseData) {
+            // Common patterns for API errors
+            const detail = responseData.detail || responseData.message || responseData.error?.message || (responseData.error && typeof responseData.error === 'string' ? responseData.error : null);
+
+            if (detail && typeof detail === 'string') {
+                failureReason = `${error.message}: ${detail}`;
+            } else if (typeof responseData === 'string') {
+                failureReason = `${error.message}: ${responseData}`;
+            } else if (detail && typeof detail === 'object') {
+                failureReason = `${error.message}: ${JSON.stringify(detail)}`;
+            }
+        }
+
+        await updateTaskStatus(task, 'FAILED', outputData, failureReason);
     }
 }
 
@@ -1388,7 +1456,7 @@ function maybeSaveHistory(workflow) {
         nodeId: task.inputData?.nodeId || task.taskReferenceName,
         nodeType: task.inputData?.nodeType || task.taskType,
         success: task.status === 'COMPLETED',
-        data: task.status === 'COMPLETED' ? { type: task.taskType, output: task.outputData } : undefined,
+        data: (task.status === 'COMPLETED' || (task.outputData && Object.keys(task.outputData).length > 0)) ? { type: task.taskType, output: task.outputData } : undefined,
         error: task.status === 'FAILED' ? task.reasonForIncompletion || task.failureReason : undefined
     }));
 
@@ -1524,7 +1592,7 @@ app.get('/workflow/:id/status', async (req, res) => {
                 nodeId: task.inputData?.nodeId || task.taskReferenceName,
                 nodeType: task.inputData?.nodeType || task.taskType,
                 success: task.status === 'COMPLETED',
-                data: task.status === 'COMPLETED' ? { type: task.taskType, output: task.outputData } : undefined,
+                data: (task.status === 'COMPLETED' || (task.outputData && Object.keys(task.outputData).length > 0)) ? { type: task.taskType, output: task.outputData } : undefined,
                 error: task.status === 'FAILED' ? task.reasonForIncompletion || task.failureReason : undefined
             }));
 
@@ -1574,7 +1642,7 @@ app.get('/workflow/:id/results', async (req, res) => {
             nodeId: task.inputData?.nodeId || task.taskReferenceName,
             nodeType: task.inputData?.nodeType || task.taskType,
             success: task.status === 'COMPLETED',
-            data: task.status === 'COMPLETED' ? { type: task.taskType, output: task.outputData } : undefined,
+            data: (task.status === 'COMPLETED' || (task.outputData && Object.keys(task.outputData).length > 0)) ? { type: task.taskType, output: task.outputData } : undefined,
             error: task.status === 'FAILED' ? task.reasonForIncompletion || task.failureReason : undefined
         }));
 
@@ -1591,8 +1659,8 @@ app.get('/workflow/:id/results', async (req, res) => {
 
 // Template API Endpoints
 
-// GET /templates - Fetch all templates
-app.get('/templates', sessionMiddleware, async (req, res) => {
+// GET /api/templates - Fetch all templates
+app.get('/api/templates', sessionMiddleware, async (req, res) => {
     try {
         const templates = await db.getAllTemplates(req.userId, true);
         res.json(templates);
@@ -1602,8 +1670,8 @@ app.get('/templates', sessionMiddleware, async (req, res) => {
     }
 });
 
-// GET /template/:id - Fetch single template
-app.get('/template/:id', sessionMiddleware, async (req, res) => {
+// GET /api/template/:id - Fetch single template
+app.get('/api/template/:id', sessionMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         const template = await db.getTemplateById(id, req.userId);
@@ -1619,8 +1687,8 @@ app.get('/template/:id', sessionMiddleware, async (req, res) => {
     }
 });
 
-// POST /template - Create new template
-app.post('/template', sessionMiddleware, async (req, res) => {
+// POST /api/template - Create new template
+app.post('/api/template', sessionMiddleware, async (req, res) => {
     try {
         const { name, description, nodes, videoPreview } = req.body;
 
@@ -1660,8 +1728,8 @@ app.post('/template', sessionMiddleware, async (req, res) => {
     }
 });
 
-// PUT /template/:id - Update template
-app.put('/template/:id', sessionMiddleware, async (req, res) => {
+// PUT /api/template/:id - Update template
+app.put('/api/template/:id', sessionMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         const { name, description, nodes, videoPreview } = req.body;
@@ -1697,8 +1765,8 @@ app.put('/template/:id', sessionMiddleware, async (req, res) => {
     }
 });
 
-// DELETE /template/:id - Delete template
-app.delete('/template/:id', sessionMiddleware, async (req, res) => {
+// DELETE /api/template/:id - Delete template
+app.delete('/api/template/:id', sessionMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -1716,8 +1784,8 @@ app.delete('/template/:id', sessionMiddleware, async (req, res) => {
     }
 });
 
-// POST /template/:id/generate - Generate video from template
-app.post('/template/:id/generate', async (req, res) => {
+// POST /api/template/:id/generate - Generate video from template
+app.post('/api/template/:id/generate', async (req, res) => {
     try {
         const { id } = req.params;
 

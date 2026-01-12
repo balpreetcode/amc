@@ -4,8 +4,11 @@ import { TemplateCard } from './TemplateCard';
 import { TemplateEditModal } from './TemplateEditModal';
 import { useTemplates } from '../hooks/useTemplates';
 import { useWorkflowContext } from '../context/WorkflowContext';
+import { useAuth } from '../context/AuthContext';
 import type { Template } from '../types/template';
 import './Templates.css';
+
+type FilterType = 'all' | 'system' | 'mine';
 
 interface TemplatesProps {
     onNavigateToHistory?: () => void;
@@ -14,6 +17,7 @@ interface TemplatesProps {
 export function Templates({ onNavigateToHistory }: TemplatesProps = {}) {
     const navigate = useNavigate();
     const { loadTemplate } = useWorkflowContext();
+    const { userId, isLoggedIn } = useAuth();
     const {
         templates,
         loading,
@@ -26,10 +30,23 @@ export function Templates({ onNavigateToHistory }: TemplatesProps = {}) {
 
     const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
     const [generatingId, setGeneratingId] = useState<string | null>(null);
+    const [filter, setFilter] = useState<FilterType>('all');
 
     useEffect(() => {
         fetchTemplates();
     }, [fetchTemplates]);
+
+    // Filter templates based on selected filter
+    const filteredTemplates = templates.filter(template => {
+        if (filter === 'all') return true;
+        if (filter === 'system') return !template.userId;
+        if (filter === 'mine') return template.userId === userId;
+        return true;
+    });
+
+    // Count for display
+    const systemCount = templates.filter(t => !t.userId).length;
+    const myCount = templates.filter(t => t.userId === userId).length;
 
     const handleEdit = (template: Template) => {
         setEditingTemplate(template);
@@ -66,11 +83,27 @@ export function Templates({ onNavigateToHistory }: TemplatesProps = {}) {
     return (
         <div className="templates-container">
             <div className="templates-header">
-                <h2>Templates</h2>
+                <div className="templates-title-row">
+                    <h2>Templates</h2>
+                    {/* Filter Dropdown */}
+                    <div className="templates-filter">
+                        <select
+                            value={filter}
+                            onChange={(e) => setFilter(e.target.value as FilterType)}
+                            className="filter-select"
+                        >
+                            <option value="all">All Templates ({templates.length})</option>
+                            <option value="system">System Templates ({systemCount})</option>
+                            {isLoggedIn && (
+                                <option value="mine">My Templates ({myCount})</option>
+                            )}
+                        </select>
+                    </div>
+                </div>
                 <p className="templates-subtitle">
-                    {templates.length === 0
-                        ? 'No templates yet. Create one from Flow Builder!'
-                        : `${templates.length} template${templates.length !== 1 ? 's' : ''} available`
+                    {filteredTemplates.length === 0
+                        ? 'No templates match the current filter.'
+                        : `${filteredTemplates.length} template${filteredTemplates.length !== 1 ? 's' : ''} shown`
                     }
                 </p>
             </div>
@@ -79,15 +112,20 @@ export function Templates({ onNavigateToHistory }: TemplatesProps = {}) {
 
             {loading ? (
                 <div className="loading-state">Loading templates...</div>
-            ) : templates.length === 0 ? (
+            ) : filteredTemplates.length === 0 ? (
                 <div className="empty-state">
                     <span className="empty-icon">📋</span>
                     <p>No templates found</p>
-                    <p className="empty-hint">Go to Flow Builder and click "Save As Template" to create your first template</p>
+                    <p className="empty-hint">
+                        {filter === 'mine'
+                            ? 'Create your first template in Flow Builder!'
+                            : 'Try changing the filter or create a new template.'
+                        }
+                    </p>
                 </div>
             ) : (
                 <div className="templates-grid">
-                    {templates.map((template) => (
+                    {filteredTemplates.map((template) => (
                         <TemplateCard
                             key={template.id}
                             template={template}
@@ -95,6 +133,7 @@ export function Templates({ onNavigateToHistory }: TemplatesProps = {}) {
                             onLoad={() => handleLoad(template)}
                             onGenerate={() => handleGenerate(template.id)}
                             isGenerating={generatingId === template.id}
+                            currentUserId={userId}
                         />
                     ))}
                 </div>

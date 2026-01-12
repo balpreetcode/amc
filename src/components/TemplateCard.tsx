@@ -7,10 +7,23 @@ interface TemplateCardProps {
     onGenerate: () => void;
     onLoad: () => void;
     isGenerating?: boolean;
+    isUserOwned?: boolean;
+    currentUserId?: string | null;
 }
 
-export function TemplateCard({ template, onEdit, onGenerate, onLoad, isGenerating }: TemplateCardProps) {
+export function TemplateCard({
+    template,
+    onEdit,
+    onGenerate,
+    onLoad,
+    isGenerating,
+    currentUserId
+}: TemplateCardProps) {
     const videoSrc = template.videoPreview || '/output/default-preview.mp4';
+
+    // Determine if this is a system template or user's own template
+    const isSystemTemplate = !template.userId;
+    const isOwnTemplate = template.userId && template.userId === currentUserId;
 
     return (
         <div className="template-card">
@@ -41,6 +54,10 @@ export function TemplateCard({ template, onEdit, onGenerate, onLoad, isGeneratin
                             fill="white"
                         />
                     </svg>
+                </div>
+                {/* Ownership Badge */}
+                <div className={`template-badge ${isSystemTemplate ? 'badge-system' : 'badge-user'}`}>
+                    {isSystemTemplate ? '📦 System' : '👤 My Template'}
                 </div>
             </div>
 
@@ -78,9 +95,12 @@ export function TemplateCard({ template, onEdit, onGenerate, onLoad, isGeneratin
                 >
                     {isGenerating ? 'Generating...' : 'Generate'}
                 </button>
-                <button className="btn-edit" onClick={onEdit}>
-                    Edit
-                </button>
+                {/* Only show Edit button for user's own templates */}
+                {isOwnTemplate && (
+                    <button className="btn-edit" onClick={onEdit}>
+                        Edit
+                    </button>
+                )}
             </div>
         </div>
     );

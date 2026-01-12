@@ -1,4 +1,5 @@
 import { WorkflowProvider, useWorkflowContext } from './context/WorkflowContext'
+import { AuthProvider } from './context/AuthContext'
 import { WorkflowCanvas } from './components/WorkflowCanvas'
 import { NodePropertiesPanel } from './components/NodePropertiesPanel'
 import { ExecutionHistory } from './components/ExecutionHistory'
@@ -14,13 +15,14 @@ import './App.css'
 import { Sidebar } from './components/Sidebar'
 
 function AppContent() {
-  const { execution, runWorkflow, stopWorkflow, workflow, renameWorkflow, loadedTemplateId, setLoadedTemplateId } = useWorkflowContext();
+  const { execution, runWorkflow, stopWorkflow, workflow, renameWorkflow, loadedTemplateId } = useWorkflowContext();
   const { createTemplate, updateTemplate } = useTemplates();
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editingName, setEditingName] = useState('');
   const [showCopiedId, setShowCopiedId] = useState(false);
+  const [showCopiedError, setShowCopiedError] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -180,13 +182,36 @@ function AppContent() {
                 </div>
               )}
               {execution.error && (
-                <button
-                  className="error-badge clickable"
-                  onClick={() => navigate('/history')}
-                  title="Click to view execution history"
-                >
-                  {execution.error}
-                </button>
+                <div className="error-badge-container">
+                  <span
+                    className="error-content"
+                    onClick={() => navigate('/history')}
+                    title="Click to view execution history"
+                  >
+                    {execution.error}
+                  </span>
+                  <button
+                    className="error-copy-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(execution.error!);
+                      setShowCopiedError(true);
+                      setTimeout(() => setShowCopiedError(false), 2000);
+                    }}
+                    title="Copy error message"
+                  >
+                    {showCopiedError ? (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                    )}
+                  </button>
+                </div>
               )}
               {loadedTemplateId && (
                 <button
@@ -255,9 +280,11 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <WorkflowProvider>
-        <AppContent />
-      </WorkflowProvider>
+      <AuthProvider>
+        <WorkflowProvider>
+          <AppContent />
+        </WorkflowProvider>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

@@ -13,7 +13,7 @@ export const useTemplates = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiFetch(`${BACKEND_URL}/templates`);
+      const response = await apiFetch(`${BACKEND_URL}/api/templates`);
       if (!response.ok) throw new Error('Failed to fetch templates');
       const data = await response.json();
       setTemplates(data);
@@ -26,7 +26,7 @@ export const useTemplates = () => {
 
   const createTemplate = useCallback(async (request: TemplateCreateRequest): Promise<Template> => {
     setError(null);
-    const response = await apiFetch(`${BACKEND_URL}/template`, {
+    const response = await apiFetch(`${BACKEND_URL}/api/template`, {
       method: 'POST',
       body: JSON.stringify(request),
     });
@@ -43,7 +43,7 @@ export const useTemplates = () => {
 
   const updateTemplate = useCallback(async (id: string, updates: TemplateUpdateRequest): Promise<Template> => {
     setError(null);
-    const response = await apiFetch(`${BACKEND_URL}/template/${id}`, {
+    const response = await apiFetch(`${BACKEND_URL}/api/template/${id}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
     });
@@ -60,7 +60,7 @@ export const useTemplates = () => {
 
   const deleteTemplate = useCallback(async (id: string): Promise<void> => {
     setError(null);
-    const response = await apiFetch(`${BACKEND_URL}/template/${id}`, {
+    const response = await apiFetch(`${BACKEND_URL}/api/template/${id}`, {
       method: 'DELETE',
     });
 
@@ -74,7 +74,7 @@ export const useTemplates = () => {
 
   const generateFromTemplate = useCallback(async (id: string): Promise<string> => {
     setError(null);
-    const response = await apiFetch(`${BACKEND_URL}/template/${id}/generate`, {
+    const response = await apiFetch(`${BACKEND_URL}/api/template/${id}/generate`, {
       method: 'POST',
     });
 
