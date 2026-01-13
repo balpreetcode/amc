@@ -17,6 +17,7 @@ export function Sidebar({ activeTab }: SidebarProps) {
         { id: 'node-config', label: 'Node Config', icon: '⚙️', path: '/node-config' },
         { id: 'api-tokens', label: 'API & Embed', icon: '🔑', path: '/api-tokens' },
         { id: 'api-docs', label: 'API Docs', icon: '📚', path: '/api-docs' },
+        { id: 'playground', label: 'AI Playground', icon: '🎮', path: '/playground' },
     ];
 
     const handleNavigation = (path: string) => {

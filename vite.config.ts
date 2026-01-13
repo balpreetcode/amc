@@ -11,7 +11,10 @@ export default defineConfig({
       '/health': 'http://localhost:3002',
       '/api': 'http://localhost:3002',
       '/download': 'http://localhost:3002',
-      '/session': 'http://localhost:3002'
+      '/download': 'http://localhost:3002',
+      '/session': 'http://localhost:3002',
+      '/upload': 'http://localhost:3002',
+      '/nodes': 'http://localhost:3002'
     }
   }
 })

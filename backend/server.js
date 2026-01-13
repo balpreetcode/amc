@@ -156,11 +156,13 @@ const authRoutes = require('./routes/auth');
 const workflowRoutes = require('./routes/workflows');
 const executionRoutes = require('./routes/executions');
 const nodeRoutes = require('./routes/nodes');
+const uploadRoutes = require('./routes/upload');
 
 app.use('/auth', authRoutes);
 app.use('/workflows', workflowRoutes);
 app.use('/executions', executionRoutes);
 app.use('/nodes', nodeRoutes);
+app.use('/upload', uploadRoutes);
 
 const { sessionMiddleware } = require('./middleware/session');
 
@@ -764,6 +766,127 @@ const nodeProcessors = {
                 totalFiles: files.length
             }
         };
+    },
+    media_ingest: async (config, previousResults) => {
+        const { uploadToR2, uploadFromUrl, isR2Configured } = require('./utils/r2Storage');
+
+        const sourceType = config.sourceType || 'Direct Link';
+        const url = config.url || '';
+        const files = config.files || [];
+
+        console.log('[media_ingest] Processing:', { sourceType, url: url.substring(0, 100) });
+
+        /**
+         * Transform cloud storage URLs to direct download URLs
+         */
+        const transformUrl = (inputUrl, source) => {
+            // Google Drive transformation
+            if (source === 'Google Drive' || inputUrl.includes('drive.google.com')) {
+                // Extract file ID from various Drive URL formats
+                const match = inputUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match) {
+                    return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+                }
+                // Handle already formatted download links
+                if (inputUrl.includes('uc?export=download')) {
+                    return inputUrl;
+                }
+            }
+
+            // Dropbox transformation
+            if (source === 'Dropbox' || inputUrl.includes('dropbox.com')) {
+                // Convert www.dropbox.com links to dl.dropboxusercontent.com
+                if (inputUrl.includes('www.dropbox.com')) {
+                    return inputUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '');
+                }
+                // Add dl=1 if not present
+                if (!inputUrl.includes('dl=1')) {
+                    return inputUrl + (inputUrl.includes('?') ? '&dl=1' : '?dl=1');
+                }
+            }
+
+            // S3 and Direct Links are used as-is
+            return inputUrl;
+        };
+
+        /**
+         * Detect media type from URL or content-type
+         */
+        const detectMediaType = (url, contentType) => {
+            const urlLower = url.toLowerCase();
+            if (urlLower.match(/\.(mp4|mov|avi|webm|mkv)/) || (contentType && contentType.includes('video'))) {
+                return 'video';
+            }
+            if (urlLower.match(/\.(mp3|wav|ogg|m4a|aac)/) || (contentType && contentType.includes('audio'))) {
+                return 'audio';
+            }
+            if (urlLower.match(/\.(jpg|jpeg|png|gif|webp|bmp)/) || (contentType && contentType.includes('image'))) {
+                return 'image';
+            }
+            return 'media';
+        };
+
+        // Handle local file upload (passed through from frontend)
+        if (sourceType === 'Local Upload' && files.length > 0) {
+            console.log('[media_ingest] Processing local files:', files.length);
+            // Files are already uploaded via the /upload endpoint, just return them
+            const processedFiles = files.map((f, i) => ({
+                id: `ingest_${Date.now()}_${i}`,
+                name: f.name || `file_${i}`,
+                url: createProxyUrl(f.url),
+                originalUrl: f.url,
+                type: detectMediaType(f.url || f.name, '')
+            }));
+
+            return {
+                type: 'media_ingest',
+                output: {
+                    files: processedFiles,
+                    url: processedFiles[0]?.url,
+                    originalUrl: processedFiles[0]?.originalUrl,
+                    totalFiles: processedFiles.length,
+                    sourceType: 'local'
+                }
+            };
+        }
+
+        // Handle URL-based sources (Direct Link, Google Drive, Dropbox, S3)
+        if (url) {
+            const downloadUrl = transformUrl(url, sourceType);
+            console.log('[media_ingest] Transformed URL:', downloadUrl.substring(0, 100));
+
+            let finalUrl = downloadUrl;
+            let mediaType = detectMediaType(url, '');
+
+            // If R2 is configured, upload the file to R2 for persistence
+            if (isR2Configured()) {
+                try {
+                    console.log('[media_ingest] Uploading to R2...');
+                    const timestamp = Date.now();
+                    const extension = url.match(/\.([a-zA-Z0-9]+)(\?|$)/)?.[1] || (mediaType === 'video' ? 'mp4' : mediaType === 'audio' ? 'mp3' : 'jpg');
+                    const filename = `ingest_${timestamp}.${extension}`;
+
+                    finalUrl = await uploadFromUrl(downloadUrl, filename);
+                    console.log('[media_ingest] Uploaded to R2:', finalUrl.substring(0, 80));
+                } catch (uploadError) {
+                    console.warn('[media_ingest] R2 upload failed, using direct URL:', uploadError.message);
+                    // Fall back to direct URL
+                }
+            }
+
+            return {
+                type: 'media_ingest',
+                output: {
+                    url: createProxyUrl(finalUrl),
+                    originalUrl: finalUrl,
+                    sourceUrl: url,
+                    type: mediaType,
+                    sourceType: sourceType.toLowerCase().replace(' ', '_')
+                }
+            };
+        }
+
+        throw new Error('No URL or files provided for media ingest');
     }
 };
 

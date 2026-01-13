@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useWorkflowContext } from '../context/WorkflowContext';
-import { getNodeTypeConfig, getProviderFromModel, type NodeExecutionConfig, type NodeType, type MockDataConfig } from '../types/nodes';
+import { getNodeTypeConfig, getProviderFromModel, getModelDisplayName, type NodeExecutionConfig, type NodeType, type MockDataConfig } from '../types/nodes';
 import './NodePropertiesPanel.css';
 
 interface FormField {
@@ -56,7 +56,7 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
         { name: 'imageUrl', label: 'Source Image', type: 'image' },
         { name: 'prompt', label: 'Motion Prompt', type: 'textarea' },
         { name: 'model', label: 'Model', type: 'select', options: ['fal-ai/ltxv-13b-098-distilled/image-to-video', 'fal-ai/wan/v2.1/image-to-video'] },
-        { name: 'motionBucket', label: 'Motion Bucket', type: 'number', min: 1, max: 255 },
+        { name: 'motionBucket', label: 'Motion Intensity', type: 'number', min: 1, max: 255 },
         { name: 'duration', label: 'Duration', type: 'number' },
         { name: 'seed', label: 'Seed', type: 'number' }
     ],
@@ -116,6 +116,12 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
         { name: 'clips', label: 'Input Clips', type: 'text' }, // Simplified for now
         { name: 'transition', label: 'Transition', type: 'select', options: ['Cross-fade', 'Slide', 'Cut', 'Zoom'] },
         { name: 'bgmUrl', label: 'BGM Overlay', type: 'audio' }
+    ],
+    'media_ingest': [
+        { name: 'sourceType', label: 'Source', type: 'select', options: ['Local Upload', 'Direct Link', 'Google Drive', 'Dropbox', 'S3'] },
+        { name: 'url', label: 'URL / Link', type: 'text' },
+        { name: 'files', label: 'Upload Files', type: 'file' },
+        { name: 'connectionMode', label: 'Connection Mode', type: 'select', options: ['Public Link', 'Connect Account'] }
     ]
 };
 
@@ -131,6 +137,7 @@ const OUTPUT_KEYS: Record<string, string[]> = {
     'edit_video': ['videoUrl'],
     'clip_merger': ['videoUrl'],
     'upload_files': ['files'],
+    'media_ingest': ['url', 'files'],
 };
 
 // Voice options based on TTS model
@@ -628,6 +635,76 @@ export const NodePropertiesPanel: React.FC = () => {
                     )}
 
                     {fields.map(field => {
+                        // Media Ingest: Conditional field visibility
+                        if (selectedNode.type === 'media_ingest') {
+                            const sourceType = (selectedNode.config as any)?.sourceType || 'Direct Link';
+                            const connectionMode = (selectedNode.config as any)?.connectionMode || 'Public Link';
+
+                            // Hide connectionMode for sources that don't support OAuth
+                            if (field.name === 'connectionMode' && !['Google Drive', 'Dropbox'].includes(sourceType)) {
+                                return null;
+                            }
+
+                            // Hide URL field for Local Upload
+                            if (field.name === 'url' && sourceType === 'Local Upload') {
+                                return null;
+                            }
+
+                            // Hide files field for non-Local sources
+                            if (field.name === 'files' && sourceType !== 'Local Upload') {
+                                return null;
+                            }
+
+                            // For Google Drive / Dropbox with Connect Account mode, show connect button instead of URL
+                            if (field.name === 'url' && ['Google Drive', 'Dropbox'].includes(sourceType) && connectionMode === 'Connect Account') {
+                                const providerName = sourceType;
+                                const isConnected = false; // TODO: Check actual connection status from backend
+
+                                return (
+                                    <div key={field.name} className="form-group">
+                                        <label>Connect to {providerName}</label>
+                                        <div className="oauth-connect-section">
+                                            {!isConnected ? (
+                                                <>
+                                                    <button
+                                                        className="btn-oauth-connect"
+                                                        onClick={() => {
+                                                            // TODO: Implement OAuth flow
+                                                            alert(`OAuth integration for ${providerName} requires API credentials.\n\nTo enable this feature:\n1. Set up OAuth credentials in your ${providerName} Developer Console\n2. Add the credentials to your .env file\n3. The backend will handle the OAuth flow\n\nFor now, please use "Public Link" mode and paste a shareable link.`);
+                                                        }}
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '8px',
+                                                            padding: '12px 16px',
+                                                            backgroundColor: sourceType === 'Google Drive' ? '#4285f4' : '#0061ff',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '8px',
+                                                            cursor: 'pointer',
+                                                            fontSize: '14px',
+                                                            fontWeight: 500
+                                                        }}
+                                                    >
+                                                        {sourceType === 'Google Drive' ? '🔗 Connect Google Drive' : '📦 Connect Dropbox'}
+                                                    </button>
+                                                    <p className="oauth-hint" style={{ fontSize: '12px', color: '#888', marginTop: '8px' }}>
+                                                        Click to authorize access to your {providerName} files
+                                                    </p>
+                                                </>
+                                            ) : (
+                                                <div className="connected-status">
+                                                    <span className="status-badge success">✓ Connected</span>
+                                                    <button className="btn-secondary small">Browse Files</button>
+                                                    <button className="btn-text small">Disconnect</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            }
+                        }
+
                         if (selectedNode.type === 'split_text' && field.name === 'arrayPath') {
                             const splitMode = ((selectedNode.config as any)?.splitMode || 'text').toString().toLowerCase();
                             if (!splitMode.includes('json')) {
@@ -718,7 +795,9 @@ export const NodePropertiesPanel: React.FC = () => {
                                                     ? (VOICE_OPTIONS_BY_MODEL[(selectedNode.config as any)?.[field.dynamicOptions]] || DEFAULT_VOICE_OPTIONS)
                                                     : (field.options || [])
                                                 ).map(opt => (
-                                                    <option key={opt} value={opt}>{opt}</option>
+                                                    <option key={opt} value={opt}>
+                                                        {field.name === 'model' ? getModelDisplayName(opt, selectedNode.type) : opt}
+                                                    </option>
                                                 ))}
                                             </select>
                                         )}

@@ -7,6 +7,7 @@ import { Templates } from './components/Templates'
 import { SaveTemplateModal } from './components/SaveTemplateModal'
 import { ApiTokens } from './components/ApiTokens'
 import { ApiDocs } from './components/ApiDocs'
+import { AIPlayground } from './components/AIPlayground'
 import { GlobalConfig } from './components/GlobalConfig'
 import { useTemplates } from './hooks/useTemplates'
 import { useState } from 'react'
@@ -33,6 +34,7 @@ function AppContent() {
     if (location.pathname === '/node-config') return 'node-config';
     if (location.pathname === '/api-tokens') return 'api-tokens';
     if (location.pathname === '/api-docs') return 'api-docs';
+    if (location.pathname === '/playground') return 'playground';
     return 'builder';
   };
 
@@ -261,6 +263,7 @@ function AppContent() {
               <Route path="/node-config" element={<GlobalConfig />} />
               <Route path="/api-tokens" element={<ApiTokens />} />
               <Route path="/api-docs" element={<ApiDocs />} />
+              <Route path="/playground" element={<AIPlayground />} />
             </Routes>
           </main>
         </div>

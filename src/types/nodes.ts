@@ -70,7 +70,8 @@ export type NodeType =
   | 'video_sound_effects'
   | 'edit_video'
   | 'upload_files'
-  | 'clip_merger';
+  | 'clip_merger'
+  | 'media_ingest';
 
 export interface NodeTypeConfig {
   type: NodeType;
@@ -100,6 +101,8 @@ export const NODE_TYPES: NodeTypeConfig[] = [
   { type: 'video_sound_effects', label: 'Sound Effects', icon: '🔉', defaultProvider: 'Epidemic', defaultTime: '30s', category: 'processing' },
   { type: 'edit_video', label: 'Edit Video', icon: '✏️', defaultProvider: 'FFmpeg', defaultTime: '2min', category: 'processing' },
   { type: 'clip_merger', label: 'Clip Merger', icon: '🔗', defaultProvider: 'FFmpeg', defaultTime: '1min', category: 'output' },
+  // Hidden until OAuth integration is complete:
+  // { type: 'media_ingest', label: 'Media Import', icon: '📥', defaultProvider: 'Import', defaultTime: '30s', category: 'input' },
 ];
 
 // Provider-specific node type mappings
@@ -107,6 +110,92 @@ export const PROVIDER_NODE_TYPES: Record<ProviderType, NodeType[]> = {
   'openai': ['text_to_text', 'text_to_image', 'image_to_image'],
   'fal-ai': ['text_to_speech', 'text_to_image', 'image_to_image', 'text_to_video', 'image_to_video', 'text_to_music'],
   'ffmpeg': ['edit_video', 'clip_merger']
+};
+
+export interface ModelProviderInfo {
+  model: string;              // Model ID used in API calls (e.g., 'fal-ai/flux/schnell')
+  provider: string;           // Internal provider key (e.g., 'fal-ai', 'openai')
+  displayName: string;        // Provider display name (e.g., 'Fal AI', 'OpenAI')
+  modelDisplayName: string;   // Model display name shown in dropdown (e.g., 'Flux', 'GPT-4o')
+}
+
+export const NODE_MODEL_PROVIDERS: Record<NodeType, ModelProviderInfo[]> = {
+  'text_to_text': [
+    { model: 'gpt-4o', provider: 'openai', displayName: 'OpenAI', modelDisplayName: 'GPT-4o' },
+    { model: 'gpt-4o-mini', provider: 'openai', displayName: 'OpenAI', modelDisplayName: 'GPT-4o Mini' },
+    { model: 'claude-3-opus', provider: 'anthropic', displayName: 'Anthropic', modelDisplayName: 'Claude 3 Opus' },
+    { model: 'claude-3-sonnet', provider: 'anthropic', displayName: 'Anthropic', modelDisplayName: 'Claude 3 Sonnet' },
+  ],
+  'text_to_image': [
+    { model: 'fal-ai/flux/schnell', provider: 'fal-ai', displayName: 'Fal AI', modelDisplayName: 'Flux Schnell' },
+    { model: 'fal-ai/z-image/turbo', provider: 'fal-ai', displayName: 'Fal AI', modelDisplayName: 'Z-Image Turbo' },
+    { model: 'dall-e-3', provider: 'openai', displayName: 'OpenAI', modelDisplayName: 'DALL-E 3' },
+  ],
+  'text_to_video': [
+    { model: 'fal-ai/ltxv-13b-098-distilled', provider: 'fal-ai', displayName: 'Fal AI', modelDisplayName: 'LTXV 13B' },
+    { model: 'fal-ai/wan/v2.1/text-to-video', provider: 'fal-ai', displayName: 'Fal AI', modelDisplayName: 'WAN v2.1' },
+  ],
+  'text_to_music': [
+    { model: 'fal-ai/stable-audio', provider: 'fal-ai', displayName: 'Fal AI', modelDisplayName: 'Stable Audio' },
+    { model: 'fal-ai/minimax/music-01', provider: 'fal-ai', displayName: 'MiniMax', modelDisplayName: 'MiniMax Music' },
+  ],
+  'text_to_speech': [
+    { model: 'fal-ai/chatterbox/text-to-speech/turbo', provider: 'fal-ai', displayName: 'Fal AI', modelDisplayName: 'Chatterbox TTS' },
+    { model: 'fal-ai/playht/tts/v3', provider: 'fal-ai', displayName: 'PlayHT', modelDisplayName: 'PlayHT v3' },
+    { model: 'openai/tts-1', provider: 'openai', displayName: 'OpenAI', modelDisplayName: 'TTS-1' },
+    { model: 'openai/gpt-4o-mini-tts', provider: 'openai', displayName: 'OpenAI', modelDisplayName: 'GPT-4o Mini TTS' },
+  ],
+  'image_to_video': [
+    { model: 'fal-ai/ltxv-13b-098-distilled/image-to-video', provider: 'fal-ai', displayName: 'Fal AI', modelDisplayName: 'LTXV Image-to-Video' },
+    { model: 'fal-ai/wan/v2.1/image-to-video', provider: 'fal-ai', displayName: 'Fal AI', modelDisplayName: 'WAN Image-to-Video' },
+  ],
+  'image_to_image': [
+    { model: 'fal-ai/stable-diffusion-v3-medium', provider: 'fal-ai', displayName: 'Fal AI', modelDisplayName: 'Stable Diffusion v3' },
+    { model: 'openai/dall-e-2', provider: 'openai', displayName: 'OpenAI', modelDisplayName: 'DALL-E 2' },
+  ],
+  // Non-model nodes with default providers
+  'face_swap': [
+    { model: 'default', provider: 'insightface', displayName: 'InsightFace', modelDisplayName: 'InsightFace' },
+  ],
+  'lip_sync': [
+    { model: 'SadTalker', provider: 'sadtalker', displayName: 'SadTalker', modelDisplayName: 'SadTalker' },
+    { model: 'HeyGen', provider: 'heygen', displayName: 'HeyGen', modelDisplayName: 'HeyGen' },
+    { model: 'SyncLabs', provider: 'synclabs', displayName: 'SyncLabs', modelDisplayName: 'SyncLabs' },
+  ],
+  'ai_avatar': [
+    { model: 'default', provider: 'heygen', displayName: 'HeyGen', modelDisplayName: 'HeyGen Avatar' },
+  ],
+  'enhancer': [
+    { model: 'default', provider: 'topaz', displayName: 'Topaz', modelDisplayName: 'Topaz Enhancer' },
+  ],
+  'split_text': [
+    { model: 'default', provider: 'internal', displayName: 'AMC', modelDisplayName: 'Text Splitter' },
+  ],
+  'image_object_removal': [
+    { model: 'default', provider: 'remove-bg', displayName: 'Remove.bg', modelDisplayName: 'Object Removal' },
+  ],
+  'image_remove_background': [
+    { model: 'default', provider: 'remove-bg', displayName: 'Remove.bg', modelDisplayName: 'Background Removal' },
+  ],
+  'video_sound_effects': [
+    { model: 'default', provider: 'epidemic', displayName: 'Epidemic Sound', modelDisplayName: 'Epidemic SFX' },
+  ],
+  'edit_video': [
+    { model: 'default', provider: 'ffmpeg', displayName: 'FFmpeg', modelDisplayName: 'FFmpeg Editor' },
+  ],
+  'upload_files': [
+    { model: 'default', provider: 'local', displayName: 'Local', modelDisplayName: 'File Upload' },
+  ],
+  'clip_merger': [
+    { model: 'default', provider: 'ffmpeg', displayName: 'FFmpeg', modelDisplayName: 'Clip Merger' },
+  ],
+  'media_ingest': [
+    { model: 'google-drive', provider: 'google', displayName: 'Google Drive', modelDisplayName: 'Google Drive' },
+    { model: 'dropbox', provider: 'dropbox', displayName: 'Dropbox', modelDisplayName: 'Dropbox' },
+    { model: 's3', provider: 'aws', displayName: 'AWS S3', modelDisplayName: 'AWS S3' },
+    { model: 'local', provider: 'local', displayName: 'Local Upload', modelDisplayName: 'Local Upload' },
+    { model: 'url', provider: 'url', displayName: 'Direct Link', modelDisplayName: 'Direct URL' },
+  ],
 };
 
 export const getNodeTypeConfig = (type: NodeType): NodeTypeConfig => {
@@ -133,6 +222,32 @@ export const createNode = (type: NodeType): WorkflowNodeData => {
 
 // Derive provider display name from model string and node type
 export const getProviderFromModel = (model: string | undefined, nodeType: NodeType): string => {
+  // Check localStorage for user overrides first
+  try {
+    const savedOverrides = localStorage.getItem('providerDisplayNameOverrides');
+    if (savedOverrides && model) {
+      const overrides = JSON.parse(savedOverrides);
+      if (overrides[nodeType]?.[model]) {
+        return overrides[nodeType][model];
+      }
+    }
+  } catch (e) {
+    // Ignore localStorage errors (e.g., SSR, parsing errors)
+  }
+
+  // Use the comprehensive mapping if available
+  if (model) {
+    const providers = NODE_MODEL_PROVIDERS[nodeType];
+    if (providers) {
+      const match = providers.find(p => p.model === model);
+      if (match) {
+        return match.displayName;
+      }
+    }
+  }
+
+  // Fallback logic for models not in mapping or if model is undefined
+
   // FFmpeg nodes
   if (nodeType === 'edit_video' || nodeType === 'clip_merger') {
     return 'FFmpeg';
@@ -141,6 +256,11 @@ export const getProviderFromModel = (model: string | undefined, nodeType: NodeTy
   // AMC internal nodes (not ClipZap)
   if (nodeType === 'split_text') {
     return 'AMC';
+  }
+
+  // Media ingest nodes
+  if (nodeType === 'media_ingest') {
+    return 'Import';
   }
 
   // If no model specified, return Others
@@ -165,4 +285,39 @@ export const getProviderFromModel = (model: string | undefined, nodeType: NodeTy
   }
 
   return 'Others';
+};
+
+export const getProviderDisplayName = (model: string, nodeType: NodeType): string => {
+  return getProviderFromModel(model, nodeType);
+};
+
+// Storage key for model display name overrides
+const MODEL_DISPLAY_NAME_OVERRIDES_KEY = 'modelDisplayNameOverrides';
+
+// Get the display name for a model (shown in dropdown)
+export const getModelDisplayName = (model: string, nodeType: NodeType): string => {
+  // Check localStorage for user overrides first
+  try {
+    const savedOverrides = localStorage.getItem(MODEL_DISPLAY_NAME_OVERRIDES_KEY);
+    if (savedOverrides) {
+      const overrides = JSON.parse(savedOverrides);
+      if (overrides[nodeType]?.[model]) {
+        return overrides[nodeType][model];
+      }
+    }
+  } catch (e) {
+    // Ignore localStorage errors
+  }
+
+  // Use the mapping if available
+  const providers = NODE_MODEL_PROVIDERS[nodeType];
+  if (providers) {
+    const match = providers.find(p => p.model === model);
+    if (match) {
+      return match.modelDisplayName;
+    }
+  }
+
+  // Fallback to the raw model string
+  return model;
 };

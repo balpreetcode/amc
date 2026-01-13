@@ -115,12 +115,13 @@
 }
 
 .doc-section code {
-  background: rgba(0, 0, 0, 0.3);
+  background: #1e293b;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
   font-size: 0.9em;
-  color: #f87171;
+  color: #67e8f9;
+  border: 1px solid #334155;
 }
 
 .doc-section ul {
@@ -151,9 +152,11 @@
   display: block;
   margin: 0.5rem 0;
   padding: 0.5rem 0.75rem;
-  background: rgba(0, 0, 0, 0.4);
+  background: #1e293b;
   border-radius: 4px;
   font-size: 0.85rem;
+  color: #67e8f9;
+  border: 1px solid #334155;
 }
 
 /* Tag List */
@@ -174,9 +177,10 @@
 }
 
 .tag-list code {
-  background: transparent;
-  padding: 0;
-  color: #f87171;
+  background: #1e293b;
+  padding: 0.2rem 0.4rem;
+  color: #67e8f9;
+  border: 1px solid #334155;
 }
 
 /* Endpoint Card */
@@ -268,8 +272,8 @@
 
 /* Code Block */
 .code-block {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--color-border);
+  background: #0f172a;
+  border: 1px solid #334155;
   border-radius: 8px;
   overflow: hidden;
 }
@@ -280,7 +284,7 @@
   font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
   font-size: 0.85rem;
   line-height: 1.6;
-  color: #e5e7eb;
+  color: #7dd3fc;
   overflow-x: auto;
 }
 
@@ -316,10 +320,12 @@
 }
 
 .params-table code {
-  background: rgba(0, 0, 0, 0.3);
+  background: #1e293b;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-size: 0.85em;
+  color: #67e8f9;
+  border: 1px solid #334155;
 }
 
 /* Errors List */
