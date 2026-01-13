@@ -189,6 +189,34 @@ loadHistoryIndex();
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+/**
+ * Detect language from workflow nodes by finding text_to_speech nodes
+ * @param {Array} workflowNodes - All workflow nodes
+ * @param {string} currentNodeId - Current node ID (to look for preceding nodes)
+ * @returns {string|null} Detected language code or null
+ */
+function detectLanguageFromWorkflow(workflowNodes, currentNodeId) {
+    if (!workflowNodes || !Array.isArray(workflowNodes)) {
+        return null;
+    }
+
+    // Find all text_to_speech nodes that come before the current node
+    const ttsNodes = workflowNodes.filter(node =>
+        node.type === 'text_to_speech' &&
+        node.config &&
+        node.config.language
+    );
+
+    if (ttsNodes.length > 0) {
+        // Return the language from the first TTS node (all scenes use same language)
+        const language = ttsNodes[0].config.language;
+        console.log(`[Language] Detected from workflow: ${language}`);
+        return language;
+    }
+
+    return null;
+}
+
 const MOCK_ENDPOINTS = {
     face_swap: '/face-swap',
     lip_sync: '/lip-sync',
@@ -673,6 +701,20 @@ const nodeProcessors = {
         const speechVolume = config.speechVolume || 1.0;
         const musicVolume = config.musicVolume || 0.3;
 
+        // Auto-subtitle support: detect language from previous text_to_speech results
+        let detectedLanguage = null;
+        if (config.enableAutoSubtitles && !config.subtitleLanguage) {
+            // Look for language in previous text_to_speech node results
+            for (let i = 0; i < previousResults.length; i++) {
+                const result = previousResults[i];
+                if (result.data?.output?.language) {
+                    detectedLanguage = result.data.output.language;
+                    console.log(`[edit_video] Detected language from previous TTS node: ${detectedLanguage}`);
+                    break;
+                }
+            }
+        }
+
         // Handle case where videoUrl and speechUrl are arrays (from parallel node execution)
         // Convert them to items format for concatenation
         if (!items && Array.isArray(videoUrl)) {
@@ -718,6 +760,9 @@ const nodeProcessors = {
 
         if (!finalVideoSource) throw new Error('No input video provided');
 
+        // Determine subtitle language: manual override > detected > null (auto-detect)
+        const subtitleLanguage = config.subtitleLanguage || detectedLanguage || null;
+
         const result = await composeVideo({
             videoUrl: finalVideoSource,
             speechUrl: finalSpeechSource,
@@ -727,7 +772,9 @@ const nodeProcessors = {
             subtitleText: config.subtitleText,
             subtitlePosition: config.subtitlePosition,
             subtitleColor: config.subtitleColor,
-            subtitleSize: config.subtitleSize
+            subtitleSize: config.subtitleSize,
+            enableAutoSubtitles: config.enableAutoSubtitles || false,
+            subtitleLanguage
         });
 
         return {

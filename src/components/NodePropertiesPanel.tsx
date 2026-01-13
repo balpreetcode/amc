@@ -6,12 +6,13 @@ import './NodePropertiesPanel.css';
 interface FormField {
     name: string;
     label: string;
-    type: 'text' | 'textarea' | 'select' | 'number' | 'slider' | 'toggle' | 'file' | 'video' | 'audio' | 'image';
+    type: 'text' | 'textarea' | 'select' | 'number' | 'slider' | 'toggle' | 'file' | 'video' | 'audio' | 'image' | 'color';
     options?: string[];
     dynamicOptions?: string;
     min?: number;
     max?: number;
     step?: number;
+    default?: string | number;
 }
 
 export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
@@ -110,7 +111,12 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
         { name: 'startTime', label: 'Trim Start', type: 'text' },
         { name: 'endTime', label: 'Trim End', type: 'text' },
         { name: 'cropRatio', label: 'Crop Ratio', type: 'select', options: ['1:1', '16:9', '9:16'] },
-        { name: 'filter', label: 'Filter', type: 'select', options: ['None', 'Grayscale', 'Sepia', 'High Contrast'] }
+        { name: 'filter', label: 'Filter', type: 'select', options: ['None', 'Grayscale', 'Sepia', 'High Contrast'] },
+        { name: 'enableAutoSubtitles', label: '🎬 Auto-Generate Subtitles from Audio', type: 'toggle' },
+        { name: 'subtitleLanguage', label: 'Subtitle Language (leave empty for auto-detect)', type: 'select', options: ['', 'en', 'hi', 'es', 'fr', 'de', 'ja', 'ko', 'zh'] },
+        { name: 'subtitlePosition', label: 'Subtitle Position', type: 'select', options: ['bottom', 'center', 'top'] },
+        { name: 'subtitleColor', label: 'Subtitle Color', type: 'color', default: '#ffffff' },
+        { name: 'subtitleSize', label: 'Subtitle Size', type: 'number', default: 24 }
     ],
     'clip_merger': [
         { name: 'clips', label: 'Input Clips', type: 'text' }, // Simplified for now
@@ -823,6 +829,23 @@ export const NodePropertiesPanel: React.FC = () => {
                                                 />
                                                 <span className="slider round"></span>
                                             </label>
+                                        )}
+                                        {field.type === 'color' && (
+                                            <div className="color-input-container">
+                                                <input
+                                                    type="color"
+                                                    value={fieldValue || field.default || '#ffffff'}
+                                                    onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                                                    className="color-picker"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={fieldValue || field.default || '#ffffff'}
+                                                    onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                                                    placeholder="#ffffff"
+                                                    className="color-text-input"
+                                                />
+                                            </div>
                                         )}
                                         {(field.type === 'file' || field.type === 'image' || field.type === 'video' || field.type === 'audio') && (
                                             <div className="file-input-container">

@@ -312,7 +312,9 @@ async function composeVideo(options) {
         subtitlePosition = 'bottom',
         subtitleFont = 'Arial',
         subtitleColor = '#ffffff',
-        subtitleSize = 24
+        subtitleSize = 24,
+        enableAutoSubtitles = false,
+        subtitleLanguage = null
     } = options;
 
     // PORT must be defined here since it's not available in module scope
@@ -408,8 +410,57 @@ async function composeVideo(options) {
         // Step 4: Build filter complex
         let filterComplex = '';
         let videoFilters = [];
+        let subtitleFilePath = null; // Track SRT file for cleanup
 
-        if (subtitleText) {
+        // Handle auto-subtitles (transcribe speech audio) using SRT format
+        if (enableAutoSubtitles && speechUrl && speechPath) {
+            try {
+                console.log('[Subtitles] Auto-generating subtitles from speech audio...');
+
+                const { transcribeAudio, generateSRT, saveSRTFile } = require('../utils/transcription');
+
+                // Transcribe the speech audio
+                const transcription = await transcribeAudio(speechPath, {
+                    language: subtitleLanguage,
+                    apiKey: process.env.OPENAI_API_KEY
+                });
+
+                console.log(`[Subtitles] Transcribed ${transcription.segments.length} segments`);
+
+                if (transcription.segments.length > 0) {
+                    // Generate SRT content
+                    const srtContent = generateSRT(transcription);
+                    console.log(`[Subtitles] Generated SRT with ${transcription.segments.length} entries`);
+
+                    // Save SRT to temp file
+                    subtitleFilePath = path.join(TEMP_DIR, `subtitles_${timestamp}.srt`);
+                    await saveSRTFile(srtContent, subtitleFilePath);
+
+                    // Build subtitle style string for FFmpeg
+                    const styles = [
+                        `FontSize=${subtitleSize}`,
+                        `PrimaryColour=&H${cleanColor(subtitleColor).padStart(6, '0')}`,
+                        `Alignment=${subtitlePosition === 'top' ? '8' : subtitlePosition === 'center' ? '5' : '2'}`,
+                        `MarginV=${subtitlePosition === 'top' ? '20' : subtitlePosition === 'center' ? '0' : '20'}`
+                    ].join(',');
+
+                    // Escape SRT file path for FFmpeg (handle backslashes on Windows, colons, etc.)
+                    const escapedSrtPath = subtitleFilePath.replace(/\\/g, '\\\\').replace(/:/g, '\\:');
+
+                    // Use subtitles filter instead of drawtext
+                    videoFilters.push(`subtitles='${escapedSrtPath}':force_style='${styles}'`);
+
+                    console.log('[Subtitles] Applied SRT subtitle filter');
+                }
+
+            } catch (transcriptionError) {
+                console.error('[Subtitles] Auto-generation failed:', transcriptionError.message);
+                console.warn('[Subtitles] Continuing without subtitles...');
+                // Continue with video composition, just no subtitles
+            }
+        }
+        // Handle manual subtitles (static text)
+        else if (subtitleText) {
             const escapedText = escapeForDrawtext(subtitleText);
             const yPos = getSubtitleY(subtitlePosition);
             const hexColor = cleanColor(subtitleColor);
@@ -460,8 +511,8 @@ async function composeVideo(options) {
         await runFFmpeg(ffmpegCmd);
 
         // Step 6: Clean up temp files
-        [videoPath, speechPath, musicPath].forEach(f => {
-            if (fs.existsSync(f)) fs.unlinkSync(f);
+        [videoPath, speechPath, musicPath, subtitleFilePath].forEach(f => {
+            if (f && fs.existsSync(f)) fs.unlinkSync(f);
         });
 
         let outputUrl = `http://localhost:${PORT}/output/composed_${timestamp}.mp4`;
@@ -503,8 +554,12 @@ async function composeVideo(options) {
         console.error('Composition failed:', error);
 
         // Clean up on error
-        [videoPath, speechPath, musicPath, outputPath].forEach(f => {
-            if (fs.existsSync(f)) fs.unlinkSync(f);
+        const errorCleanupFiles = [videoPath, speechPath, musicPath, outputPath];
+        if (typeof subtitleFilePath !== 'undefined') {
+            errorCleanupFiles.push(subtitleFilePath);
+        }
+        errorCleanupFiles.forEach(f => {
+            if (f && fs.existsSync(f)) fs.unlinkSync(f);
         });
 
         throw error;
