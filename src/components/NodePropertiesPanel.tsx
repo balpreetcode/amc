@@ -61,6 +61,17 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
         { name: 'duration', label: 'Duration', type: 'number' },
         { name: 'seed', label: 'Seed', type: 'number' }
     ],
+    'image_based_video': [
+        { name: 'imageUrls', label: 'Source Images', type: 'text' },
+        { name: 'effectType', label: 'Effect Type', type: 'select', options: ['zoom_in', 'zoom_out', 'zoom_in_out', 'pan_down', 'pan_up', 'pan_left', 'pan_right', 'ken_burns', 'ultra_zoom', 'pulse', 'rotate'] },
+        { name: 'durationPerImage', label: 'Duration Per Image (seconds)', type: 'number', default: 5, min: 2, max: 30 },
+        { name: 'effectIntensity', label: 'Effect Intensity', type: 'slider', min: 1, max: 10, step: 1, default: 5 },
+        { name: 'transitionType', label: 'Transition Between Images', type: 'select', options: ['fade', 'cut', 'dissolve', 'wipe_left', 'wipe_right'] },
+        { name: 'transitionDuration', label: 'Transition Duration (seconds)', type: 'number', default: 1, min: 0.5, max: 3 },
+        { name: 'outputFPS', label: 'Output FPS', type: 'select', options: ['24', '30', '60'] },
+        { name: 'resolution', label: 'Output Resolution', type: 'select', options: ['1920x1080', '1280x720', '1080x1920', '1080x1080'] },
+        { name: 'enableMotionBlur', label: 'Enable Motion Blur', type: 'toggle', default: 0 }
+    ],
     'image_to_image': [
         { name: 'imageUrl', label: 'Source Image', type: 'image' },
         { name: 'prompt', label: 'Prompt', type: 'textarea' },
@@ -131,6 +142,7 @@ const OUTPUT_KEYS: Record<string, string[]> = {
     'image_to_image': ['imageUrl'],
     'text_to_video': ['videoUrl'],
     'image_to_video': ['videoUrl'],
+    'image_based_video': ['videoUrl', 'originalVideoUrl', 'sourceImages', 'duration'],
     'text_to_music': ['audioUrl'],
     'text_to_speech': ['audioUrl', 'text', 'originalText'],
     'split_text': ['segments', 'items'],

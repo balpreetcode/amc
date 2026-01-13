@@ -598,6 +598,7 @@ export const useWorkflow = () => {
                                     case 'text_to_image':
                                     case 'image_to_image': return 'image';
                                     case 'image_to_video':
+                                    case 'image_based_video':
                                     case 'text_to_video':
                                     case 'edit_video': return 'video';
                                     case 'text_to_speech': return 'audio';

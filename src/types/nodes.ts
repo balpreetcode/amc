@@ -55,6 +55,7 @@ export interface NodeExecutionConfig {
 export type NodeType =
   | 'face_swap'
   | 'image_to_video'
+  | 'image_based_video'
   | 'text_to_image'
   | 'text_to_video'
   | 'text_to_text'
@@ -89,6 +90,7 @@ export const NODE_TYPES: NodeTypeConfig[] = [
   { type: 'text_to_music', label: 'Text To Music', icon: '🎵', defaultProvider: 'MiniMax', defaultTime: '3min', category: 'generation' },
   { type: 'text_to_speech', label: 'Text To Speech', icon: '🔊', defaultProvider: 'Fal AI', defaultTime: '20s', category: 'generation' },
   { type: 'image_to_video', label: 'Image To Video', icon: '🎬', defaultProvider: 'Runway', defaultTime: '2min', category: 'generation' },
+  { type: 'image_based_video', label: 'Image-Based Video', icon: '🎞️', defaultProvider: 'FFmpeg', defaultTime: '30s', category: 'generation' },
   { type: 'image_to_image', label: 'Image To Image', icon: '🔄', defaultProvider: 'Fal AI', defaultTime: '30s', category: 'processing' },
   { type: 'face_swap', label: 'Face Swap', icon: '🎭', defaultProvider: 'InsightFace', defaultTime: '45s', category: 'processing' },
   { type: 'lip_sync', label: 'Lip Sync', icon: '👄', defaultProvider: 'KlingAI', defaultTime: '10min', category: 'processing' },

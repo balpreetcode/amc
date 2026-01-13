@@ -370,6 +370,196 @@ const nodeProcessors = {
             apiCalls: [apiCall]
         };
     },
+    image_based_video: async (config, previousResults) => {
+        const { generateImageBasedVideo } = require('./generators/imageBasedVideo');
+
+        // AGGREGATE MODE: Process each item separately (when aggregateItems: true)
+        // This is used when Node 8 receives multiple items from Node 7 in parallel execution
+        if (config.items && Array.isArray(config.items) && config.items.length > 0) {
+            console.log(`[image_based_video] Processing ${config.items.length} items in aggregate mode`);
+
+            const itemOutputs = [];
+
+            for (let i = 0; i < config.items.length; i++) {
+                const item = config.items[i];
+                let imageUrls = null;
+
+                // Extract image URL from this item
+                if (item.imageUrls && Array.isArray(item.imageUrls)) {
+                    imageUrls = item.imageUrls;
+                } else if (item.imageUrls && typeof item.imageUrls === 'string') {
+                    imageUrls = [item.imageUrls];
+                } else if (item.imageUrl) {
+                    imageUrls = [item.imageUrl];
+                } else if (item.originalImageUrl) {
+                    imageUrls = [item.originalImageUrl];
+                }
+
+                if (!imageUrls || imageUrls.length === 0) {
+                    console.warn(`[image_based_video] Item ${i + 1} has no images, skipping`);
+                    continue;
+                }
+
+                // Resolve proxy URLs
+                imageUrls = imageUrls.map(url => resolveOriginalUrl(url));
+
+                console.log(`[image_based_video] Item ${i + 1}: Processing ${imageUrls.length} image(s)`);
+
+                const result = await generateImageBasedVideo({
+                    imageUrls,
+                    durationPerImage: item.durationPerImage || config.durationPerImage || 5,
+                    effectType: item.effectType || config.effectType || 'ken_burns',
+                    effectIntensity: item.effectIntensity || config.effectIntensity || 5,
+                    transitionType: item.transitionType || config.transitionType || 'fade',
+                    transitionDuration: item.transitionDuration || config.transitionDuration || 1,
+                    outputFPS: item.outputFPS || config.outputFPS || 24,
+                    resolution: item.resolution || config.resolution || '1920x1080',
+                    enableMotionBlur: item.enableMotionBlur !== undefined ? item.enableMotionBlur : config.enableMotionBlur
+                });
+
+                const proxyVideoUrl = createProxyUrl(result.videoUrl);
+
+                itemOutputs.push({
+                    videoUrl: proxyVideoUrl,
+                    originalVideoUrl: result.originalVideoUrl,
+                    sourceImages: result.sourceImages,
+                    duration: result.duration
+                });
+
+                console.log(`[image_based_video] Item ${i + 1}: Generated video -> ${result.videoUrl.substring(0, 60)}...`);
+            }
+
+            if (itemOutputs.length === 0) {
+                throw new Error('No videos generated from any items');
+            }
+
+            // Return aggregated output in the format expected by Node 10
+            // Include both items array (for aggregation) and videoUrl array (for Conductor references)
+            // Also include audioUrl as null for compatibility when workflows reference it incorrectly
+            return {
+                type: 'image_based_video',
+                output: {
+                    items: itemOutputs,
+                    videoUrl: itemOutputs.map(item => item.videoUrl),
+                    originalVideoUrl: itemOutputs.map(item => item.originalVideoUrl),
+                    audioUrl: null  // For workflow compatibility when outputKey is incorrectly set to audioUrl
+                },
+                apiCalls: []
+            };
+        }
+
+        // SINGLE ITEM MODE: Process single image or array of images
+        let imageUrls = config.imageUrls;
+
+        // Case 1: Direct config.imageUrls as STRING
+        if (imageUrls && typeof imageUrls === 'string') {
+            imageUrls = [imageUrls];
+            console.log(`[image_based_video] Converted single URL to array`);
+        }
+        // Case 2: Direct config.imageUrls as ARRAY
+        else if (imageUrls && Array.isArray(imageUrls) && imageUrls.length > 0) {
+            console.log(`[image_based_video] Using config.imageUrls array: ${imageUrls.length} images`);
+        }
+        // Case 3: Get from previous node output
+        else if (previousResults.length > 0) {
+            for (let i = previousResults.length - 1; i >= 0; i--) {
+                const output = previousResults[i]?.data?.output;
+                if (!output) continue;
+
+                // Check for items array from parallel execution
+                if (output.items && Array.isArray(output.items) && output.items.length > 0) {
+                    const urls = [];
+                    for (const item of output.items) {
+                        if (item.originalImageUrl) {
+                            urls.push(item.originalImageUrl);
+                        } else if (item.imageUrl) {
+                            urls.push(item.imageUrl);
+                        }
+                    }
+                    if (urls.length > 0) {
+                        imageUrls = urls;
+                        console.log(`[image_based_video] Extracted ${urls.length} images from previous output.items`);
+                        break;
+                    }
+                }
+                // Check for direct imageUrls array
+                else if (output.imageUrls && Array.isArray(output.imageUrls) && output.imageUrls.length > 0) {
+                    imageUrls = output.imageUrls;
+                    console.log(`[image_based_video] Using output.imageUrls: ${imageUrls.length} images`);
+                    break;
+                }
+                // Check for aggregated imageUrl array (from parallel combineOutputs)
+                else if (output.imageUrl && Array.isArray(output.imageUrl) && output.imageUrl.length > 0) {
+                    imageUrls = output.imageUrl;
+                    console.log(`[image_based_video] Using output.imageUrl array: ${imageUrls.length} images`);
+                    break;
+                }
+                // Check for aggregated originalImageUrl array
+                else if (output.originalImageUrl && Array.isArray(output.originalImageUrl) && output.originalImageUrl.length > 0) {
+                    imageUrls = output.originalImageUrl;
+                    console.log(`[image_based_video] Using output.originalImageUrl array: ${imageUrls.length} images`);
+                    break;
+                }
+                // Check for single imageUrl
+                else if (output.imageUrl && typeof output.imageUrl === 'string') {
+                    imageUrls = [output.imageUrl];
+                    console.log(`[image_based_video] Using single output.imageUrl`);
+                    break;
+                }
+                // Check for single originalImageUrl
+                else if (output.originalImageUrl && typeof output.originalImageUrl === 'string') {
+                    imageUrls = [output.originalImageUrl];
+                    console.log(`[image_based_video] Using single output.originalImageUrl`);
+                    break;
+                }
+            }
+        }
+
+        // Resolve proxy URLs to original URLs for external processing
+        if (imageUrls && Array.isArray(imageUrls)) {
+            imageUrls = imageUrls.map(url => resolveOriginalUrl(url));
+        }
+
+        // Final validation
+        if (!imageUrls) {
+            throw new Error('No input images provided for image_based_video node');
+        }
+        if (!Array.isArray(imageUrls)) {
+            throw new Error(`imageUrls must be an array, got: ${typeof imageUrls}`);
+        }
+        if (imageUrls.length === 0) {
+            throw new Error('imageUrls must be a non-empty array');
+        }
+
+        console.log('[image_based_video] Processing images:', imageUrls.length);
+
+        const result = await generateImageBasedVideo({
+            imageUrls,
+            durationPerImage: config.durationPerImage || 5,
+            effectType: config.effectType || 'ken_burns',
+            effectIntensity: config.effectIntensity || 5,
+            transitionType: config.transitionType || 'fade',
+            transitionDuration: config.transitionDuration || 1,
+            outputFPS: config.outputFPS || 24,
+            resolution: config.resolution || '1920x1080',
+            enableMotionBlur: config.enableMotionBlur || false
+        });
+
+        const proxyVideoUrl = createProxyUrl(result.videoUrl);
+
+        return {
+            type: 'image_based_video',
+            output: {
+                videoUrl: proxyVideoUrl,
+                originalVideoUrl: result.originalVideoUrl,
+                sourceImages: result.sourceImages,
+                duration: result.duration,
+                effectApplied: result.effectApplied,
+                resolution: result.resolution
+            },
+            apiCalls: []
+        };
+    },
     text_to_music: async (config) => {
         const prompt = config.prompt || 'Upbeat electronic music';
         const duration = config.duration || 30;
@@ -1037,8 +1227,26 @@ function mapWorkflowStatus(status) {
 function getLastOutput(previousResults, key) {
     for (let i = previousResults.length - 1; i >= 0; i--) {
         const output = previousResults[i]?.data?.output;
-        if (output && output[key]) {
-            return output[key];
+        if (output) {
+            // Case 1: Direct output key (e.g., output.videoUrl)
+            if (output[key]) {
+                return output[key];
+            }
+            // Case 2: Aggregated parallel execution (output.items array)
+            // When aggregateItems: true, results are wrapped in output.items
+            if (output.items && Array.isArray(output.items) && output.items.length > 0) {
+                // Collect all values for the requested key from items
+                const values = [];
+                for (const item of output.items) {
+                    if (item[key]) {
+                        values.push(item[key]);
+                    }
+                }
+                // Return array if we found any values
+                if (values.length > 0) {
+                    return values;
+                }
+            }
         }
     }
     return null;

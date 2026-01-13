@@ -6,8 +6,7 @@
 const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const https = require('https');
-const http = require('http');
+const axios = require('axios');
 
 // Base directories - relative to project root
 // Use __filename to ensure correct path resolution regardless of execution environment
@@ -21,6 +20,7 @@ if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });
 
 /**
  * Download a file from URL to local path
+ * Uses axios for better compatibility with HTTP/2, redirects, and modern servers
  * @param {string} url - Source URL
  * @param {string} destPath - Destination path
  * @returns {Promise<string>} Downloaded file path
@@ -56,34 +56,140 @@ function downloadFile(url, destPath) {
             return;
         }
 
-        console.log(`[downloadFile] Downloading from URL: ${url}`);
-        const file = fs.createWriteStream(destPath);
-        const protocol = url.startsWith('https') ? https : http;
+        console.log(`[downloadFile] Downloading from URL: ${url.substring(0, 60)}...`);
 
-        protocol.get(url, (response) => {
-            if (response.statusCode === 301 || response.statusCode === 302) {
-                file.close();
-                fs.unlink(destPath, () => { });
-                downloadFile(response.headers.location, destPath).then(resolve).catch(reject);
+        // Use axios for better HTTP/2 and redirect handling
+        axios({
+            method: 'GET',
+            url: url,
+            responseType: 'stream',
+            timeout: 30000, // 30 second timeout
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; WorkflowBuilder/1.0)',
+                'Accept': '*/*'
+            },
+            // Allow redirects (default is true for axios)
+            maxRedirects: 5,
+            // Validate HTTP status codes
+            validateStatus: (status) => status >= 200 && status < 300
+        }).then(response => {
+            const contentType = response.headers['content-type'];
+            const contentLength = response.headers['content-length'];
+            console.log(`[downloadFile] Content-Type: ${contentType}, Status: ${response.status}, Content-Length: ${contentLength || 'unknown'}`);
+
+            // Check for empty responses
+            if (contentLength && parseInt(contentLength) === 0) {
+                reject(new Error(`URL returned empty content (0 bytes)`));
                 return;
             }
-            if (response.statusCode !== 200) {
-                file.close();
-                fs.unlink(destPath, () => { });
-                reject(new Error(`HTTP ${response.statusCode}: ${url}`));
+
+            // Valid media file extensions (for fallback when content-type is generic)
+            const MEDIA_EXTENSIONS = [
+                // Video
+                '.mp4', '.mov', '.avi', '.mkv', '.webm', '.flv', '.wmv', '.m4v',
+                // Audio
+                '.mp3', '.wav', '.m4a', '.aac', '.ogg', '.flac', '.wma',
+                // Image
+                '.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.svg'
+            ];
+
+            // Check if content-type is a standard media type
+            const isStandardMediaType = contentType && (
+                contentType.startsWith('image/') ||
+                contentType.startsWith('video/') ||
+                contentType.startsWith('audio/')
+            );
+
+            // Check if it's the generic binary type with a valid media extension
+            const isGenericBinary = contentType === 'application/octet-stream';
+            const hasValidExtension = MEDIA_EXTENSIONS.some(ext => destPath.toLowerCase().endsWith(ext));
+
+            // Validate content-type
+            if (!contentType) {
+                reject(new Error(`URL returned no content-type header`));
                 return;
             }
-            response.pipe(file);
-            file.on('finish', () => {
-                file.close();
-                const stats = fs.statSync(destPath);
-                console.log(`[downloadFile] Downloaded ${stats.size} bytes`);
-                resolve(destPath);
+
+            // Accept standard media types OR generic binary with valid extension
+            if (!isStandardMediaType) {
+                if (isGenericBinary && hasValidExtension) {
+                    console.warn(`[downloadFile] Content-Type is 'application/octet-stream', trusting URL extension: ${path.extname(destPath)}`);
+                } else {
+                    reject(new Error(`URL did not return an image, video, or audio, got: ${contentType}`));
+                    return;
+                }
+            }
+
+            // Pipe response to file
+            const writer = fs.createWriteStream(destPath);
+            let downloadComplete = false;
+
+            // Handle errors on the incoming stream
+            response.data.on('error', (err) => {
+                if (!downloadComplete) {
+                    writer.close();
+                    fs.unlink(destPath, () => {});
+                    reject(new Error(`Download stream error: ${err.message}`));
+                }
             });
-        }).on('error', (err) => {
-            file.close();
-            fs.unlink(destPath, () => { });
-            reject(err);
+
+            // Handle when readable stream ends (source finished sending data)
+            response.data.on('end', () => {
+                console.log(`[downloadFile] Source stream ended, flushing to disk...`);
+            });
+
+            response.data.pipe(writer);
+
+            // Use 'close' event instead of 'finish' - ensures all data flushed and file descriptor closed
+            writer.on('close', () => {
+                if (downloadComplete) return; // Already processed
+                downloadComplete = true;
+
+                // Verify file exists and has content
+                try {
+                    const stats = fs.statSync(destPath);
+                    if (stats.size === 0) {
+                        fs.unlink(destPath, () => {});
+                        reject(new Error(`Downloaded file is empty: ${destPath}`));
+                        return;
+                    }
+
+                    // Verify size matches expected content-length (if provided)
+                    if (contentLength && stats.size !== parseInt(contentLength)) {
+                        console.warn(`[downloadFile] Size mismatch: expected ${contentLength} bytes, got ${stats.size} bytes`);
+                    }
+
+                    console.log(`[downloadFile] Downloaded ${stats.size} bytes`);
+                    resolve(destPath);
+                } catch (statError) {
+                    if (statError.code === 'ENOENT') {
+                        // File was renamed/moved by caller - this is expected
+                        console.log(`[downloadFile] Download complete (file already moved)`);
+                        resolve(destPath);
+                    } else {
+                        reject(new Error(`Failed to access downloaded file: ${statError.message}`));
+                    }
+                }
+            });
+
+            writer.on('error', (err) => {
+                if (!downloadComplete) {
+                    downloadComplete = true;
+                    writer.close();
+                    fs.unlink(destPath, () => {});
+                    reject(new Error(`Failed to write file: ${err.message}`));
+                }
+            });
+        }).catch(error => {
+            // Clean up partial download
+            if (fs.existsSync(destPath)) {
+                fs.unlink(destPath, () => {});
+            }
+            if (error.response) {
+                reject(new Error(`HTTP ${error.response.status}: ${error.response.statusText}`));
+            } else {
+                reject(new Error(`Download failed: ${error.message}`));
+            }
         });
     });
 }
