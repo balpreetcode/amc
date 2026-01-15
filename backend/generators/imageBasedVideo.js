@@ -22,26 +22,31 @@ const EFFECT_PRESETS = {
     zoom_in: {
         description: 'Smooth zoom from center',
         getFilter: (duration, fps, intensity) => {
-            const zoomRange = 0.5;  // 1.5 - 1.0
-            const zoomSpeed = (zoomRange / (fps * duration)) * intensity;
-            return `zoompan=z='min(zoom+${zoomSpeed},1.5)':d=${fps * duration}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`;
+            const baseZoomRange = 0.5;  // 1.5 - 1.0
+            const actualZoomRange = baseZoomRange * (intensity / 5);
+            const zoomSpeed = actualZoomRange / (fps * duration);
+            const maxZoom = 1.0 + actualZoomRange;
+            return `zoompan=z='min(zoom+${zoomSpeed},${maxZoom})':d=${fps * duration}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`;
         }
     },
     zoom_out: {
         description: 'Smooth zoom out from center',
         getFilter: (duration, fps, intensity) => {
-            const startScale = 1.5;
-            const zoomRange = 0.5;  // 1.5 - 1.0
-            const zoomSpeed = (zoomRange / (fps * duration)) * intensity;
+            const baseZoomRange = 0.5;  // 1.5 - 1.0
+            const actualZoomRange = baseZoomRange * (intensity / 5);
+            const zoomSpeed = actualZoomRange / (fps * duration);
+            const startScale = 1.0 + actualZoomRange;
             return `zoompan=z='if(eq(on,1),${startScale},max(1.001,zoom-${zoomSpeed}))':d=${fps * duration}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`;
         }
     },
     zoom_in_out: {
         description: 'Zoom in then out',
         getFilter: (duration, fps, intensity) => {
-            const zoomRange = 0.4;  // 1.4 - 1.0
-            const zoomSpeed = (zoomRange / (fps * duration)) * intensity;
-            return `zoompan=z='min(max(1.001,zoom+sin(on/${fps * duration}*PI)*${zoomSpeed}),1.4)':d=${fps * duration}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`;
+            const baseZoomRange = 0.4;  // 1.4 - 1.0
+            const actualZoomRange = baseZoomRange * (intensity / 5);
+            const zoomSpeed = (actualZoomRange / 2) / (fps * duration);
+            const maxZoom = 1.0 + actualZoomRange;
+            return `zoompan=z='min(max(1.001,zoom+sin(on/${fps * duration}*PI)*${zoomSpeed}),${maxZoom})':d=${fps * duration}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`;
         }
     },
     pan_down: {
@@ -75,35 +80,42 @@ const EFFECT_PRESETS = {
     ken_burns: {
         description: 'Classic documentary style (slow zoom with subtle pan)',
         getFilter: (duration, fps, intensity) => {
-            const zoomRange = 0.15;  // 1.15 - 1.0
-            const zoomSpeed = (zoomRange / (fps * duration)) * intensity;
-            return `zoompan=z='min(zoom+${zoomSpeed},1.15)':d=${fps * duration}:x='iw/2-(iw/zoom/1.5)':y='ih/2-(ih/zoom/1.5)'`;
+            const baseZoomRange = 0.15;  // 1.15 - 1.0
+            const actualZoomRange = baseZoomRange * (intensity / 5);
+            const zoomSpeed = actualZoomRange / (fps * duration);
+            const maxZoom = 1.0 + actualZoomRange;
+            return `zoompan=z='min(zoom+${zoomSpeed},${maxZoom})':d=${fps * duration}:x='iw/2-(iw/zoom/1.5)':y='ih/2-(ih/zoom/1.5)'`;
         }
     },
     ultra_zoom: {
         description: 'Extreme zoom with motion blur effect',
         getFilter: (duration, fps, intensity) => {
-            const zoomRange = 2.0;  // 3.0 - 1.0
-            const zoomSpeed = (zoomRange / (fps * duration)) * intensity;
-            return `zoompan=z='min(zoom+${zoomSpeed},3.0)':d=${fps * duration}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`;
+            const baseZoomRange = 2.0;  // 3.0 - 1.0
+            const actualZoomRange = baseZoomRange * (intensity / 5);
+            const zoomSpeed = actualZoomRange / (fps * duration);
+            const maxZoom = 1.0 + actualZoomRange;
+            return `zoompan=z='min(zoom+${zoomSpeed},${maxZoom})':d=${fps * duration}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`;
         }
     },
     pulse: {
         description: 'Repeated zoom in and out',
         getFilter: (duration, fps, intensity) => {
-            const zoomRange = 0.2;  // ±0.1 from 1.2
-            const zoomSpeed = (zoomRange / (fps * duration)) * intensity;
+            const baseZoomRange = 0.2;  // ±0.1 from 1.2
+            const actualZoomRange = baseZoomRange * (intensity / 5);
+            const zoomSpeed = (actualZoomRange / 2) / (fps * duration);
             return `zoompan=z='1.2+sin(on/${fps * 0.5}*PI)*${zoomSpeed}':d=${fps * duration}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`;
         }
     },
     rotate: {
         description: 'Slow rotation with zoom',
         getFilter: (duration, fps, intensity) => {
-            const zoomRange = 0.3;  // 1.3 - 1.0
-            const zoomSpeed = (zoomRange / (fps * duration)) * intensity;
+            const baseZoomRange = 0.3;  // 1.3 - 1.0
+            const actualZoomRange = baseZoomRange * (intensity / 5);
+            const zoomSpeed = actualZoomRange / (fps * duration);
+            const maxZoom = 1.0 + actualZoomRange;
             const rotationSpeed = 0.1 * intensity;
             const totalFrames = fps * duration;
-            return `zoompan=z='min(zoom+${zoomSpeed},1.3)':d=${totalFrames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)',rotate='angle*on*${rotationSpeed}/${totalFrames}'`;
+            return `zoompan=z='min(zoom+${zoomSpeed},${maxZoom})':d=${totalFrames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)',rotate='angle*on*${rotationSpeed}/${totalFrames}'`;
         }
     }
 };
