@@ -14,6 +14,7 @@ import { useState } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import './App.css'
 import { Sidebar } from './components/Sidebar'
+import { DriveConnect } from './components/DriveConnect'
 
 function AppContent() {
   const { execution, runWorkflow, stopWorkflow, workflow, renameWorkflow, loadedTemplateId } = useWorkflowContext();
@@ -35,6 +36,7 @@ function AppContent() {
     if (location.pathname === '/api-tokens') return 'api-tokens';
     if (location.pathname === '/api-docs') return 'api-docs';
     if (location.pathname === '/playground') return 'playground';
+    if (location.pathname === '/drive-connect') return 'drive-connect';
     return 'builder';
   };
 
@@ -264,6 +266,7 @@ function AppContent() {
               <Route path="/api-tokens" element={<ApiTokens />} />
               <Route path="/api-docs" element={<ApiDocs />} />
               <Route path="/playground" element={<AIPlayground />} />
+              <Route path="/drive-connect" element={<DriveConnect />} />
             </Routes>
           </main>
         </div>

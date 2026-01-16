@@ -101,8 +101,7 @@ export const NODE_TYPES: NodeTypeConfig[] = [
   { type: 'video_sound_effects', label: 'Sound Effects', icon: '🔉', defaultProvider: 'Epidemic', defaultTime: '30s', category: 'processing' },
   { type: 'edit_video', label: 'Edit Video', icon: '✏️', defaultProvider: 'FFmpeg', defaultTime: '2min', category: 'processing' },
   { type: 'clip_merger', label: 'Clip Merger', icon: '🔗', defaultProvider: 'FFmpeg', defaultTime: '1min', category: 'output' },
-  // Hidden until OAuth integration is complete:
-  // { type: 'media_ingest', label: 'Media Import', icon: '📥', defaultProvider: 'Import', defaultTime: '30s', category: 'input' },
+  { type: 'media_ingest', label: 'Media Import/Export', icon: '📥', defaultProvider: 'Import', defaultTime: '30s', category: 'input' },
 ];
 
 // Provider-specific node type mappings
@@ -150,6 +149,7 @@ export const NODE_MODEL_PROVIDERS: Record<NodeType, ModelProviderInfo[]> = {
     { model: 'fal-ai/wan/v2.1/image-to-video', provider: 'fal-ai', displayName: 'Fal AI', modelDisplayName: 'WAN Image-to-Video' },
   ],
   'image_to_image': [
+    { model: 'fal-ai/gpt-image-1.5/edit', provider: 'fal-ai', displayName: 'Fal AI', modelDisplayName: 'GPT-IMG 1.5' },
     { model: 'fal-ai/stable-diffusion-v3-medium', provider: 'fal-ai', displayName: 'Fal AI', modelDisplayName: 'Stable Diffusion v3' },
     { model: 'openai/dall-e-2', provider: 'openai', displayName: 'OpenAI', modelDisplayName: 'DALL-E 2' },
   ],

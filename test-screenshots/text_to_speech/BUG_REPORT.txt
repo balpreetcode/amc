@@ -1,0 +1,1 @@
+Text To Speech Test encountered BUG: Form selection doesn't persist on submission. Switches to different capability types.

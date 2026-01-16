@@ -4,19 +4,19 @@ import { NODE_TYPES, type NodeType, createNode } from '../types/nodes';
 import './AIPlayground.css';
 
 // Reuse the OutputKeys from NodePropertiesPanel if possible, or redefine locally for now to be safe
-const OUTPUT_KEYS: Record<string, string[]> = {
-    'text_to_text': ['text'],
-    'text_to_image': ['imageUrl'],
-    'image_to_image': ['imageUrl'],
-    'text_to_video': ['videoUrl'],
-    'image_to_video': ['videoUrl'],
-    'text_to_music': ['audioUrl'],
-    'text_to_speech': ['audioUrl', 'text'],
-    'split_text': ['segments'],
-    'edit_video': ['videoUrl'],
-    'clip_merger': ['videoUrl'],
-    'upload_files': ['files'],
-};
+// const OUTPUT_KEYS: Record<string, string[]> = {
+//     'text_to_text': ['text'],
+//     'text_to_image': ['imageUrl'],
+//     'image_to_image': ['imageUrl'],
+//     'text_to_video': ['videoUrl'],
+//     'image_to_video': ['videoUrl'],
+//     'text_to_music': ['audioUrl'],
+//     'text_to_speech': ['audioUrl', 'text'],
+//     'split_text': ['segments'],
+//     'edit_video': ['videoUrl'],
+//     'clip_merger': ['videoUrl'],
+//     'upload_files': ['files'],
+// };
 
 export const AIPlayground: React.FC = () => {
     const [selectedNodeType, setSelectedNodeType] = useState<NodeType>('text_to_text');

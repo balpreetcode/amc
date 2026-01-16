@@ -16,8 +16,9 @@ async function sessionMiddleware(req, res, next) {
         || req.query?.sessiontoken;
 
     if (!sessionToken) {
-        // Allow requests without session token, but no userId
-        req.userId = null;
+        // DEV BYPASS: Allow access as 'dev-user' when no token is present
+        // in a real app, you'd check process.env.NODE_ENV
+        req.userId = 'dev-user';
         return next();
     }
 

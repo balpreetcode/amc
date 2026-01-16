@@ -84,9 +84,9 @@ export function TemplateCard({
                     className="btn-load"
                     onClick={onLoad}
                     disabled={isGenerating}
-                    title="Load into Builder for editing"
+                    title="Edit in Builder"
                 >
-                    Load
+                    Edit
                 </button>
                 <button
                     className="btn-generate"

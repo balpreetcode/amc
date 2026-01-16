@@ -289,6 +289,24 @@ class ProviderHandler {
                     image_size: config.aspectRatio || 'square'
                 };
             case 'image_to_image':
+                // GPT-IMG 1.5 edit model has a different API format
+                if (this.model && this.model.includes('gpt-image-1.5/edit')) {
+                    // Read from imageUrls array field (new) or fallback to imageUrl (legacy)
+                    const imageUrls = Array.isArray(config.imageUrls) ? config.imageUrls :
+                        Array.isArray(config.imageUrl) ? config.imageUrl :
+                            (config.imageUrl ? [config.imageUrl] : []);
+                    return {
+                        prompt: config.prompt,
+                        image_urls: imageUrls.filter(Boolean),
+                        image_size: config.imageSize || '1024x1024',
+                        background: config.background || 'auto',
+                        quality: config.quality || 'low',
+                        input_fidelity: config.inputFidelity || 'high',
+                        num_images: config.numImages || 1,
+                        output_format: config.outputFormat || 'png'
+                    };
+                }
+                // Default image-to-image format
                 return {
                     image_url: config.imageUrl,
                     prompt: config.prompt,

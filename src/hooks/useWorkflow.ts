@@ -264,7 +264,7 @@ export const useWorkflow = () => {
     const MAX_HISTORY = 50;
     const undoStackRef = useRef<WorkflowState[]>([]);
     const redoStackRef = useRef<WorkflowState[]>([]);
-    const [historyVersion, setHistoryVersion] = useState(0); // Force re-render on undo/redo
+    const [, setHistoryVersion] = useState(0); // Force re-render on undo/redo
 
     // Push current state to undo stack before mutations
     const pushToHistory = useCallback(() => {

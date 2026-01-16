@@ -1,0 +1,1 @@
+Image To Image Test encountered PARTIAL SUCCESS: Form now captures image URL (using React-compatible value setter) but returns 400 Bad Request error. This is progress from 'No input image provided' error. Likely backend validation issue with image URL format or API requirements.

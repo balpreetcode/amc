@@ -1,0 +1,104 @@
+[
+  {
+    "modelName": "text_to_text",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "text_to_image",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "text_to_video",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "text_to_music",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "text_to_speech",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "image_to_video",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "image_to_image",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "face_swap",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "lip_sync",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "ai_avatar",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "enhancer",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "split_text",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "image_object_removal",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "image_remove_background",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "video_sound_effects",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "edit_video",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  },
+  {
+    "modelName": "clip_merger",
+    "status": "FAIL",
+    "artifactType": null,
+    "error": "locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select.playground-select').first()\u001b[22m\n"
+  }
+]

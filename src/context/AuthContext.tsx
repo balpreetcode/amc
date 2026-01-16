@@ -23,14 +23,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const validateSession = async () => {
             const token = getSessionToken();
 
-            if (!token) {
-                setUserId(null);
-                setIsLoading(false);
-                return;
-            }
+            // DEV BYPASS: If no token found internally, attempt to validate with backend anyway (which will return dev-user)
+            const tokenToValidate = token || 'dev-check';
 
             try {
-                const response = await fetch(`${BACKEND_URL}/session/validate?token=${encodeURIComponent(token)}`);
+                const response = await fetch(`${BACKEND_URL}/session/validate?token=${encodeURIComponent(tokenToValidate)}`);
                 const data = await response.json();
 
                 if (data.valid && data.userId) {

@@ -1,0 +1,155 @@
+.drive-connect-container {
+    padding: 2rem;
+    color: #e0e0e0;
+    font-family: 'Inter', sans-serif;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.drive-header h1 {
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.connect-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    background: rgba(30, 30, 30, 0.5);
+    border-radius: 8px;
+    border: 1px dashed #444;
+}
+
+.connect-state p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: #aaa;
+}
+
+.connect-btn {
+    padding: 0.75rem 1.5rem;
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.connect-btn:hover {
+    background-color: #3367d6;
+}
+
+.connect-btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+.drive-error {
+    background-color: rgba(255, 68, 68, 0.1);
+    color: #ff4444;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    background: #1e1e1e;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-link {
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.separator {
+    margin: 0 0.5rem;
+    color: #666;
+}
+
+.file-list {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background: #1e1e1e;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    border: 1px solid transparent;
+}
+
+.file-item:hover {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+.file-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+.file-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.file-name {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.folder-link {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.folder-link:hover {
+    color: #4285f4;
+}
+
+.file-size {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.loading-files {
+    text-align: center;
+    padding: 2rem;
+    color: #888;
+}
+
+.empty-folder {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-style: italic;
+}

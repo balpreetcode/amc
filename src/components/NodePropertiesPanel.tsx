@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWorkflowContext } from '../context/WorkflowContext';
+import { useAuth } from '../context/AuthContext';
+import { FileBrowserModal } from './FileBrowserModal';
 import { getNodeTypeConfig, getProviderFromModel, getModelDisplayName, type NodeExecutionConfig, type NodeType, type MockDataConfig } from '../types/nodes';
 import './NodePropertiesPanel.css';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
+
+interface ComposioAccount {
+    id: string;
+    toolkit: string;
+    status: string;
+    accountName?: string;
+}
 
 interface FormField {
     name: string;
     label: string;
-    type: 'text' | 'textarea' | 'select' | 'number' | 'slider' | 'toggle' | 'file' | 'video' | 'audio' | 'image' | 'color';
+    type: 'text' | 'textarea' | 'select' | 'number' | 'slider' | 'toggle' | 'file' | 'video' | 'audio' | 'image' | 'images' | 'color';
     options?: string[];
     dynamicOptions?: string;
     min?: number;
@@ -62,10 +73,14 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
         { name: 'seed', label: 'Seed', type: 'number' }
     ],
     'image_to_image': [
+        { name: 'model', label: 'Model', type: 'select', options: ['fal-ai/gpt-image-1.5/edit', 'fal-ai/stable-diffusion-v3-medium', 'openai/dall-e-2'] },
         { name: 'imageUrl', label: 'Source Image', type: 'image' },
+        { name: 'imageUrls', label: 'Source Images', type: 'images' },
         { name: 'prompt', label: 'Prompt', type: 'textarea' },
         { name: 'strength', label: 'Strength', type: 'slider', min: 0, max: 1, step: 0.1 },
-        { name: 'model', label: 'Model', type: 'select', options: ['fal-ai/stable-diffusion-v3-medium', 'openai/dall-e-2'] }
+        { name: 'imageSize', label: 'Image Size', type: 'select', options: ['1024x1024', '1536x1024', '1024x1536', '512x512'] },
+        { name: 'quality', label: 'Quality', type: 'select', options: ['low', 'medium', 'high'] },
+        { name: 'inputFidelity', label: 'Input Fidelity', type: 'select', options: ['high', 'low'] }
     ],
     'face_swap': [
         { name: 'targetImageUrl', label: 'Target Image', type: 'image' },
@@ -90,8 +105,8 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
     'split_text': [
         { name: 'text', label: 'Source', type: 'textarea' },
         { name: 'numSegments', label: 'Scenes', type: 'number' },
-        { name: 'splitMode', label: 'Split Mode', type: 'select', options: ['text', 'array', 'json_path'] },
-        { name: 'arrayPath', label: 'Array Path', type: 'text' }
+        { name: 'splitMode', label: 'Split Method', type: 'select', options: ['Text', 'Array', 'JSON Path'] },
+        { name: 'arrayPath', label: 'JSON Path', type: 'text' }
     ],
     'image_object_removal': [
         { name: 'imageUrl', label: 'Source Image', type: 'image' },
@@ -124,10 +139,16 @@ export const FORM_SCHEMAS: Record<NodeType, FormField[]> = {
         { name: 'bgmUrl', label: 'BGM Overlay', type: 'audio' }
     ],
     'media_ingest': [
-        { name: 'sourceType', label: 'Source', type: 'select', options: ['Local Upload', 'Direct Link', 'Google Drive', 'Dropbox', 'S3'] },
+        { name: 'mode', label: 'Mode', type: 'select', options: ['Import', 'Export'] },
+        // Import mode fields
+        { name: 'sourceType', label: 'Import From', type: 'select', options: ['Local Upload', 'Direct Link', 'Google Drive', 'Dropbox', 'S3'] },
         { name: 'url', label: 'URL / Link', type: 'text' },
         { name: 'files', label: 'Upload Files', type: 'file' },
-        { name: 'connectionMode', label: 'Connection Mode', type: 'select', options: ['Public Link', 'Connect Account'] }
+        { name: 'connectionMode', label: 'Connection Mode', type: 'select', options: ['Public Link', 'Connect Account'] },
+        // Export mode fields
+        { name: 'exportDestination', label: 'Export To', type: 'select', options: ['Google Drive', 'Dropbox', 'S3'] },
+        { name: 'exportFolderPath', label: 'Destination Folder', type: 'text' },
+        { name: 'exportFileName', label: 'File Name (optional)', type: 'text' }
     ]
 };
 
@@ -160,11 +181,21 @@ type TabType = 'params' | 'config' | 'docs' | 'input' | 'output';
 
 export const NodePropertiesPanel: React.FC = () => {
     const { workflow, selectedNodeId, updateNode, execution, runFromNode } = useWorkflowContext();
+    const { userId, isLoggedIn } = useAuth();
     const [activeTab, setActiveTab] = useState<TabType>('params');
     const [mockDataText, setMockDataText] = React.useState<string>('');
     const [mockDataError, setMockDataError] = React.useState<string | null>(null);
     const [inputPreviewIndex, setInputPreviewIndex] = useState(0);
     const [outputPreviewIndex, setOutputPreviewIndex] = useState(0);
+
+    // Composio OAuth state
+    const [composioAccounts, setComposioAccounts] = useState<ComposioAccount[]>([]);
+    const [composioLoading, setComposioLoading] = useState(false);
+    const [oauthConnecting, setOauthConnecting] = useState(false);
+    const [fileBrowserOpen, setFileBrowserOpen] = useState(false);
+
+    // File upload state - must be at top level before any early returns
+    const [uploadingField, setUploadingField] = useState<string | null>(null);
 
     const selectedNode = workflow.nodes.find(n => n.id === selectedNodeId);
 
@@ -179,6 +210,111 @@ export const NodePropertiesPanel: React.FC = () => {
         setInputPreviewIndex(0);
         setOutputPreviewIndex(0);
     }, [selectedNodeId]);
+
+    // Fetch Composio connected accounts for media_ingest nodes
+    useEffect(() => {
+        if (!selectedNode || selectedNode.type !== 'media_ingest') return;
+        if (!userId || !isLoggedIn) return;
+
+        const mode = (selectedNode.config as any)?.mode || 'Import';
+        const sourceType = (selectedNode.config as any)?.sourceType;
+        const exportDestination = (selectedNode.config as any)?.exportDestination;
+
+        // Determine which toolkit to fetch accounts for
+        let targetProvider: string | null = null;
+        if (mode === 'Import' && ['Google Drive', 'Dropbox'].includes(sourceType)) {
+            targetProvider = sourceType;
+        } else if (mode === 'Export' && ['Google Drive', 'Dropbox'].includes(exportDestination)) {
+            targetProvider = exportDestination;
+        }
+
+        if (!targetProvider) return;
+
+        const toolkit = targetProvider === 'Google Drive' ? 'GOOGLEDRIVE' : 'DROPBOX';
+
+        const fetchAccounts = async () => {
+            setComposioLoading(true);
+            try {
+                const response = await fetch(`${BACKEND_URL}/composio/accounts/${userId}?toolkit=${toolkit}`);
+                const data = await response.json();
+                if (data.accounts) {
+                    setComposioAccounts(data.accounts);
+                }
+            } catch (error) {
+                console.error('[Composio] Failed to fetch accounts:', error);
+            } finally {
+                setComposioLoading(false);
+            }
+        };
+
+        fetchAccounts();
+
+        // Listen for OAuth completion messages
+        const handleMessage = (event: MessageEvent) => {
+            if (event.data?.type === 'COMPOSIO_OAUTH_COMPLETE') {
+                setOauthConnecting(false);
+                if (event.data.success) {
+                    fetchAccounts(); // Refresh accounts list
+                }
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [selectedNode?.type, (selectedNode?.config as any)?.mode, (selectedNode?.config as any)?.sourceType, (selectedNode?.config as any)?.exportDestination, userId, isLoggedIn]);
+
+    // Function to initiate OAuth connection
+    const initiateOAuthConnection = async (sourceType: string) => {
+        if (!userId) {
+            alert('Please log in to connect your account.');
+            return;
+        }
+
+        const toolkit = sourceType === 'Google Drive' ? 'GOOGLEDRIVE' : 'DROPBOX';
+        setOauthConnecting(true);
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/composio/connect`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ toolkit })
+            });
+
+            const data = await response.json();
+
+            if (data.redirectUrl) {
+                // Open OAuth in a popup window
+                const width = 600;
+                const height = 700;
+                const left = window.screenX + (window.outerWidth - width) / 2;
+                const top = window.screenY + (window.outerHeight - height) / 2;
+                window.open(
+                    data.redirectUrl,
+                    'composio_oauth',
+                    `width=${width},height=${height},left=${left},top=${top},popup=1`
+                );
+            } else {
+                throw new Error(data.error || 'Failed to get OAuth URL');
+            }
+        } catch (error: any) {
+            console.error('[Composio] OAuth initiation failed:', error);
+            alert(`Failed to connect: ${error.message}`);
+            setOauthConnecting(false);
+        }
+    };
+
+    // Function to disconnect an account
+    const disconnectAccount = async (connectionId: string) => {
+        try {
+            await fetch(`${BACKEND_URL}/composio/accounts/${connectionId}`, {
+                method: 'DELETE'
+            });
+            setComposioAccounts(prev => prev.filter(a => a.id !== connectionId));
+        } catch (error) {
+            console.error('[Composio] Disconnect failed:', error);
+        }
+    };
 
     if (!selectedNode) {
         return (
@@ -285,7 +421,9 @@ export const NodePropertiesPanel: React.FC = () => {
         };
 
         if (selectedNode.type === 'split_text' && name === 'splitMode') {
-            if (value === 'json_path' && typeof nextConfig.arrayPath !== 'string') {
+            // Handle both display value 'JSON Path' and legacy 'json_path'
+            const isJsonPath = String(value).toLowerCase().includes('json');
+            if (isJsonPath && typeof nextConfig.arrayPath !== 'string') {
                 nextConfig.arrayPath = '';
             }
         }
@@ -316,6 +454,44 @@ export const NodePropertiesPanel: React.FC = () => {
                 nodeId: previousNodes[previousNodes.length - 1]?.id || '',
                 outputKey: OUTPUT_KEYS[previousNodes[previousNodes.length - 1]?.type]?.[0] || ''
             });
+        }
+    };
+
+    // File upload function for image fields
+
+    const uploadFile = async (file: File, fieldName: string, arrayIndex?: number) => {
+        setUploadingField(fieldName + (arrayIndex !== undefined ? `-${arrayIndex}` : ''));
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch(`${BACKEND_URL}/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Upload failed');
+            }
+
+            const data = await response.json();
+            const url = data.url;
+
+            // If this is for an array field (imageUrls), update the specific index
+            if (arrayIndex !== undefined) {
+                const currentUrls = Array.isArray((selectedNode.config as any)?.[fieldName])
+                    ? [...(selectedNode.config as any)[fieldName]]
+                    : [''];
+                currentUrls[arrayIndex] = url;
+                handleFieldChange(fieldName, currentUrls.filter(u => u));
+            } else {
+                handleFieldChange(fieldName, url);
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Failed to upload file. Please try again.');
+        } finally {
+            setUploadingField(null);
         }
     };
 
@@ -641,69 +817,328 @@ export const NodePropertiesPanel: React.FC = () => {
                     )}
 
                     {fields.map(field => {
+                        // Image-to-Image: Conditional field visibility based on model
+                        if (selectedNode.type === 'image_to_image') {
+                            const model = (selectedNode.config as any)?.model || 'fal-ai/stable-diffusion-v3-medium';
+                            const isGptImg15 = model.includes('gpt-image-1.5');
+
+                            // Fields only for GPT-IMG 1.5
+                            if (['imageUrls', 'imageSize', 'quality', 'inputFidelity'].includes(field.name) && !isGptImg15) {
+                                return null;
+                            }
+                            // Fields only for other models (not GPT-IMG 1.5)
+                            if (['imageUrl', 'strength'].includes(field.name) && isGptImg15) {
+                                return null;
+                            }
+                        }
+
                         // Media Ingest: Conditional field visibility
                         if (selectedNode.type === 'media_ingest') {
+                            const mode = (selectedNode.config as any)?.mode || 'Import';
                             const sourceType = (selectedNode.config as any)?.sourceType || 'Direct Link';
                             const connectionMode = (selectedNode.config as any)?.connectionMode || 'Public Link';
+                            const exportDestination = (selectedNode.config as any)?.exportDestination || 'Google Drive';
 
-                            // Hide connectionMode for sources that don't support OAuth
-                            if (field.name === 'connectionMode' && !['Google Drive', 'Dropbox'].includes(sourceType)) {
-                                return null;
+                            // Mode field - render as radio buttons
+                            if (field.name === 'mode') {
+                                return (
+                                    <div key={field.name} className="form-group">
+                                        <label>{field.label}</label>
+                                        <div className="radio-group" style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
+                                            {field.options?.map(option => (
+                                                <label
+                                                    key={option}
+                                                    className="radio-option"
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px',
+                                                        padding: '10px 16px',
+                                                        borderRadius: '8px',
+                                                        border: mode === option ? '2px solid #4a9eff' : '1px solid #3a3a3a',
+                                                        backgroundColor: mode === option ? 'rgba(74, 158, 255, 0.1)' : '#1a1a1a',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease'
+                                                    }}
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name="media-mode"
+                                                        value={option}
+                                                        checked={mode === option}
+                                                        onChange={() => handleFieldChange('mode', option)}
+                                                        style={{ accentColor: '#4a9eff' }}
+                                                    />
+                                                    <span style={{ fontSize: '14px', fontWeight: mode === option ? 600 : 400 }}>
+                                                        {option === 'Import' ? '📥 Import' : '📤 Export'}
+                                                    </span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
                             }
 
-                            // Hide URL field for Local Upload
-                            if (field.name === 'url' && sourceType === 'Local Upload') {
-                                return null;
+                            // Hide Import-specific fields when in Export mode
+                            if (mode === 'Export') {
+                                if (['sourceType', 'url', 'files', 'connectionMode'].includes(field.name)) {
+                                    return null;
+                                }
                             }
 
-                            // Hide files field for non-Local sources
-                            if (field.name === 'files' && sourceType !== 'Local Upload') {
-                                return null;
+                            // Hide Export-specific fields when in Import mode
+                            if (mode === 'Import') {
+                                if (['exportDestination', 'exportFolderPath', 'exportFileName'].includes(field.name)) {
+                                    return null;
+                                }
                             }
 
-                            // For Google Drive / Dropbox with Connect Account mode, show connect button instead of URL
-                            if (field.name === 'url' && ['Google Drive', 'Dropbox'].includes(sourceType) && connectionMode === 'Connect Account') {
-                                const providerName = sourceType;
-                                const isConnected = false; // TODO: Check actual connection status from backend
+                            // Import mode conditional logic
+                            if (mode === 'Import') {
+                                // Hide connectionMode for sources that don't support OAuth
+                                if (field.name === 'connectionMode' && !['Google Drive', 'Dropbox'].includes(sourceType)) {
+                                    return null;
+                                }
+
+                                // Hide URL field for Local Upload
+                                if (field.name === 'url' && sourceType === 'Local Upload') {
+                                    return null;
+                                }
+
+                                // Hide files field for non-Local sources
+                                if (field.name === 'files' && sourceType !== 'Local Upload') {
+                                    return null;
+                                }
+                            }
+
+                            // Export mode - show connect button for Google Drive/Dropbox
+                            if (mode === 'Export' && field.name === 'exportFolderPath' && ['Google Drive', 'Dropbox'].includes(exportDestination)) {
+                                const providerName = exportDestination;
+                                const activeAccounts = composioAccounts.filter(a => a.status === 'ACTIVE');
+                                const hasConnectedAccount = activeAccounts.length > 0;
+                                const selectedAccountId = (selectedNode.config as any)?.composioAccountId;
 
                                 return (
                                     <div key={field.name} className="form-group">
                                         <label>Connect to {providerName}</label>
                                         <div className="oauth-connect-section">
-                                            {!isConnected ? (
+                                            {composioLoading ? (
+                                                <div style={{ padding: '12px', color: '#888' }}>
+                                                    ⏳ Loading connected accounts...
+                                                </div>
+                                            ) : hasConnectedAccount ? (
+                                                <>
+                                                    <div style={{ marginBottom: '12px' }}>
+                                                        <select
+                                                            value={selectedAccountId || activeAccounts[0]?.id}
+                                                            onChange={(e) => handleFieldChange('composioAccountId', e.target.value)}
+                                                            style={{
+                                                                width: '100%',
+                                                                padding: '10px 12px',
+                                                                borderRadius: '8px',
+                                                                border: '1px solid #3a3a3a',
+                                                                backgroundColor: '#1a1a1a',
+                                                                color: '#fff',
+                                                                fontSize: '14px'
+                                                            }}
+                                                        >
+                                                            {activeAccounts.map(account => (
+                                                                <option key={account.id} value={account.id}>
+                                                                    ✓ {account.accountName || 'Connected Account'}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                                        <button
+                                                            onClick={() => setFileBrowserOpen(true)}
+                                                            style={{
+                                                                padding: '8px 12px',
+                                                                backgroundColor: exportDestination === 'Google Drive' ? '#4285f4' : '#0061ff',
+                                                                color: '#fff',
+                                                                border: 'none',
+                                                                borderRadius: '6px',
+                                                                cursor: 'pointer',
+                                                                fontSize: '13px',
+                                                                fontWeight: 500
+                                                            }}
+                                                        >
+                                                            📂 Select Destination Folder
+                                                        </button>
+                                                        <button
+                                                            onClick={() => initiateOAuthConnection(exportDestination)}
+                                                            disabled={oauthConnecting}
+                                                            style={{
+                                                                padding: '8px 12px',
+                                                                backgroundColor: '#2a2a2a',
+                                                                color: '#4a9eff',
+                                                                border: '1px solid #3a3a3a',
+                                                                borderRadius: '6px',
+                                                                cursor: oauthConnecting ? 'not-allowed' : 'pointer',
+                                                                fontSize: '13px'
+                                                            }}
+                                                        >
+                                                            + Add Account
+                                                        </button>
+                                                    </div>
+                                                    {(selectedNode.config as any)?.exportFolderPath && (
+                                                        <div style={{ marginTop: '12px', padding: '8px 12px', backgroundColor: '#0d1117', borderRadius: '6px', fontSize: '13px' }}>
+                                                            📁 {(selectedNode.config as any)?.exportFolderPath || '/'}
+                                                        </div>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <button
+                                                    onClick={() => initiateOAuthConnection(exportDestination)}
+                                                    disabled={oauthConnecting}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '12px 16px',
+                                                        backgroundColor: exportDestination === 'Google Drive' ? '#4285f4' : '#0061ff',
+                                                        color: '#fff',
+                                                        border: 'none',
+                                                        borderRadius: '8px',
+                                                        cursor: oauthConnecting ? 'not-allowed' : 'pointer',
+                                                        fontSize: '14px',
+                                                        fontWeight: 500,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '8px'
+                                                    }}
+                                                >
+                                                    {oauthConnecting ? (
+                                                        '⏳ Connecting...'
+                                                    ) : (
+                                                        <>
+                                                            {exportDestination === 'Google Drive' ? '🔗' : '📦'} Connect to {exportDestination}
+                                                        </>
+                                                    )}
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            }
+
+                            // For Google Drive / Dropbox with Connect Account mode, show connect button instead of URL
+                            if (field.name === 'url' && ['Google Drive', 'Dropbox'].includes(sourceType) && connectionMode === 'Connect Account') {
+                                const providerName = sourceType;
+                                const activeAccounts = composioAccounts.filter(a => a.status === 'ACTIVE');
+                                const hasConnectedAccount = activeAccounts.length > 0;
+                                const selectedAccountId = (selectedNode.config as any)?.composioAccountId;
+
+                                return (
+                                    <div key={field.name} className="form-group">
+                                        <label>Connect to {providerName}</label>
+                                        <div className="oauth-connect-section">
+                                            {composioLoading ? (
+                                                <div style={{ padding: '12px', color: '#888' }}>
+                                                    ⏳ Loading connected accounts...
+                                                </div>
+                                            ) : hasConnectedAccount ? (
+                                                <>
+                                                    <div style={{ marginBottom: '12px' }}>
+                                                        <select
+                                                            value={selectedAccountId || activeAccounts[0]?.id}
+                                                            onChange={(e) => handleFieldChange('composioAccountId', e.target.value)}
+                                                            style={{
+                                                                width: '100%',
+                                                                padding: '10px 12px',
+                                                                borderRadius: '8px',
+                                                                border: '1px solid #3a3a3a',
+                                                                backgroundColor: '#1a1a1a',
+                                                                color: '#fff',
+                                                                fontSize: '14px'
+                                                            }}
+                                                        >
+                                                            {activeAccounts.map(account => (
+                                                                <option key={account.id} value={account.id}>
+                                                                    ✓ {account.accountName || 'Connected Account'}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                                        <button
+                                                            onClick={() => setFileBrowserOpen(true)}
+                                                            style={{
+                                                                padding: '8px 12px',
+                                                                backgroundColor: sourceType === 'Google Drive' ? '#4285f4' : '#0061ff',
+                                                                color: '#fff',
+                                                                border: 'none',
+                                                                borderRadius: '6px',
+                                                                cursor: 'pointer',
+                                                                fontSize: '13px',
+                                                                fontWeight: 500
+                                                            }}
+                                                        >
+                                                            📂 Browse Files
+                                                        </button>
+                                                        <button
+                                                            onClick={() => initiateOAuthConnection(sourceType)}
+                                                            disabled={oauthConnecting}
+                                                            style={{
+                                                                padding: '8px 12px',
+                                                                backgroundColor: '#2a2a2a',
+                                                                color: '#4a9eff',
+                                                                border: '1px solid #3a3a3a',
+                                                                borderRadius: '6px',
+                                                                cursor: oauthConnecting ? 'not-allowed' : 'pointer',
+                                                                fontSize: '13px'
+                                                            }}
+                                                        >
+                                                            + Add Account
+                                                        </button>
+                                                        <button
+                                                            onClick={() => selectedAccountId && disconnectAccount(selectedAccountId)}
+                                                            style={{
+                                                                padding: '8px 12px',
+                                                                backgroundColor: 'transparent',
+                                                                color: '#ff6b6b',
+                                                                border: 'none',
+                                                                borderRadius: '6px',
+                                                                cursor: 'pointer',
+                                                                fontSize: '13px'
+                                                            }}
+                                                        >
+                                                            Disconnect
+                                                        </button>
+                                                    </div>
+                                                </>
+                                            ) : (
                                                 <>
                                                     <button
                                                         className="btn-oauth-connect"
-                                                        onClick={() => {
-                                                            // TODO: Implement OAuth flow
-                                                            alert(`OAuth integration for ${providerName} requires API credentials.\n\nTo enable this feature:\n1. Set up OAuth credentials in your ${providerName} Developer Console\n2. Add the credentials to your .env file\n3. The backend will handle the OAuth flow\n\nFor now, please use "Public Link" mode and paste a shareable link.`);
-                                                        }}
+                                                        onClick={() => initiateOAuthConnection(sourceType)}
+                                                        disabled={oauthConnecting}
                                                         style={{
                                                             display: 'flex',
                                                             alignItems: 'center',
                                                             gap: '8px',
                                                             padding: '12px 16px',
-                                                            backgroundColor: sourceType === 'Google Drive' ? '#4285f4' : '#0061ff',
+                                                            backgroundColor: oauthConnecting
+                                                                ? '#666'
+                                                                : sourceType === 'Google Drive' ? '#4285f4' : '#0061ff',
                                                             color: 'white',
                                                             border: 'none',
                                                             borderRadius: '8px',
-                                                            cursor: 'pointer',
+                                                            cursor: oauthConnecting ? 'not-allowed' : 'pointer',
                                                             fontSize: '14px',
                                                             fontWeight: 500
                                                         }}
                                                     >
-                                                        {sourceType === 'Google Drive' ? '🔗 Connect Google Drive' : '📦 Connect Dropbox'}
+                                                        {oauthConnecting
+                                                            ? '⏳ Connecting...'
+                                                            : sourceType === 'Google Drive'
+                                                                ? '🔗 Connect to Google Drive'
+                                                                : '📦 Connect to Dropbox'
+                                                        }
                                                     </button>
                                                     <p className="oauth-hint" style={{ fontSize: '12px', color: '#888', marginTop: '8px' }}>
                                                         Click to authorize access to your {providerName} files
                                                     </p>
                                                 </>
-                                            ) : (
-                                                <div className="connected-status">
-                                                    <span className="status-badge success">✓ Connected</span>
-                                                    <button className="btn-secondary small">Browse Files</button>
-                                                    <button className="btn-text small">Disconnect</button>
-                                                </div>
                                             )}
                                         </div>
                                     </div>
@@ -719,7 +1154,7 @@ export const NodePropertiesPanel: React.FC = () => {
                         }
                         const fieldValue = (selectedNode.config as any)?.[field.name];
                         const isReference = fieldValue && typeof fieldValue === 'object' && fieldValue._type === 'reference';
-                        const canBeReference = ['text', 'textarea', 'image', 'video', 'audio', 'file'].includes(field.type)
+                        const canBeReference = ['text', 'textarea', 'image', 'images', 'video', 'audio', 'file'].includes(field.type)
                             && !(selectedNode.type === 'split_text' && field.name === 'arrayPath');
 
                         const fieldNode = (
@@ -761,6 +1196,13 @@ export const NodePropertiesPanel: React.FC = () => {
                                                 ));
                                             })() || <option value="">No outputs</option>}
                                         </select>
+                                        <input
+                                            type="text"
+                                            value={fieldValue.jsonPath || ''}
+                                            onChange={(e) => handleFieldChange(field.name, { ...fieldValue, jsonPath: e.target.value })}
+                                            placeholder="JSON path (e.g., data.images)"
+                                            style={{ marginTop: '8px', fontSize: '12px' }}
+                                        />
                                     </div>
                                 ) : (
                                     <>
@@ -776,7 +1218,7 @@ export const NodePropertiesPanel: React.FC = () => {
                                                 type="text"
                                                 value={field.name === 'arrayPath' ? (typeof fieldValue === 'string' ? fieldValue : '') : (fieldValue || '')}
                                                 onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                                                placeholder={field.name === 'arrayPath' ? 'response.body.Items' : `Enter ${field.label.toLowerCase()}...`}
+                                                placeholder={field.name === 'arrayPath' ? 'e.g., data.items or scenes' : `Enter ${field.label.toLowerCase()}...`}
                                             />
                                         )}
                                         {field.type === 'number' && (
@@ -855,7 +1297,79 @@ export const NodePropertiesPanel: React.FC = () => {
                                                     onChange={(e) => handleFieldChange(field.name, e.target.value)}
                                                     placeholder="Paste URL or upload..."
                                                 />
-                                                <button className="btn-secondary small">Upload</button>
+                                                <input
+                                                    type="file"
+                                                    id={`file-upload-${field.name}`}
+                                                    style={{ display: 'none' }}
+                                                    accept={field.type === 'image' ? 'image/*' : field.type === 'video' ? 'video/*' : field.type === 'audio' ? 'audio/*' : '*/*'}
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) uploadFile(file, field.name);
+                                                    }}
+                                                />
+                                                <button
+                                                    className="btn-secondary small"
+                                                    onClick={() => document.getElementById(`file-upload-${field.name}`)?.click()}
+                                                    disabled={uploadingField === field.name}
+                                                >
+                                                    {uploadingField === field.name ? '⏳' : 'Upload'}
+                                                </button>
+                                            </div>
+                                        )}
+                                        {field.type === 'images' && (
+                                            <div className="multi-image-input">
+                                                {(() => {
+                                                    const urls: string[] = Array.isArray(fieldValue) ? fieldValue : (fieldValue ? [fieldValue] : ['']);
+                                                    return (
+                                                        <>
+                                                            {urls.map((url, idx) => (
+                                                                <div key={idx} className="file-input-container" style={{ marginBottom: '8px' }}>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={url || ''}
+                                                                        onChange={(e) => {
+                                                                            const newUrls = [...urls];
+                                                                            newUrls[idx] = e.target.value;
+                                                                            handleFieldChange(field.name, newUrls.filter(u => u));
+                                                                        }}
+                                                                        placeholder={`Image URL ${idx + 1}...`}
+                                                                    />
+                                                                    <input
+                                                                        type="file"
+                                                                        id={`file-upload-${field.name}-${idx}`}
+                                                                        style={{ display: 'none' }}
+                                                                        accept="image/*"
+                                                                        onChange={(e) => {
+                                                                            const file = e.target.files?.[0];
+                                                                            if (file) uploadFile(file, field.name, idx);
+                                                                        }}
+                                                                    />
+                                                                    <button
+                                                                        className="btn-secondary small"
+                                                                        onClick={() => document.getElementById(`file-upload-${field.name}-${idx}`)?.click()}
+                                                                        disabled={uploadingField === `${field.name}-${idx}`}
+                                                                        style={{ padding: '4px 8px' }}
+                                                                    >
+                                                                        {uploadingField === `${field.name}-${idx}` ? '⏳' : '📤'}
+                                                                    </button>
+                                                                    <button
+                                                                        className="btn-secondary small"
+                                                                        onClick={() => {
+                                                                            const newUrls = urls.filter((_, i) => i !== idx);
+                                                                            handleFieldChange(field.name, newUrls.length ? newUrls : ['']);
+                                                                        }}
+                                                                        style={{ background: '#ff4d4d', padding: '4px 8px' }}
+                                                                    >✕</button>
+                                                                </div>
+                                                            ))}
+                                                            <button
+                                                                className="btn-secondary small"
+                                                                onClick={() => handleFieldChange(field.name, [...urls, ''])}
+                                                                style={{ marginTop: '4px' }}
+                                                            >+ Add Image</button>
+                                                        </>
+                                                    );
+                                                })()}
                                             </div>
                                         )}
                                     </>
@@ -960,6 +1474,27 @@ export const NodePropertiesPanel: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* File Browser Modal for Google Drive / Dropbox */}
+            {selectedNode.type === 'media_ingest' && userId && (
+                <FileBrowserModal
+                    isOpen={fileBrowserOpen}
+                    onClose={() => setFileBrowserOpen(false)}
+                    onSelect={(file, downloadUrl) => {
+                        // Update the node config with the selected file
+                        handleFieldChange('url', downloadUrl);
+                        handleFieldChange('selectedFileName', file.name);
+                        handleFieldChange('selectedFileId', file.id);
+                        setFileBrowserOpen(false);
+                    }}
+                    userId={userId}
+                    toolkit={
+                        (selectedNode.config as any)?.sourceType === 'Google Drive'
+                            ? 'GOOGLEDRIVE'
+                            : 'DROPBOX'
+                    }
+                />
+            )}
         </aside>
     );
 };

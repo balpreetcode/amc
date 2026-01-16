@@ -17,11 +17,10 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
     node,
     index,
     onRemove,
-    onUpdate,
     isCurrentlyRunning = false,
     arrayInputCount
 }) => {
-    const { selectedNodeId, setSelectedNodeId, runFromNode, execution } = useWorkflowContext();
+    const { selectedNodeId, setSelectedNodeId } = useWorkflowContext();
     const [menuOpen, setMenuOpen] = React.useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -45,7 +44,7 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
         };
     }, [menuOpen]);
     const config = getNodeTypeConfig(node.type);
-    const hasMockData = node.mockData?.enabled && node.mockData?.data != null;
+    // const hasMockData = node.mockData?.enabled && node.mockData?.data != null;
 
     const getStatusBadge = () => {
         switch (node.status) {
@@ -93,8 +92,6 @@ export const WorkflowNode: React.FC<WorkflowNodeProps> = ({
                     )}
                 </div>
             </div>
-
-            <span className="node-time">⏱ {node.estimatedTime}</span>
 
             <div className="node-actions-container">
                 <button
