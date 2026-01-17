@@ -15,6 +15,7 @@ const crypto = require('crypto');
 const { generateImageOpenAI, editImageOpenAI } = require('./generators/openai-image');
 const { composeVideo, concatAudioUrls, concatVideoUrls } = require('./generators/ffmpeg');
 const db = require('./db');
+const { uploadUrlToR2, isR2Configured, getContentType } = require('./utils/r2Storage');
 const { generateToken, verifyToken, getAllTokens, deleteToken } = require('./tokens');
 const { validateSessionToken } = require('./mongodb');
 
@@ -100,6 +101,31 @@ function resolveOriginalUrl(url) {
         }
     }
     return url;
+}
+
+async function maybeUploadImageToR2(imageUrl, label) {
+    if (!imageUrl) {
+        return { finalUrl: imageUrl, r2Url: null };
+    }
+
+    if (!isR2Configured()) {
+        return { finalUrl: createProxyUrl(imageUrl), r2Url: null };
+    }
+
+    const publicBase = process.env.R2_PUBLIC_URL;
+    if (publicBase && imageUrl.startsWith(publicBase)) {
+        return { finalUrl: imageUrl, r2Url: imageUrl };
+    }
+
+    try {
+        const detectedType = getContentType(imageUrl);
+        const contentType = detectedType === 'application/octet-stream' ? 'image/png' : detectedType;
+        const uploadedUrl = await uploadUrlToR2(imageUrl, label, contentType);
+        return { finalUrl: uploadedUrl, r2Url: uploadedUrl };
+    } catch (error) {
+        console.error('[R2] Image upload failed:', error.message);
+        return { finalUrl: createProxyUrl(imageUrl), r2Url: null };
+    }
 }
 
 const app = express();
@@ -463,11 +489,11 @@ const nodeProcessors = {
             apiCall = response.apiCall;
         }
 
-        const proxyUrl = createProxyUrl(imageUrl);
+        const { finalUrl: storedImageUrl } = await maybeUploadImageToR2(imageUrl, 'text_to_image');
         return {
             type: 'text_to_image',
             output: {
-                imageUrl: proxyUrl,
+                imageUrl: storedImageUrl,
                 originalImageUrl: imageUrl,
                 prompt,
                 aspectRatio
@@ -476,26 +502,55 @@ const nodeProcessors = {
         };
     },
     image_to_image: async (config, previousResults) => {
-        let imageUrl = config.imageUrl || getLastOutput(previousResults, 'originalImageUrl') || getLastOutput(previousResults, 'imageUrl');
+        const imageUrls = Array.isArray(config.imageUrls) ? config.imageUrls : null;
+        const baseImage = config.imageUrl || getLastOutput(previousResults, 'originalImageUrl') || getLastOutput(previousResults, 'imageUrl');
+        const backgroundImages = config.backgroundImages || config.backgroundImage || null;
+        const characterImages = config.characterImages || null;
 
-        // Resolve proxy URL to original URL for external API calls
-        imageUrl = resolveOriginalUrl(imageUrl);
+        const extractUrls = (value) => {
+            if (!value) return [];
+            if (typeof value === 'string') return [value];
+            if (Array.isArray(value)) {
+                return value.flatMap(item => extractUrls(item));
+            }
+            if (typeof value === 'object') {
+                const candidate = value.imageUrl || value.url || value.originalImageUrl;
+                return candidate ? [candidate] : [];
+            }
+            return [];
+        };
+
+        const inputImages = [];
+        if (baseImage) {
+            inputImages.push(resolveOriginalUrl(baseImage));
+        }
+
+        extractUrls(backgroundImages).forEach(url => inputImages.push(resolveOriginalUrl(url)));
+        extractUrls(characterImages).forEach(url => inputImages.push(resolveOriginalUrl(url)));
+
+        if (imageUrls && imageUrls.length > 0) {
+            inputImages.push(...imageUrls.map(url => resolveOriginalUrl(url)).filter(Boolean));
+        }
+
+        const normalizedInputs = Array.from(new Set(inputImages.filter(Boolean)));
 
         const prompt = config.prompt || 'Enhance this image';
 
-        if (!imageUrl) throw new Error('No input image provided');
+        if (normalizedInputs.length === 0) throw new Error('No input image provided');
 
-        const resultUrl = await editImageOpenAI(imageUrl, prompt, {
+        const imageInput = normalizedInputs.length === 1 ? normalizedInputs[0] : normalizedInputs;
+        const originalSource = baseImage || normalizedInputs[0] || null;
+        const resultUrl = await editImageOpenAI(imageInput, prompt, {
             model: config.model || 'gpt-image-1-mini'
         });
 
-        const proxyUrl = createProxyUrl(resultUrl);
+        const { finalUrl: storedImageUrl } = await maybeUploadImageToR2(resultUrl, 'image_to_image');
         return {
             type: 'image_to_image',
             output: {
-                imageUrl: proxyUrl,
+                imageUrl: storedImageUrl,
                 originalImageUrl: resultUrl,
-                originalUrl: imageUrl // Keep tracking source 
+                originalUrl: originalSource // Keep tracking source
             }
         };
     },
@@ -720,7 +775,7 @@ const nodeProcessors = {
                 }
                 return { index, text: String(item), duration: 10 };
             });
-            return segments;
+            return { segments, rawItems: slicedItems };
         };
 
         if (splitMode === 'array') {
@@ -733,6 +788,7 @@ const nodeProcessors = {
                     const output = {
                         segments: extractedScenes,
                         items: extractedScenes.map(segment => segment.text),
+                        itemsRaw: extractedScenes,
                         totalSegments: extractedScenes.length
                     };
 
@@ -769,10 +825,15 @@ const nodeProcessors = {
 
                 return {
                     type: 'split_text',
-                    output: { segments: extractedScenes, items: extractedScenes.map(segment => segment.text), totalSegments: extractedScenes.length }
+                    output: {
+                        segments: extractedScenes,
+                        items: extractedScenes.map(segment => segment.text),
+                        itemsRaw: extractedScenes,
+                        totalSegments: extractedScenes.length
+                    }
                 };
             }
-            const segments = buildSegmentsFromArray(items);
+            const { segments, rawItems } = buildSegmentsFromArray(items);
 
             console.log('\n  📤 OUTPUT: Split into', segments.length, 'scenes');
             segments.forEach((segment, index) => {
@@ -783,7 +844,12 @@ const nodeProcessors = {
 
             return {
                 type: 'split_text',
-                output: { segments, items: segments.map(segment => segment.text), totalSegments: segments.length }
+                output: {
+                    segments,
+                    items: segments.map(segment => segment.text),
+                    itemsRaw: rawItems,
+                    totalSegments: segments.length
+                }
             };
         }
 
@@ -796,7 +862,7 @@ const nodeProcessors = {
             if (!Array.isArray(items)) {
                 throw new Error('Array path did not resolve to an array');
             }
-            const segments = buildSegmentsFromArray(items);
+            const { segments, rawItems } = buildSegmentsFromArray(items);
 
             console.log('\n  📤 OUTPUT: Split into', segments.length, 'scenes');
             segments.forEach((segment, index) => {
@@ -807,7 +873,12 @@ const nodeProcessors = {
 
             return {
                 type: 'split_text',
-                output: { segments, items: segments.map(segment => segment.text), totalSegments: segments.length }
+                output: {
+                    segments,
+                    items: segments.map(segment => segment.text),
+                    itemsRaw: rawItems,
+                    totalSegments: segments.length
+                }
             };
         }
 
@@ -821,6 +892,7 @@ const nodeProcessors = {
             const output = {
                 segments: preFormattedScenes,
                 items: preFormattedScenes.map(segment => segment.text),
+                itemsRaw: preFormattedScenes,
                 totalSegments: preFormattedScenes.length
             };
             console.log('[split_text] Returning output with', output.items.length, 'items');
@@ -854,7 +926,12 @@ const nodeProcessors = {
         }
 
         console.log('[split_text] Final segments count:', segments.length);
-        const output = { segments, items: segments.map(segment => segment.text), totalSegments: segments.length };
+        const output = {
+            segments,
+            items: segments.map(segment => segment.text),
+            itemsRaw: segments,
+            totalSegments: segments.length
+        };
 
         // Console log for split scenes
         console.log('\n  📤 OUTPUT: Split into', segments.length, 'scenes');
@@ -1372,6 +1449,38 @@ function mapConfigReferences(config, nodeIdToTaskRef) {
                 refExpr += '}';
                 resolved[key] = refExpr;
             }
+        } else if (value && typeof value === 'object' && value._type === 'filteredReference') {
+            // Filtered references are resolved at runtime by the worker
+            // We need to transform node IDs to task references for Conductor
+            const sourceTaskRef = nodeIdToTaskRef.get(value.sourceNode);
+            const filterConfig = value.filterConfig || {};
+
+            // Transform matchFrom reference if it exists
+            let transformedMatchFrom = filterConfig.matchFrom;
+            if (filterConfig.matchFrom && filterConfig.matchFrom._type === 'reference') {
+                const matchFromTaskRef = nodeIdToTaskRef.get(filterConfig.matchFrom.nodeId);
+                if (matchFromTaskRef) {
+                    transformedMatchFrom = {
+                        ...filterConfig.matchFrom,
+                        taskRef: matchFromTaskRef,
+                        // Build Conductor expression for runtime resolution
+                        _conductorExpr: '${' + matchFromTaskRef + '.output.' + filterConfig.matchFrom.outputKey + '}'
+                    };
+                }
+            }
+
+            resolved[key] = {
+                _type: 'filteredReference',
+                _runtimeResolve: true, // Flag for runtime resolution
+                sourceNode: value.sourceNode,
+                sourceTaskRef: sourceTaskRef,
+                sourceField: value.sourceField,
+                sourceExpr: sourceTaskRef ? '${' + sourceTaskRef + '.output.' + (value.sourceField || 'items') + '}' : null,
+                filterConfig: {
+                    ...filterConfig,
+                    matchFrom: transformedMatchFrom
+                }
+            };
         } else if (value && typeof value === 'object') {
             resolved[key] = mapConfigReferences(value, nodeIdToTaskRef);
         } else {
@@ -1379,6 +1488,73 @@ function mapConfigReferences(config, nodeIdToTaskRef) {
         }
     });
 
+    return resolved;
+}
+
+// Rewriting function to be context-aware
+function resolveRuntimeReferences(config, rootConfig = null, context = {}) {
+    if (!config || typeof config !== 'object') return config;
+    if (!rootConfig) rootConfig = config;
+
+    if (Array.isArray(config)) {
+        return config.map(item => resolveRuntimeReferences(item, rootConfig, context));
+    }
+
+    if (config._type === 'filteredReference' && config._runtimeResolve) {
+        const sourceData = config.sourceExpr;
+        let matchValues = config.filterConfig.matchValues;
+        const itemIndex = context.itemIndex;
+
+        // 1. Try Conductor resolved expression
+        if (config.filterConfig.matchFrom && config.filterConfig.matchFrom._conductorExpr) {
+            matchValues = config.filterConfig.matchFrom._conductorExpr;
+        }
+
+        const matchKey = config.filterConfig.matchFrom?.outputKey;
+        const hasSiblingMatch = matchKey && rootConfig && Object.prototype.hasOwnProperty.call(rootConfig, matchKey);
+        const isTemplateString = typeof matchValues === 'string' && matchValues.trim().startsWith('${') && matchValues.trim().endsWith('}');
+        let isArrayOfArrays = Array.isArray(matchValues) && matchValues.length > 0 && Array.isArray(matchValues[0]);
+
+        // 2. Prefer per-item sibling values when available or when unresolved/global arrays are detected
+        if (hasSiblingMatch && (isTemplateString || isArrayOfArrays)) {
+            matchValues = rootConfig[matchKey];
+        }
+
+        // 3. Fallback: Search in rootConfig (sibling inputs)
+        if ((!matchValues || (Array.isArray(matchValues) && matchValues.length === 0)) && config.filterConfig.matchFrom) {
+            const keyToFind = config.filterConfig.matchFrom.outputKey;
+            // Search immediate children of rootConfig
+            for (const val of Object.values(rootConfig)) {
+                if (val && typeof val === 'object' && val[keyToFind]) {
+                    matchValues = val[keyToFind];
+                    console.log(`  🔍 Found match value for '${keyToFind}' in sibling input`);
+                    break;
+                }
+            }
+        }
+
+        // Re-check after fallbacks
+        isArrayOfArrays = Array.isArray(matchValues) && matchValues.length > 0 && Array.isArray(matchValues[0]);
+
+        // 4. If Conductor resolved to an array of arrays, align to current item
+        if (isArrayOfArrays && typeof itemIndex === 'number' && Array.isArray(matchValues[itemIndex])) {
+            matchValues = matchValues[itemIndex];
+        }
+
+        console.log(`  🔍 Resolving Filtered Reference: Field=${config.filterConfig.field} Op=${config.filterConfig.operator}`);
+
+        return applyFilteredReference({
+            sourceData,
+            filterField: config.filterConfig.field,
+            operator: config.filterConfig.operator,
+            matchValues
+        });
+    }
+
+    const resolved = {};
+    Object.keys(config).forEach(key => {
+        resolved[key] = resolveRuntimeReferences(config[key], rootConfig, context);
+    });
     return resolved;
 }
 
@@ -1399,9 +1575,214 @@ function normalizeExecution(execution) {
     };
 }
 
-function getArrayFields(config) {
+const NON_SPLIT_ARRAY_FIELDS = new Set([
+    'imageUrls',
+    'characters',
+    'characterNames',
+    'charactersInScene',
+    'characterList',
+    'sceneCharacters',
+    'presentCharacters'
+]);
+
+const NON_SPLIT_ARRAY_FIELDS_BY_NODE = {
+    image_to_image: ['imageUrls', 'characters', 'characterNames', 'charactersInScene', 'characterList'],
+};
+
+function getArrayFields(config, nodeType) {
     if (!config || typeof config !== 'object') return [];
-    return Object.entries(config).filter(([, value]) => Array.isArray(value));
+
+    const noSplit = new Set(NON_SPLIT_ARRAY_FIELDS);
+    if (nodeType && NON_SPLIT_ARRAY_FIELDS_BY_NODE[nodeType]) {
+        NON_SPLIT_ARRAY_FIELDS_BY_NODE[nodeType].forEach(field => noSplit.add(field));
+    }
+    if (Array.isArray(config._noSplitFields)) {
+        config._noSplitFields.forEach(field => noSplit.add(field));
+    }
+
+    return Object.entries(config).filter(([key, value]) => Array.isArray(value) && !noSplit.has(key));
+}
+
+// ============================================================================
+// OUTPUT MAPPING & FILTERED REFERENCE HELPERS
+// ============================================================================
+
+/**
+ * Get a nested value from an object using dot notation path
+ * @param {object} obj - The object to get value from
+ * @param {string} path - Dot-notation path (e.g., 'user.name' or 'items[0].id')
+ * @returns {*} The value at the path, or undefined if not found
+ */
+function getNestedValue(obj, path) {
+    if (!obj || !path) return undefined;
+
+    // Handle array index notation like 'items[0]'
+    const normalizedPath = path.replace(/\[(\d+)\]/g, '.$1');
+    const parts = normalizedPath.split('.');
+
+    let current = obj;
+    for (const part of parts) {
+        if (current === null || current === undefined) return undefined;
+        current = current[part];
+    }
+    return current;
+}
+
+/**
+ * Apply output mapping to transform node output
+ * Maps input fields and output fields to a new output structure
+ * 
+ * @param {object} output - The raw output from the node handler
+ * @param {object} input - The input config that was passed to the node
+ * @param {object} mapping - The output mapping configuration
+ *   Example: { 
+ *     "imageUrl": "$output.imageUrl",
+ *     "characterName": "$input.name",
+ *     "staticField": "constant value"
+ *   }
+ * @returns {object} The mapped output
+ */
+function applyOutputMapping(output, input, mapping) {
+    if (!mapping || typeof mapping !== 'object') return output;
+
+    const mapped = {};
+
+    for (const [key, expression] of Object.entries(mapping)) {
+        if (typeof expression === 'string') {
+            if (expression.startsWith('$output.')) {
+                const field = expression.replace('$output.', '');
+                mapped[key] = getNestedValue(output, field);
+            } else if (expression.startsWith('$input.')) {
+                const field = expression.replace('$input.', '');
+                mapped[key] = getNestedValue(input, field);
+            } else if (expression === '$output') {
+                mapped[key] = output;
+            } else if (expression === '$input') {
+                mapped[key] = input;
+            } else {
+                // Static value
+                mapped[key] = expression;
+            }
+        } else {
+            // Non-string values are passed through as-is
+            mapped[key] = expression;
+        }
+    }
+
+    // Preserve any output fields not explicitly mapped
+    // This ensures we don't lose data if mapping is partial
+    return { ...output, ...mapped };
+}
+
+/**
+ * Apply output mapping to array of outputs (for batch processing)
+ * Each output item is mapped with its corresponding input item
+ * 
+ * @param {Array} outputs - Array of output objects
+ * @param {Array} inputs - Array of input configs (same length as outputs)
+ * @param {object} mapping - The output mapping configuration
+ * @returns {Array} Array of mapped outputs
+ */
+function applyOutputMappingToArray(outputs, inputs, mapping) {
+    if (!mapping || !Array.isArray(outputs)) return outputs;
+
+    return outputs.map((output, index) => {
+        const input = Array.isArray(inputs) ? inputs[index] : inputs;
+        return applyOutputMapping(output, input, mapping);
+    });
+}
+
+/**
+ * Apply filtered reference - select items from source array based on filter condition
+ * Implements WHERE clause functionality
+ * 
+ * @param {object} filterConfig - The filter configuration
+ *   {
+ *     sourceData: [...],           // Array to filter from
+ *     filterField: "name",         // Field to filter on
+ *     operator: "IN",              // IN, EQUALS, CONTAINS
+ *     matchValues: [...]           // Values to match against
+ *   }
+ * @returns {Array} Filtered array
+ */
+function applyFilteredReference(filterConfig) {
+    const { sourceData, filterField, operator, matchValues } = filterConfig;
+
+    if (!Array.isArray(sourceData)) {
+        console.warn('[FilteredReference] sourceData is not an array');
+        return sourceData;
+    }
+
+    if (!filterField || !matchValues) {
+        console.warn('[FilteredReference] Missing filterField or matchValues');
+        return sourceData;
+    }
+
+    const matchSet = Array.isArray(matchValues)
+        ? new Set(matchValues.map(v => String(v).toLowerCase()))
+        : new Set([String(matchValues).toLowerCase()]);
+
+    return sourceData.filter(item => {
+        const fieldValue = getNestedValue(item, filterField);
+        if (fieldValue === undefined) return false;
+
+        const normalizedValue = String(fieldValue).toLowerCase();
+
+        switch (operator?.toUpperCase()) {
+            case 'IN':
+                return matchSet.has(normalizedValue);
+            case 'EQUALS':
+                return matchSet.has(normalizedValue);
+            case 'CONTAINS':
+                return Array.from(matchSet).some(v => normalizedValue.includes(v));
+            case 'NOT_IN':
+                return !matchSet.has(normalizedValue);
+            default:
+                return matchSet.has(normalizedValue);
+        }
+    });
+}
+
+/**
+ * Resolve a filtered reference from config
+ * Handles the _type: 'filteredReference' case in mapConfigReferences
+ * 
+ * @param {object} refConfig - The filtered reference configuration
+ * @param {Map} nodeIdToTaskRef - Mapping of node IDs to task references
+ * @param {object} previousOutputs - Previous task outputs
+ * @returns {Array} Filtered data
+ */
+function resolveFilteredReference(refConfig, previousOutputs) {
+    const { sourceNode, sourceField, filterConfig } = refConfig;
+
+    // Get source data from the specified node
+    const sourceOutput = previousOutputs[sourceNode];
+    if (!sourceOutput) {
+        console.warn(`[FilteredReference] Source node '${sourceNode}' not found in previous outputs`);
+        return [];
+    }
+
+    const sourceData = sourceField ? getNestedValue(sourceOutput, sourceField) : sourceOutput;
+    if (!Array.isArray(sourceData)) {
+        console.warn(`[FilteredReference] Source data is not an array`);
+        return sourceData;
+    }
+
+    // Resolve match values - could be a static array or a reference
+    let matchValues = filterConfig.matchValues;
+    if (filterConfig.matchFrom) {
+        const matchNode = previousOutputs[filterConfig.matchFrom.nodeId];
+        if (matchNode) {
+            matchValues = getNestedValue(matchNode, filterConfig.matchFrom.outputKey);
+        }
+    }
+
+    return applyFilteredReference({
+        sourceData,
+        filterField: filterConfig.field,
+        operator: filterConfig.operator,
+        matchValues
+    });
 }
 
 function normalizePromptConfig(config) {
@@ -1491,8 +1872,8 @@ async function runItemHandlers(runOne, itemConfigs, mode) {
     return results;
 }
 
-function combineOutputs(results, aggregateItems) {
-    const outputs = results.map(result => {
+function combineOutputs(results, aggregateItems, outputMapping = null, itemConfigs = null) {
+    let outputs = results.map(result => {
         if (result && typeof result === 'object' && result.output && typeof result.output === 'object') {
             return result.output;
         }
@@ -1501,6 +1882,12 @@ function combineOutputs(results, aggregateItems) {
         }
         return { value: result };
     });
+
+    // Apply output mapping if provided - preserves input metadata in outputs
+    if (outputMapping && itemConfigs) {
+        outputs = applyOutputMappingToArray(outputs, itemConfigs, outputMapping);
+        console.log(`  📋 Applied output mapping to ${outputs.length} items`);
+    }
 
     // Collect all API calls from results
     const allApiCalls = [];
@@ -1590,7 +1977,9 @@ function buildWorkflowDefinition(workflowDefName, nodes) {
             nodeId: node.id,
             nodeType: node.type,
             config: mapConfigReferences(node.config || {}, nodeIdToTaskRef),
-            execution: node.execution || {}
+            execution: node.execution || {},
+            // Pass output mapping configuration
+            outputMapping: node.outputMapping || null
         }
     }));
 
@@ -1656,22 +2045,34 @@ async function callExternalService(nodeType, config, previousResults) {
 async function executeTask(task) {
     const taskType = task.taskType || task.taskDefName;
     const handler = nodeProcessors[taskType];
-    const config = normalizePromptConfig(task.inputData?.config || {});
+
+    // Removed top-level resolution to move it to runOne
+    let config = normalizePromptConfig(task.inputData?.config || {});
     const execution = normalizeExecution(task.inputData?.execution);
     const aggregateItems = execution.waitForAll && execution.aggregateItems;
     const nodeId = task.inputData?.nodeId || 'unknown';
+    const outputMapping = task.inputData?.outputMapping || null;
 
     console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
     console.log(`🚀 EXECUTING NODE: ${nodeId}`);
     console.log(`📋 Task Type: ${taskType}`);
+    if (outputMapping) {
+        console.log(`📋 Output Mapping: ${Object.keys(outputMapping).join(', ')}`);
+    }
     console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
 
     try {
-        const arrayFields = getArrayFields(config);
+        const arrayFields = getArrayFields(config, taskType);
         const runOne = async (itemConfig, itemIndex) => {
             if (arrayFields.length > 0) {
                 console.log(`\n  ⚙️  Processing item ${itemIndex + 1}...`);
             }
+
+            // JOIN/FILTER Update: Resolve references per item context
+            try {
+                itemConfig = resolveRuntimeReferences(itemConfig, itemConfig, { itemIndex });
+            } catch (e) { console.error('Error resolving runtime ref in runOne:', e); }
+
             if (handler) {
                 return handler(itemConfig, []);
             }
@@ -1684,7 +2085,14 @@ async function executeTask(task) {
             if (aggregateItems) {
                 const aggregateConfig = { ...baseConfig, items: itemConfigs };
                 const result = await runOne(aggregateConfig, 0);
-                const output = result && result.output ? result.output : {};
+                let output = result && result.output ? result.output : {};
+
+                // Apply output mapping for aggregated results
+                if (outputMapping) {
+                    output = applyOutputMapping(output, aggregateConfig, outputMapping);
+                    console.log(`  📋 Applied output mapping to aggregated result`);
+                }
+
                 const taskOutput = {
                     ...output,
                     itemsCount,
@@ -1703,7 +2111,8 @@ async function executeTask(task) {
             }
 
             const results = await runItemHandlers(runOne, itemConfigs, execution.mode);
-            const combinedOutput = combineOutputs(results, false);
+            // Pass outputMapping and itemConfigs to combineOutputs for metadata preservation
+            const combinedOutput = combineOutputs(results, false, outputMapping, itemConfigs);
 
             await updateTaskStatus(task, 'COMPLETED', {
                 ...combinedOutput,
@@ -1716,7 +2125,14 @@ async function executeTask(task) {
         }
 
         const result = await runOne(config, 0);
-        const output = result && result.output ? result.output : {};
+        let output = result && result.output ? result.output : {};
+
+        // Apply output mapping for single item
+        if (outputMapping) {
+            output = applyOutputMapping(output, config, outputMapping);
+            console.log(`  📋 Applied output mapping`);
+        }
+
         const taskOutput = { ...output, nodeType: result?.type || taskType };
 
         // Include apiCalls if present (fix for missing API call logs)

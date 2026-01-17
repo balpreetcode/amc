@@ -1,0 +1,126 @@
+.filtered-reference-editor {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+}
+
+.ref-row {
+    margin-bottom: 0.75rem;
+}
+
+.ref-row label {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ref-select,
+.ref-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 0.6rem 0.75rem;
+    color: #fff;
+    font-size: 0.85rem;
+}
+
+.ref-select:focus,
+.ref-input:focus {
+    outline: none;
+    border-color: rgba(99, 102, 241, 0.5);
+}
+
+.ref-select option {
+    background: #1a1a2e;
+    color: #fff;
+}
+
+.filter-toggle {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.85rem !important;
+    text-transform: none !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #6366f1;
+}
+
+.filter-config {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.filter-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    color: #a5b4fc;
+}
+
+.filter-icon {
+    font-size: 0.9rem;
+}
+
+.filter-match-section {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.match-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+}
+
+.ref-preview {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.preview-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.preview-code {
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 0.8rem;
+    color: #ffffff;
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    word-break: break-all;
+}

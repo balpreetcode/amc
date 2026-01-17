@@ -3,6 +3,9 @@ import { useWorkflowContext } from '../context/WorkflowContext';
 import { useAuth } from '../context/AuthContext';
 import { FileBrowserModal } from './FileBrowserModal';
 import { getNodeTypeConfig, getProviderFromModel, getModelDisplayName, type NodeExecutionConfig, type NodeType, type MockDataConfig } from '../types/nodes';
+import { JsonTree } from './JsonTree';
+import { OutputMappingEditor } from './OutputMappingEditor';
+import { FilteredReferenceEditor } from './FilteredReferenceEditor';
 import './NodePropertiesPanel.css';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
@@ -187,6 +190,8 @@ export const NodePropertiesPanel: React.FC = () => {
     const [mockDataError, setMockDataError] = React.useState<string | null>(null);
     const [inputPreviewIndex, setInputPreviewIndex] = useState(0);
     const [outputPreviewIndex, setOutputPreviewIndex] = useState(0);
+    const [outputViewMode, setOutputViewMode] = useState<'raw' | 'tree'>('raw');
+    const [copyFeedback, setCopyFeedback] = useState(false);
 
     // Composio OAuth state
     const [composioAccounts, setComposioAccounts] = useState<ComposioAccount[]>([]);
@@ -693,31 +698,83 @@ export const NodePropertiesPanel: React.FC = () => {
 
                                     <div className="preview-header">
                                         <label>Output Data</label>
-                                        {isArrayOutput && arrayLength > 1 && (
-                                            <div className="array-navigation">
+                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                            <button
+                                                className="nav-btn"
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(JSON.stringify(displayedOutput, null, 2));
+                                                    setCopyFeedback(true);
+                                                    setTimeout(() => setCopyFeedback(false), 2000);
+                                                }}
+                                                title="Copy JSON"
+                                                style={{ width: 'auto', padding: '0 8px', fontSize: '0.75rem', gap: '4px' }}
+                                            >
+                                                {copyFeedback ? '✓ Copied' : '📋 Copy'}
+                                            </button>
+                                            <div className="view-toggle" style={{ display: 'flex', background: 'rgba(0,0,0,0.1)', padding: '2px', borderRadius: '4px' }}>
                                                 <button
-                                                    className="nav-btn"
-                                                    disabled={outputPreviewIndex === 0}
-                                                    onClick={() => setOutputPreviewIndex(prev => Math.max(0, prev - 1))}
+                                                    onClick={() => setOutputViewMode('raw')}
+                                                    style={{
+                                                        background: outputViewMode === 'raw' ? '#fff' : 'transparent',
+                                                        border: 'none',
+                                                        padding: '4px 8px',
+                                                        borderRadius: '3px',
+                                                        fontSize: '0.75rem',
+                                                        cursor: 'pointer',
+                                                        color: outputViewMode === 'raw' ? '#000' : '#666',
+                                                        boxShadow: outputViewMode === 'raw' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none'
+                                                    }}
                                                 >
-                                                    &lt;
+                                                    JSON
                                                 </button>
-                                                <span className="nav-counter">
-                                                    {outputPreviewIndex + 1} / {arrayLength}
-                                                </span>
                                                 <button
-                                                    className="nav-btn"
-                                                    disabled={outputPreviewIndex === arrayLength - 1}
-                                                    onClick={() => setOutputPreviewIndex(prev => Math.min(arrayLength - 1, prev + 1))}
+                                                    onClick={() => setOutputViewMode('tree')}
+                                                    style={{
+                                                        background: outputViewMode === 'tree' ? '#fff' : 'transparent',
+                                                        border: 'none',
+                                                        padding: '4px 8px',
+                                                        borderRadius: '3px',
+                                                        fontSize: '0.75rem',
+                                                        cursor: 'pointer',
+                                                        color: outputViewMode === 'tree' ? '#000' : '#666',
+                                                        boxShadow: outputViewMode === 'tree' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none'
+                                                    }}
                                                 >
-                                                    &gt;
+                                                    Tree
                                                 </button>
                                             </div>
-                                        )}
+                                            {isArrayOutput && arrayLength > 1 && (
+                                                <div className="array-navigation">
+                                                    <button
+                                                        className="nav-btn"
+                                                        disabled={outputPreviewIndex === 0}
+                                                        onClick={() => setOutputPreviewIndex(prev => Math.max(0, prev - 1))}
+                                                    >
+                                                        &lt;
+                                                    </button>
+                                                    <span className="nav-counter">
+                                                        {outputPreviewIndex + 1} / {arrayLength}
+                                                    </span>
+                                                    <button
+                                                        className="nav-btn"
+                                                        disabled={outputPreviewIndex === arrayLength - 1}
+                                                        onClick={() => setOutputPreviewIndex(prev => Math.min(arrayLength - 1, prev + 1))}
+                                                    >
+                                                        &gt;
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                    <pre className="json-preview">
-                                        {JSON.stringify(displayedOutput, null, 2)}
-                                    </pre>
+                                    {outputViewMode === 'raw' ? (
+                                        <pre className="json-preview">
+                                            {JSON.stringify(displayedOutput, null, 2)}
+                                        </pre>
+                                    ) : (
+                                        <div className="json-preview" style={{ background: '#1e1e1e', color: '#d4d4d4', padding: '1rem', borderRadius: '6px', fontFamily: 'Monaco, Consolas, monospace', fontSize: '0.8rem' }}>
+                                            <JsonTree data={displayedOutput} />
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })()}
@@ -815,6 +872,33 @@ export const NodePropertiesPanel: React.FC = () => {
                             )}
                         </div>
                     )}
+
+                    {/* Output Mapping Section */}
+                    <OutputMappingEditor
+                        mapping={selectedNode.outputMapping || {}}
+                        nodeType={selectedNode.type}
+                        inputFields={(() => {
+                            // Extract input field names from referenced nodes
+                            const fields: string[] = [];
+                            const config = selectedNode.config || {};
+                            Object.values(config).forEach(value => {
+                                if (value && typeof value === 'object' && (value as any)._type === 'reference') {
+                                    const ref = value as { nodeId: string; outputKey: string };
+                                    // Add common fields that might be in the input
+                                    if (ref.outputKey === 'items') {
+                                        fields.push('name', 'description', 'text', 'id');
+                                    } else {
+                                        fields.push(ref.outputKey);
+                                    }
+                                }
+                            });
+                            return Array.from(new Set(fields));
+                        })()}
+                        outputFields={OUTPUT_KEYS[selectedNode.type] || []}
+                        onChange={(mapping) => {
+                            updateNode(selectedNode.id, { outputMapping: mapping });
+                        }}
+                    />
 
                     {fields.map(field => {
                         // Image-to-Image: Conditional field visibility based on model
@@ -1175,35 +1259,12 @@ export const NodePropertiesPanel: React.FC = () => {
                                 </label>
 
                                 {isReference ? (
-                                    <div className="reference-selector">
-                                        <select
-                                            value={fieldValue.nodeId}
-                                            onChange={(e) => handleFieldChange(field.name, { ...fieldValue, nodeId: e.target.value })}
-                                        >
-                                            {previousNodes.map(node => (
-                                                <option key={node.id} value={node.id}>{node.title}</option>
-                                            ))}
-                                        </select>
-                                        <select
-                                            value={fieldValue.outputKey}
-                                            onChange={(e) => handleFieldChange(field.name, { ...fieldValue, outputKey: e.target.value })}
-                                        >
-                                            {(() => {
-                                                const keys = OUTPUT_KEYS[workflow.nodes.find(n => n.id === fieldValue.nodeId)?.type || ''] || [];
-                                                const withItems = keys.includes('items') ? keys : [...keys, 'items'];
-                                                return withItems.map(key => (
-                                                    <option key={key} value={key}>{key}</option>
-                                                ));
-                                            })() || <option value="">No outputs</option>}
-                                        </select>
-                                        <input
-                                            type="text"
-                                            value={fieldValue.jsonPath || ''}
-                                            onChange={(e) => handleFieldChange(field.name, { ...fieldValue, jsonPath: e.target.value })}
-                                            placeholder="JSON path (e.g., data.images)"
-                                            style={{ marginTop: '8px', fontSize: '12px' }}
-                                        />
-                                    </div>
+                                    <FilteredReferenceEditor
+                                        fieldName={field.name}
+                                        currentValue={fieldValue}
+                                        previousNodes={previousNodes}
+                                        onChange={(value) => handleFieldChange(field.name, value)}
+                                    />
                                 ) : (
                                     <>
                                         {field.type === 'textarea' && (

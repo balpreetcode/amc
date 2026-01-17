@@ -582,8 +582,9 @@ input:checked+.slider:before {
 
 .btn-link-node:hover,
 .btn-link-node.active {
-    color: var(--accent-primary);
-    background: rgba(249, 115, 22, 0.1);
+    color: #1a1a1a;
+    background: rgba(249, 115, 22, 0.2);
+    font-weight: 500;
 }
 
 .reference-selector {

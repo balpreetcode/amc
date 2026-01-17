@@ -28,6 +28,29 @@ export interface NodeOutput {
   type: OutputType;
 }
 
+// Output Mapping - allows preserving metadata from input to output
+// Example: { imageUrl: "$output.imageUrl", characterName: "$input.name" }
+export interface OutputMappingConfig {
+  [key: string]: string;  // Field name -> mapping expression ($output.*, $input.*, or static value)
+}
+
+// Filtered Reference for WHERE clause functionality
+export interface FilteredReferenceConfig {
+  _type: 'filteredReference';
+  sourceNode: string;       // Node ID to get data from
+  sourceField: string;      // Field in source output (e.g., 'items')
+  filterConfig: {
+    field: string;          // Field to filter on (e.g., 'characterName')
+    operator: 'IN' | 'EQUALS' | 'CONTAINS' | 'NOT_IN';
+    matchValues?: unknown[];  // Static match values
+    matchFrom?: {           // Or dynamic values from another node
+      _type: 'reference';
+      nodeId: string;
+      outputKey: string;
+    };
+  };
+}
+
 export interface WorkflowNodeData {
   id: string;
   type: NodeType;
@@ -40,6 +63,7 @@ export interface WorkflowNodeData {
   mockData?: MockDataConfig;
   providerConfig?: ProviderConfig;
   apiConfig?: ApiConfig;
+  outputMapping?: OutputMappingConfig;  // New: Output mapping configuration
   outputUrl?: string;  // Legacy: single output URL (kept for backwards compatibility)
   outputs?: NodeOutput[];  // New: array of outputs (supports parallel execution)
 }
